@@ -55,7 +55,7 @@
     return;
   }
 
-  const response = await fetch("http://192.168.1.18:8000/session", {
+  const response = await fetch("/session", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -63,7 +63,11 @@
     body: JSON.stringify({ name })
   });
 
-  const data = await response.json();
+  const data = await response.json().catch(() => null);
+  if (!response.ok || !data) {
+    alert(`Ошибка сервера при создании сессии: ${response.status}`);
+    return;
+  }
 
   // 🔥 сохраняем session_id
   localStorage.setItem("session_id", data.session_id);

@@ -56,9 +56,8 @@
 </table>
 
 <script>
-
 async function loadAnswers() {
-  const res = await fetch("http://192.168.1.18:8000/answers");
+  const res = await fetch("/answers");
   const data = await res.json();
 
   const table = document.getElementById("answersTable");
@@ -89,7 +88,7 @@ async function loadAnswers() {
 }
 
 async function markAnswer(id, isCorrect) {
-  await fetch(`http://192.168.1.18:8000/answers/${id}`, {
+  await fetch(`/answers/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json"

@@ -1,5 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -16,16 +20,19 @@ Base.metadata.create_all(bind=engine)
 # APP
 # --------------------
 
+FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 # --------------------
 # DB SESSION
@@ -155,3 +162,15 @@ def get_answers(db: Session = Depends(get_db)):
         }
         for answer, user in results
     ]
+
+
+@app.get("/", response_class=FileResponse)
+async def serve_index():
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+@app.get("/{full_path:path}", response_class=FileResponse)
+async def serve_frontend(full_path: str):
+    target_path = (FRONTEND_DIR / full_path).resolve()
+    if not str(target_path).startswith(str(FRONTEND_DIR.resolve())) or not target_path.exists():
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(target_path)
