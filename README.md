@@ -1,30 +1,66 @@
-# WSH_quiz_game_app
-This is a web app, for my self-made Who's smart here? quiz game
+# WSH Quiz Game App
 
-This web app is created with a lof of hepling from various AI 
+A small quiz game web app built with FastAPI and plain frontend HTML pages. Players can register with a name, submit answers, and a host can mark answers as correct or incorrect. Final results are shown in a leaderboard.
 
-# How the app should be used?
+## Features
 
-During a Who's Smart Here? quiz game, the player opens the web app
+- Player registration via `index.html`
+- Question submission via `questions.html`
+- Host answer review via `answers.html`
+- Final leaderboard via `final_result.html`
+- Data reset button for development/testing
+- Responsive layout for mobile devices
 
-The first page - is a registration page, that consists of a name input field and a Submit button
+## Project structure
 
-Player enters his name and presses Submit, after what is redirected to the first questions page
+- `app/` — backend code
+  - `main.py` — FastAPI application
+  - `db/` — database connection and setup
+  - `models/` — SQLAlchemy models
+- `frontend/` — frontend HTML pages for players and host
+- `database.db` — SQLite database file
 
-The question page is the same one throught the whole game, the number of the questions and the round increases only
+## Requirements
 
-The page consists of the number of the question, number of the round, answer input field and a Submit button
+- Python 3.10+
+- FastAPI
+- Uvicorn
+- SQLAlchemy
+- Pydantic
 
-The player enters the answer and presses Submit, by what the answer is sent ot the answers db with a appropriate number of the question, number of the round and the name of the player
+You can install the required packages with:
 
-The answers table is shown on the answers page for the game host 
+```bash
+pip install fastapi uvicorn sqlalchemy pydantic
+```
 
-The game host must check, wheter the answer is correct or not and mark the correctness of the answer by clicking on the check mark or the cross
+## Run the app
 
-If the answer is marked correct - the amount of final amount of points of the particular player is increased by one
+From the project root, start the backend server:
 
-If the answer is marked incorrect - nothing happens 
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-The final results table is shown on the final result page
+Then open in your browser:
 
-All players are sorted by the amount of the final points (from the most, to least points)
+- `http://localhost:8000/` — player login page
+- `http://localhost:8000/questions.html` — quiz page (after login)
+- `http://localhost:8000/answers.html` — host answer review page
+- `http://localhost:8000/final_result.html` — leaderboard
+
+## How to use
+
+1. Player opens `index.html` and enters a name.
+2. The app creates a session and redirects to `questions.html`.
+3. The player submits answers for each question.
+4. The host opens `answers.html`, reviews answers, and marks them correct or incorrect.
+5. Correct answers increase the player's score.
+6. The final leaderboard is available on `final_result.html`.
+
+## Notes
+
+- The app uses browser `localStorage` to keep the logged-in player session across refreshes.
+- The frontend is served from the FastAPI app, so all pages are available from the same origin.
+- The `final_result.html` page refreshes automatically to show new users and scores in real time.
+- The `Reset database` button on the final results page clears all users and answers for easy testing.
