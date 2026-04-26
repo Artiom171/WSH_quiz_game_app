@@ -31,9 +31,16 @@
 
     p.subtitle {
       text-align: center;
-      margin: 0 0 24px;
+      margin: 0 0 12px;
       color: #475569;
       font-size: 15px;
+    }
+
+    p.note {
+      text-align: center;
+      margin: 0 0 24px;
+      color: #64748b;
+      font-size: 14px;
     }
 
     table {
@@ -83,6 +90,27 @@
       color: #1e3a8a;
     }
 
+    .reset-container {
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .danger-button {
+      border: none;
+      background: #ef4444;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .danger-button:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
     td.score {
       font-weight: 600;
       color: #0f172a;
@@ -100,6 +128,7 @@
   <div class="container">
     <h2>Финальный результат</h2>
     <p class="subtitle">Таблица игроков, отсортированная по баллам от большего к меньшему.</p>
+    <p class="note">Показываются все зарегистрированные игроки, даже если они еще не дали ни одного ответа.</p>
     <table>
       <thead>
         <tr>
@@ -111,6 +140,9 @@
       <tbody id="resultsTable"></tbody>
     </table>
     <div id="emptyState" class="empty-state" style="display:none;">Пока нет результатов.</div>
+    <div class="reset-container">
+      <button id="resetButton" class="danger-button" type="button">Очистить базу данных</button>
+    </div>
   </div>
 
   <script>
@@ -123,6 +155,7 @@
       table.innerHTML = "";
 
       if (!data || data.length === 0) {
+        emptyState.textContent = "Пока нет зарегистрированных игроков.";
         emptyState.style.display = "block";
         return;
       }
@@ -134,13 +167,28 @@
         row.innerHTML = `
           <td class="rank">${index + 1}</td>
           <td>${user.name}</td>
-          <td class="score">${user.score}</td>
+          <td class="score">${user.score ?? 0}</td>
         `;
         table.appendChild(row);
       });
     }
 
+    async function resetDatabase() {
+      if (!confirm('Вы уверены? Это удалит все данные в базе.')) {
+        return;
+      }
+
+      const res = await fetch('/reset', { method: 'DELETE' });
+      if (res.ok) {
+        loadResults();
+      } else {
+        alert('Ошибка при очистке базы данных');
+      }
+    }
+
+    document.getElementById('resetButton').addEventListener('click', resetDatabase);
     loadResults();
+    setInterval(loadResults, 3000);
   </script>
 </body>
 </html>

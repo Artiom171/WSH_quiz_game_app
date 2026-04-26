@@ -164,6 +164,14 @@ def get_answers(db: Session = Depends(get_db)):
     ]
 
 
+@app.delete("/reset")
+def reset_database(db: Session = Depends(get_db)):
+    db.query(Answer).delete()
+    db.query(User).delete()
+    db.commit()
+    return {"status": "ok"}
+
+
 @app.get("/", response_class=FileResponse)
 async def serve_index():
     return FileResponse(FRONTEND_DIR / "index.html")
