@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Игра</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 15px;
+      width: 300px;
+    }
+
+    input {
+      padding: 10px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      background: #38bdf8;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h3 id="username"></h3>
+  <h2 id="questionText"></h2>
+
+  <input type="text" id="answerInput" placeholder="Ваш ответ">
+  <button onclick="sendAnswer()">Ответить</button>
+</div>
+
+<script>
+const session_id = localStorage.getItem("session_id");
+const user_name = localStorage.getItem("user_name");
+
+document.getElementById("username").innerText = "Игрок: " + user_name;
+
+// 🎮 логика игры
+let round = 1;
+let questionNumber = 1;
+
+const roundLimits = {
+  1: 10,
+  2: 20,
+  3: 15,
+  4: 20
+};
+
+// показать текущий вопрос
+function loadQuestion() {
+  document.getElementById("questionText").innerText =
+    `Тур ${round}, Вопрос ${questionNumber}`;
+}
+
+// переход к следующему
+function nextQuestion() {
+  questionNumber++;
+
+  if (questionNumber > roundLimits[round]) {
+    round++;
+    questionNumber = 1;
+  }
+
+  if (round > 4) {
+    alert("Игра окончена");
+    return;
+  }
+
+  loadQuestion();
+}
+
+// отправка ответа
+async function sendAnswer() {
+  const answer = document.getElementById("answerInput").value;
+
+  if (!answer) return;
+
+  await fetch("http://192.168.1.18:8000/answers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      session_id: session_id,
+      round: round,
+      question_number: questionNumber,
+      answer_text: answer
+    })
+  });
+
+  document.getElementById("answerInput").value = "";
+
+  nextQuestion();
+}
+
+// старт
+loadQuestion();
+</script>
+
+</body>
+</html>
