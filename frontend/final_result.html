@@ -1,31 +1,146 @@
-<table>
-  <thead>
-    <tr>
-      <th>Игрок</th>
-      <th>Баллы</th>
-    </tr>
-  </thead>
-  <tbody id="resultsTable"></tbody>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Финальный результат</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #f3f6ff 0%, #eef2ff 100%);
+      color: #0f172a;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    h2 {
+      font-size: 32px;
+      margin: 0 0 16px;
+      text-align: center;
+      color: #111827;
+    }
+
+    p.subtitle {
+      text-align: center;
+      margin: 0 0 24px;
+      color: #475569;
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+    }
+
+    th, td {
+      padding: 16px 18px;
+      text-align: left;
+    }
+
+    th {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    tbody tr:hover {
+      background: #eff6ff;
+    }
+
+    td.rank {
+      width: 72px;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    td.score {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Финальный результат</h2>
+    <p class="subtitle">Таблица игроков, отсортированная по баллам от большего к меньшему.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Игрок</th>
+          <th>Баллы</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display:none;">Пока нет результатов.</div>
+  </div>
+
   <script>
-  async function loadResults() {
-  const res = await fetch("/results");
-  const data = await res.json();
+    async function loadResults() {
+      const res = await fetch("/results");
+      const data = await res.json();
 
-  const table = document.getElementById("resultsTable");
-  table.innerHTML = "";
+      const table = document.getElementById("resultsTable");
+      const emptyState = document.getElementById("emptyState");
+      table.innerHTML = "";
 
-  data.forEach(user => {
-    const row = document.createElement("tr");
+      if (!data || data.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
 
-    row.innerHTML = `
-      <td>${user.name}</td>
-      <td>${user.score}</td>
-    `;
+      emptyState.style.display = "none";
 
-    table.appendChild(row);
-  });
-}
+      data.forEach((user, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="rank">${index + 1}</td>
+          <td>${user.name}</td>
+          <td class="score">${user.score}</td>
+        `;
+        table.appendChild(row);
+      });
+    }
 
-loadResults();
+    loadResults();
   </script>
-</table>
+</body>
+</html>
