@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ответы игроков</title>
 
   <style>
@@ -10,7 +11,7 @@
       background: linear-gradient(180deg, #e9efff 0%, #f7f9ff 100%);
       color: #1f2937;
       margin: 0;
-      padding: 24px;
+      padding: 20px;
     }
 
     .container {
@@ -74,11 +75,11 @@
 
     button {
       border: none;
-      padding: 8px 12px;
+      padding: 10px 14px;
       margin: 0 4px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      min-width: 40px;
+      min-width: 42px;
       font-size: 14px;
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
@@ -101,6 +102,30 @@
       font-size: 18px;
       font-weight: 700;
       color: #0f172a;
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        padding: 20px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      th,
+      td {
+        padding: 14px 12px;
+      }
+
+      button {
+        margin: 6px 2px;
+      }
     }
   </style>
 </head>

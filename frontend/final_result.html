@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Финальный результат</title>
   <style>
     body {
       margin: 0;
-      padding: 24px;
+      padding: 20px;
       font-family: Inter, Arial, sans-serif;
       background: linear-gradient(180deg, #f3f6ff 0%, #eef2ff 100%);
       color: #0f172a;
@@ -114,6 +115,30 @@
     td.score {
       font-weight: 600;
       color: #0f172a;
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        padding: 20px;
+      }
+
+      .reset-container {
+        text-align: center;
+      }
+
+      .danger-button {
+        width: 100%;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      th,
+      td {
+        padding: 14px 12px;
+      }
     }
 
     .empty-state {
