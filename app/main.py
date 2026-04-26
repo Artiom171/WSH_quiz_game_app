@@ -16,6 +16,7 @@ Base.metadata.create_all(bind=engine)
 # APP
 # --------------------
 
+
 app = FastAPI()
 
 app.add_middleware(
