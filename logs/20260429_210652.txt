@@ -1,0 +1,396 @@
+2026-04-29 21:06:52 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:06:52 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:52 [INFO] Accept: */*
+2026-04-29 21:06:52 [INFO] Retrieved 0 answers
+2026-04-29 21:06:52 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:52 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:06:52 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:52 [INFO] Accept: */*
+2026-04-29 21:06:52 [INFO] Retrieved leaderboard: 2 users, top=Artiom
+2026-04-29 21:06:52 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:52 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:06:52 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:52 [INFO] Accept: */*
+2026-04-29 21:06:52 [INFO] Retrieved leaderboard: 2 users, top=Artiom
+2026-04-29 21:06:52 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:54 [INFO] Request start: DELETE /reset from 127.0.0.1
+2026-04-29 21:06:54 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:54 [INFO] Accept: */*
+2026-04-29 21:06:54 [INFO] Database reset: all users and answers deleted
+2026-04-29 21:06:54 [INFO] Request complete: DELETE /reset from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:54 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:06:54 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:54 [INFO] Accept: */*
+2026-04-29 21:06:54 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:06:54 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:54 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:06:54 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:54 [INFO] Accept: */*
+2026-04-29 21:06:54 [INFO] Retrieved 0 answers
+2026-04-29 21:06:54 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:55 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:06:55 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:55 [INFO] Accept: */*
+2026-04-29 21:06:56 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:06:56 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:57 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:06:57 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:57 [INFO] Accept: */*
+2026-04-29 21:06:57 [INFO] Retrieved 0 answers
+2026-04-29 21:06:57 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:58 [INFO] Request start: GET /index.html from 192.168.1.11
+2026-04-29 21:06:58 [INFO] User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36
+2026-04-29 21:06:58 [INFO] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+2026-04-29 21:06:58 [INFO] Served frontend file: index.html
+2026-04-29 21:06:59 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:06:59 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:06:59 [INFO] Accept: */*
+2026-04-29 21:06:59 [INFO] Request complete: GET /index.html from 192.168.1.11 -> 200 unknown
+2026-04-29 21:06:59 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:06:59 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:06:59 [INFO] Request start: GET /favicon.ico from 192.168.1.11
+2026-04-29 21:06:59 [INFO] User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36
+2026-04-29 21:06:59 [INFO] Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+2026-04-29 21:06:59 [INFO] Favicon requested
+2026-04-29 21:06:59 [INFO] Request complete: GET /favicon.ico from 192.168.1.11 -> 204 unknown
+2026-04-29 21:07:00 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:00 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:00 [INFO] Accept: */*
+2026-04-29 21:07:00 [INFO] Retrieved 0 answers
+2026-04-29 21:07:00 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:00 [INFO] Request start: POST /session from 192.168.1.11
+2026-04-29 21:07:00 [INFO] User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36
+2026-04-29 21:07:00 [INFO] Accept: */*
+2026-04-29 21:07:00 [INFO] Request body: {"name":"Artiom"}
+2026-04-29 21:07:00 [ERROR] Exception handling request: POST /session from 192.168.1.11
+Traceback (most recent call last):
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\sql\elements.py", line 1518, in __getattr__
+    return getattr(self.comparator, key)
+AttributeError: 'Comparator' object has no attribute 'casefold'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\orm\attributes.py", line 475, in __getattr__
+    return getattr(self.comparator, key)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 1313, in __getattr__
+    return self._fallback_getattr(key)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\orm\properties.py", line 474, in _fallback_getattr
+    return getattr(self.__clause_element__(), key)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\sql\elements.py", line 1520, in __getattr__
+    raise AttributeError(
+    ...<6 lines>...
+    ) from err
+AttributeError: Neither 'AnnotatedColumn' object nor 'Comparator' object has an attribute 'casefold'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\artio\Documents\project\app\main.py", line 69, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\fastapi\routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\anyio\_backends\_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\anyio\_backends\_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "C:\Users\artio\Documents\project\app\main.py", line 127, in create_session
+    elif db.query(User).filter(User.name.casefold() == data.name.casefold()).first():
+                               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\artio\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\orm\attributes.py", line 477, in __getattr__
+    raise AttributeError(
+    ...<8 lines>...
+    ) from err
+AttributeError: Neither 'InstrumentedAttribute' object nor 'Comparator' object associated with User.name has an attribute 'casefold'
+2026-04-29 21:07:01 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:01 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:01 [INFO] Accept: */*
+2026-04-29 21:07:01 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:01 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:03 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:03 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:03 [INFO] Accept: */*
+2026-04-29 21:07:03 [INFO] Retrieved 0 answers
+2026-04-29 21:07:03 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:04 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:04 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:04 [INFO] Accept: */*
+2026-04-29 21:07:04 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:04 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:06 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:06 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:06 [INFO] Accept: */*
+2026-04-29 21:07:06 [INFO] Retrieved 0 answers
+2026-04-29 21:07:06 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:07 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:07 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:07 [INFO] Accept: */*
+2026-04-29 21:07:07 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:07 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:09 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:09 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:09 [INFO] Accept: */*
+2026-04-29 21:07:09 [INFO] Retrieved 0 answers
+2026-04-29 21:07:09 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:10 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:10 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:10 [INFO] Accept: */*
+2026-04-29 21:07:10 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:10 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:12 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:12 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:12 [INFO] Accept: */*
+2026-04-29 21:07:12 [INFO] Retrieved 0 answers
+2026-04-29 21:07:12 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:13 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:13 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:13 [INFO] Accept: */*
+2026-04-29 21:07:13 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:13 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:15 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:15 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:15 [INFO] Accept: */*
+2026-04-29 21:07:15 [INFO] Retrieved 0 answers
+2026-04-29 21:07:15 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:16 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:16 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:16 [INFO] Accept: */*
+2026-04-29 21:07:17 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:17 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:18 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:18 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:18 [INFO] Accept: */*
+2026-04-29 21:07:18 [INFO] Retrieved 0 answers
+2026-04-29 21:07:18 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:19 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:19 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:19 [INFO] Accept: */*
+2026-04-29 21:07:19 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:19 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:21 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:21 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:21 [INFO] Accept: */*
+2026-04-29 21:07:21 [INFO] Retrieved 0 answers
+2026-04-29 21:07:21 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:22 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:22 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:22 [INFO] Accept: */*
+2026-04-29 21:07:22 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:22 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:24 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:24 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:24 [INFO] Accept: */*
+2026-04-29 21:07:24 [INFO] Retrieved 0 answers
+2026-04-29 21:07:24 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:25 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:25 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:25 [INFO] Accept: */*
+2026-04-29 21:07:25 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:25 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:27 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:27 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:27 [INFO] Accept: */*
+2026-04-29 21:07:27 [INFO] Retrieved 0 answers
+2026-04-29 21:07:27 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:28 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:28 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:28 [INFO] Accept: */*
+2026-04-29 21:07:29 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:29 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:30 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:30 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:30 [INFO] Accept: */*
+2026-04-29 21:07:30 [INFO] Retrieved 0 answers
+2026-04-29 21:07:30 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:31 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:31 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:31 [INFO] Accept: */*
+2026-04-29 21:07:31 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:31 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:33 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:33 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:33 [INFO] Accept: */*
+2026-04-29 21:07:33 [INFO] Retrieved 0 answers
+2026-04-29 21:07:33 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:35 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:35 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:35 [INFO] Accept: */*
+2026-04-29 21:07:35 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:35 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:36 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:36 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:36 [INFO] Accept: */*
+2026-04-29 21:07:36 [INFO] Retrieved 0 answers
+2026-04-29 21:07:36 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:38 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:38 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:38 [INFO] Accept: */*
+2026-04-29 21:07:38 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:38 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:39 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:39 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:39 [INFO] Accept: */*
+2026-04-29 21:07:39 [INFO] Retrieved 0 answers
+2026-04-29 21:07:39 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:41 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:41 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:41 [INFO] Accept: */*
+2026-04-29 21:07:41 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:41 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:42 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:42 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:42 [INFO] Accept: */*
+2026-04-29 21:07:42 [INFO] Retrieved 0 answers
+2026-04-29 21:07:42 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:44 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:44 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:44 [INFO] Accept: */*
+2026-04-29 21:07:44 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:44 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:45 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:45 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:45 [INFO] Accept: */*
+2026-04-29 21:07:45 [INFO] Retrieved 0 answers
+2026-04-29 21:07:45 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:47 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:47 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:47 [INFO] Accept: */*
+2026-04-29 21:07:47 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:47 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:48 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:48 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:48 [INFO] Accept: */*
+2026-04-29 21:07:48 [INFO] Retrieved 0 answers
+2026-04-29 21:07:48 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:50 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:50 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:50 [INFO] Accept: */*
+2026-04-29 21:07:50 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:50 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:51 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:07:51 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:51 [INFO] Accept: */*
+2026-04-29 21:07:51 [INFO] Retrieved 0 answers
+2026-04-29 21:07:51 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:53 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:53 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:53 [INFO] Accept: */*
+2026-04-29 21:07:53 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:53 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:56 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:56 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:56 [INFO] Accept: */*
+2026-04-29 21:07:56 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:56 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:07:59 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:07:59 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:07:59 [INFO] Accept: */*
+2026-04-29 21:07:59 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:07:59 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:02 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:02 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:02 [INFO] Accept: */*
+2026-04-29 21:08:02 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:02 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:05 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:05 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:05 [INFO] Accept: */*
+2026-04-29 21:08:05 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:05 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:08 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:08 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:08 [INFO] Accept: */*
+2026-04-29 21:08:08 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:08 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:11 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:11 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:11 [INFO] Accept: */*
+2026-04-29 21:08:11 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:11 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:14 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:14 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:14 [INFO] Accept: */*
+2026-04-29 21:08:14 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:14 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:17 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:17 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:17 [INFO] Accept: */*
+2026-04-29 21:08:17 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:17 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:20 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:20 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:20 [INFO] Accept: */*
+2026-04-29 21:08:20 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:20 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:23 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:23 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:23 [INFO] Accept: */*
+2026-04-29 21:08:23 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:23 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:26 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:26 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:26 [INFO] Accept: */*
+2026-04-29 21:08:26 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:26 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:27 [INFO] Request start: GET /answers from 127.0.0.1
+2026-04-29 21:08:27 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:27 [INFO] Accept: */*
+2026-04-29 21:08:27 [INFO] Retrieved 0 answers
+2026-04-29 21:08:27 [INFO] Request complete: GET /answers from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:29 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:29 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:29 [INFO] Accept: */*
+2026-04-29 21:08:29 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:29 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 21:08:32 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 21:08:32 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 21:08:32 [INFO] Accept: */*
+2026-04-29 21:08:32 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 21:08:32 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
