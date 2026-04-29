@@ -6,26 +6,41 @@
   <title>Игра</title>
 
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
       margin: 0;
+      padding: 0;
+      width: 100%;
       min-height: 100vh;
+      overflow: hidden;
       font-family: Inter, Arial, sans-serif;
       background: #0f172a;
       color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px;
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
     }
 
     .container {
       width: 100%;
       max-width: 500px;
+      min-height: 340px;
+      max-height: 94vh;
       text-align: center;
       background: #111827;
-      padding: 30px;
+      padding: 28px;
       border-radius: 24px;
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.45);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      overflow: hidden;
     }
 
     h3,
@@ -47,13 +62,14 @@
 
     input {
       width: 100%;
-      padding: 16px 14px;
+      padding: 16px 18px;
       margin-top: 16px;
       border-radius: 16px;
       border: 1px solid #334155;
       background: #0f172a;
       color: white;
       font-size: 16px;
+      outline: none;
     }
 
     input::placeholder {
@@ -61,27 +77,32 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 4px;
       padding: 16px;
       width: 100%;
-      background: #38bdf8;
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
       border: none;
       border-radius: 16px;
       cursor: pointer;
       font-weight: 700;
       font-size: 16px;
       color: #0f172a;
-      transition: transform 0.2s ease, background-color 0.2s ease;
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     button:hover {
-      background: #0ea5e9;
+      background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
       transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(56, 189, 248, 0.24);
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
       .container {
-        padding: 24px;
+        padding: 20px;
         border-radius: 20px;
       }
 

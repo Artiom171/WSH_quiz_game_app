@@ -1,0 +1,50 @@
+2026-04-29 20:34:35 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:35 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:35 [INFO] Accept: */*
+2026-04-29 20:34:35 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:35 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:37 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:37 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:37 [INFO] Accept: */*
+2026-04-29 20:34:37 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:37 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:40 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:40 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:40 [INFO] Accept: */*
+2026-04-29 20:34:40 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:40 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:43 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:43 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:43 [INFO] Accept: */*
+2026-04-29 20:34:43 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:43 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:47 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:47 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:47 [INFO] Accept: */*
+2026-04-29 20:34:47 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:47 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:49 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:49 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:49 [INFO] Accept: */*
+2026-04-29 20:34:49 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:49 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:52 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:52 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:52 [INFO] Accept: */*
+2026-04-29 20:34:52 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:52 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:55 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:55 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:55 [INFO] Accept: */*
+2026-04-29 20:34:56 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:56 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:34:58 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:34:58 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:34:58 [INFO] Accept: */*
+2026-04-29 20:34:59 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:34:59 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
+2026-04-29 20:35:01 [INFO] Request start: GET /results from 127.0.0.1
+2026-04-29 20:35:01 [INFO] User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0
+2026-04-29 20:35:01 [INFO] Accept: */*
+2026-04-29 20:35:02 [INFO] Retrieved leaderboard: 0 users, top=none
+2026-04-29 20:35:02 [INFO] Request complete: GET /results from 127.0.0.1 -> 200 unknown
