@@ -121,12 +121,12 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
     if not data.name.strip():
         logger.warning("Session creation failed: empty name")
         raise HTTPException(status_code=400, detail="Name cannot be empty")
-    elif len(data.name) > 100:
+    elif len(data.name) > 40:
         logger.warning(f"Session creation failed: name too long ({len(data.name)} chars)")
-        raise HTTPException(status_code=400, detail="Name is too long (max 100 characters)")
+        raise HTTPException(status_code=400, detail="Слишком длинное имя (макс 40 символов)")
     elif db.query(User).filter(User.name == data.name).first():
         logger.warning(f"Session creation failed: name already exists ('{data.name}')")
-        raise HTTPException(status_code=400, detail="Name already exists")
+        raise HTTPException(status_code=400, detail="Игрок с таким именем уже существует")
     
     user = User(name=data.name)
     db.add(user)

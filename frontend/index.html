@@ -79,6 +79,23 @@
       background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     }
 
+    .error-message {
+      margin: 0;
+      color: #b91c1c;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+      text-align: left;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 16px;
@@ -101,42 +118,63 @@
   <div class="container">
     <h2>Введите имя</h2>
 
-    <input type="text" id="nameInput" placeholder="Ваше имя" />
+    <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="40" oninput="handleNameInput()" />
+    <p id="errorMessage" class="error-message"></p>
     <button onclick="submitName()">Отправить</button>
 
     <p id="result"></p>
   </div>
 
   <script>
-   async function submitName() {
-  const name = document.getElementById("nameInput").value;
+    async function submitName() {
+      const name = document.getElementById("nameInput").value.trim();
+      const errorMessage = document.getElementById("errorMessage");
 
-  if (!name) {
-    alert("Введите имя");
-    return;
-  }
+      errorMessage.textContent = "";
+      errorMessage.classList.remove("show");
 
-  const response = await fetch("/session", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ name })
-  });
+      if (!name) {
+        errorMessage.textContent = "Пожалуйста, укажите имя.";
+        errorMessage.classList.add("show");
+        return;
+      }
 
-  const data = await response.json().catch(() => null);
-  if (!response.ok || !data) {
-    alert(`Ошибка сервера при создании сессии: ${response.status}`);
-    return;
-  }
+      if (name.length > 40) {
+        errorMessage.textContent = "Имя не должно превышать 40 символов.";
+        errorMessage.classList.add("show");
+        return;
+      }
 
-  // 🔥 сохраняем session_id
-  localStorage.setItem("session_id", data.session_id);
-  localStorage.setItem("user_name", name);
+      const response = await fetch("/session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name })
+      });
 
-  // 🔥 переход на страницу вопроса
-  window.location.href = "questions.html";
-}
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        const message = data?.detail || `Ошибка сервера: ${response.status}`;
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+        return;
+      }
+
+      // сохраняем session_id
+      localStorage.setItem("session_id", data.session_id);
+      localStorage.setItem("user_name", name);
+
+      // переход на страницу вопроса
+      window.location.href = "questions.html";
+    }
+
+    function handleNameInput() {
+      const input = document.getElementById("nameInput");
+      if (input.value.length > 40) {
+        input.value = input.value.slice(0, 40);
+      }
+    }
   </script>
 
 </body>
