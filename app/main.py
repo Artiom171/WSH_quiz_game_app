@@ -118,6 +118,16 @@ class AnswerUpdate(BaseModel):
 
 @app.post("/session")
 def create_session(data: UserCreate, db: Session = Depends(get_db)):
+    if not data.name.strip():
+        logger.warning("Session creation failed: empty name")
+        raise HTTPException(status_code=400, detail="Name cannot be empty")
+    elif len(data.name) > 100:
+        logger.warning(f"Session creation failed: name too long ({len(data.name)} chars)")
+        raise HTTPException(status_code=400, detail="Name is too long (max 100 characters)")
+    elif db.query(User).filter(User.name == data.name).first():
+        logger.warning(f"Session creation failed: name already exists ('{data.name}')")
+        raise HTTPException(status_code=400, detail="Name already exists")
+    
     user = User(name=data.name)
     db.add(user)
     db.commit()
