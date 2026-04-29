@@ -242,7 +242,13 @@ def reset_database(db: Session = Depends(get_db)):
 @app.get("/", response_class=FileResponse)
 async def serve_index():
     logger.info("Served index page: /")
-    return FileResponse(FRONTEND_DIR / "index.html")
+    return FileResponse(
+        FRONTEND_DIR / "index.html",
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache"
+        },
+    )
 
 @app.get("/favicon.ico")
 def favicon():
@@ -256,4 +262,10 @@ async def serve_frontend(full_path: str):
         logger.warning(f"Frontend file not found: {full_path}")
         raise HTTPException(status_code=404, detail="Not found")
     logger.info(f"Served frontend file: {full_path}")
-    return FileResponse(target_path)
+    return FileResponse(
+        target_path,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache"
+        },
+    )
