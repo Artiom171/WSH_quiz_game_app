@@ -1,2 +1,2 @@
 # Ignore logs folder
-.logs/
+.logs/*
