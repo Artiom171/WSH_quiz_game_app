@@ -6,6 +6,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -124,7 +125,7 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
     elif len(data.name) > 40:
         logger.warning(f"Session creation failed: name too long ({len(data.name)} chars)")
         raise HTTPException(status_code=400, detail="Слишком длинное имя (макс 40 символов)")
-    elif db.query(User).filter(User.name == data.name).first():
+    elif db.query(User).filter(func.lower(User.name) == data.name.lower()).first():
         logger.warning(f"Session creation failed: name already exists ('{data.name}')")
         raise HTTPException(status_code=400, detail="Игрок с таким именем уже существует")
     
