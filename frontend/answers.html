@@ -34,117 +34,62 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #ffffff;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
 
-    thead {
-      background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-    }
-
-    th,
     td {
-      padding: 16px 18px;
+      padding: 14px 16px;
       border-bottom: 1px solid #e2e8f0;
-      vertical-align: middle;
     }
 
-    th {
-      color: #ffffff;
+    .round-row {
+      background: #dbeafe;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .question-row {
+      background: #eff6ff;
+      cursor: pointer;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      font-size: 13px;
-      text-align: left;
     }
 
-    tbody tr:nth-child(even) {
-      background: #f8fafc;
-    }
-
-    tbody tr:hover {
-      background: #e0efff;
-    }
-
-    td:nth-child(4) {
-      text-align: center;
-      white-space: nowrap;
+    .answer-row:hover {
+      background: #f1f5f9;
     }
 
     button {
       border: none;
-      padding: 10px 14px;
+      padding: 8px 12px;
       margin: 0 4px;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      min-width: 42px;
-      font-size: 14px;
-      transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    button.ok {
+    .ok {
       background: #10b981;
       color: white;
     }
 
-    button.no {
+    .no {
       background: #ef4444;
       color: white;
     }
 
     .status-mark {
       font-size: 18px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    @media (max-width: 720px) {
-      .container {
-        padding: 20px;
-      }
-
-      table {
-        display: block;
-        overflow-x: auto;
-      }
-
-      thead {
-        display: table-header-group;
-      }
-
-      th,
-      td {
-        padding: 14px 12px;
-      }
-
-      button {
-        margin: 6px 2px;
-      }
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
 
 <div class="container">
-<h2>Ответы игроков</h2>
+  <h2>Ответы игроков</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Игрок</th>
-      <th>Вопрос</th>
-      <th>Ответ</th>
-      <th>Статус</th>
-    </tr>
-  </thead>
-  <tbody id="answersTable"></tbody>
-</table>
+  <table>
+    <tbody id="answersTable"></tbody>
+  </table>
 </div>
 
 <script>
@@ -154,33 +99,72 @@ async function loadAnswers() {
 
   const table = document.getElementById("answersTable");
   table.innerHTML = "";
-  
-  
-  
+
+  const grouped = {};
+
   data.forEach(item => {
+    const round = item.round_number || 1;
+    const question = item.question_number;
 
-  const id = item.answer_id;
+    if (!grouped[round]) grouped[round] = {};
+    if (!grouped[round][question]) grouped[round][question] = [];
 
-  const row = document.createElement("tr");
-  
-  row.id = `row-${id}`;
+    grouped[round][question].push(item);
+  });
 
-  row.innerHTML = `
-    <td>${item.user_name}</td>
-    <td>${item.question_number}</td>
-    <td>${item.answer_text}</td>
-    <td>
-      ${
-        item.is_correct !== null
-          ? `<span class="status-mark">${item.is_correct ? '✔' : '✖'}</span>`
-          : `<button class="ok" id="ok-${id}" onclick="markAnswer(${id}, true)">✔</button>
-             <button class="no" id="no-${id}" onclick="markAnswer(${id}, false)">✖</button>`
-      }
-    </td>
-  `;
+  Object.keys(grouped).forEach(round => {
+    const roundRow = document.createElement("tr");
+    roundRow.className = "round-row";
+    roundRow.innerHTML = `<td colspan="4">Тур ${round}</td>`;
+    table.appendChild(roundRow);
 
-  table.appendChild(row);
-});
+    Object.keys(grouped[round]).forEach(question => {
+      const groupId = `group-${round}-${question}`;
+
+      const questionRow = document.createElement("tr");
+      questionRow.className = "question-row";
+      questionRow.innerHTML = `
+        <td colspan="4" onclick="toggle('${groupId}')">
+          ▶ Вопрос ${question}
+        </td>
+      `;
+      table.appendChild(questionRow);
+
+      const wrapper = document.createElement("tbody");
+      wrapper.id = groupId;
+      wrapper.style.display = "none";
+
+      grouped[round][question].forEach(item => {
+        const id = item.answer_id;
+
+        const row = document.createElement("tr");
+        row.className = "answer-row";
+
+        row.innerHTML = `
+          <td>${item.user_name}</td>
+          <td>${item.question_number}</td>
+          <td>${item.answer_text}</td>
+          <td>
+            ${
+              item.is_correct !== null
+                ? `<span class="status-mark">${item.is_correct ? '✔' : '✖'}</span>`
+                : `<button class="ok" onclick="markAnswer(${id}, true)">✔</button>
+                   <button class="no" onclick="markAnswer(${id}, false)">✖</button>`
+            }
+          </td>
+        `;
+
+        wrapper.appendChild(row);
+      });
+
+      table.appendChild(wrapper);
+    });
+  });
+}
+
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === "none" ? "table-row-group" : "none";
 }
 
 async function markAnswer(id, isCorrect) {
@@ -193,16 +177,10 @@ async function markAnswer(id, isCorrect) {
       is_correct: isCorrect
     })
   });
-  
-  const okBtn = document.getElementById(`ok-${id}`);
-  const noBtn = document.getElementById(`no-${id}`);
 
-  if (okBtn) okBtn.style.display = "none";
-  if (noBtn) noBtn.style.display = "none";
-  
+  loadAnswers();
 }
 
-// автообновление
 setInterval(loadAnswers, 3000);
 loadAnswers();
 </script>
