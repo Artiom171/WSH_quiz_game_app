@@ -93,6 +93,12 @@
 </div>
 
 <script>
+let openTours = JSON.parse(localStorage.getItem("openTours") || "[]");
+
+function saveState() {
+  localStorage.setItem("openTours", JSON.stringify(openTours));
+}
+
 async function loadAnswers() {
   const res = await fetch("/answers");
   const data = await res.json();
@@ -158,6 +164,7 @@ async function loadAnswers() {
       });
 
       table.appendChild(wrapper);
+
     });
   });
 }
