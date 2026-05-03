@@ -1,2 +1,5 @@
 # Ignore logs folder
 logs/*
+
+# Ignore database
+database/*
