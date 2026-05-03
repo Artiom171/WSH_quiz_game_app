@@ -145,6 +145,12 @@
         return;
       }
 
+      if (!nameIncludesSymbols(name)) {
+        errorMessage.textContent = "Имя может содержать только буквы и цифры.";
+        errorMessage.classList.add("show");
+        return;
+      }
+
       const response = await fetch("/session", {
         method: "POST",
         headers: {
@@ -167,6 +173,13 @@
 
       // переход на страницу вопроса
       window.location.href = "questions.html";
+    }
+
+    function nameIncludesSymbols(name) {
+      if (typeof name !== "string") {
+        return false;
+      }
+      return /^[A-Za-z0-9]+$/.test(name);
     }
 
     function handleNameInput() {
