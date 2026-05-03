@@ -210,7 +210,7 @@ def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_
 
 
 # --------------------
-# Error routes for testing
+# Expecting 404 and 500
 # --------------------
 
 @app.exception_handler(404)
@@ -218,9 +218,9 @@ async def cause_404(request: Request, exc: StarletteHTTPException):
     return RedirectResponse(url="/error_page.html")
 
 # Example route that triggers a 500
-@app.get("/cause-500")
-async def cause_500():
-    raise HTTPException(status_code=500, detail="Internal server error.")
+@app.exception_handler(500)
+async def cause_500(request: Request, exc: StarletteHTTPException):
+    return RedirectResponse(url="/server_error_page.html")
 
 # --------------------
 # RESULTS (leaderboard)
