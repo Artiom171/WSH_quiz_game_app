@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ввод имени</title>
+  <title>Ошибка</title>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -42,58 +42,39 @@
       overflow: hidden;
     }
 
+    h1 {
+      margin: 0;
+      font-size: 48px;
+      font-weight: 800;
+    }
+
     h2 {
-      margin: 0 0 18px;
-      font-size: 24px;
+      margin: 0;
+      font-size: 22px;
     }
 
-    input {
-      width: 100%;
-      max-width: 100%;
-      padding: 16px 18px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      font-size: 16px;
-      outline: none;
-      color: #0f172a;
-      background: #f8fafc;
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #475569;
     }
 
-    button {
-      width: 100%;
-      max-width: 100%;
-      padding: 16px 18px;
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 14px 16px;
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: white;
-      border: none;
+      text-decoration: none;
       border-radius: 16px;
-      font-size: 16px;
       font-weight: 700;
-      cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    button:hover {
+    a:hover {
       transform: translateY(-1px);
       box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
       background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-    }
-
-    .error-message {
-      margin: 0;
-      color: #b91c1c;
-      background: rgba(248, 113, 113, 0.12);
-      border: 1px solid rgba(248, 113, 113, 0.35);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 14px;
-      line-height: 1.4;
-      display: none;
-      text-align: left;
-    }
-
-    .error-message.show {
-      display: block;
     }
 
     @media (max-width: 480px) {
@@ -106,8 +87,12 @@
         border-radius: 20px;
       }
 
+      h1 {
+        font-size: 40px;
+      }
+
       h2 {
-        font-size: 22px;
+        font-size: 20px;
       }
     }
   </style>
@@ -115,10 +100,12 @@
 
 <body>
 
-  <h1>404</h1>
-    <h2>Page Not Found</h2>
-    <p>Sorry, the page you are looking for doesn’t exist or has been moved.</p>
-    <a href="/">Go Back Home</a>
+  <div class="container">
+    <h1>404</h1>
+    <h2>Страница не найдена</h2>
+    <p>Похоже, такой страницы не существует или она была перемещена.</p>
+    <a href="/">На главную</a>
+  </div>
 
 </body>
 </html>
