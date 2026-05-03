@@ -1,14 +1,19 @@
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
+from typing_extensions import Literal
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.db.database import SessionLocal, engine, Base
 from app.models import User, Answer
@@ -202,6 +207,20 @@ def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_
     )
 
     return {"status": "ok"}
+
+
+# --------------------
+# Error routes for testing
+# --------------------
+
+@app.exception_handler(404)
+async def cause_404(request: Request, exc: StarletteHTTPException):
+    return RedirectResponse(url="/error_page.html")
+
+# Example route that triggers a 500
+@app.get("/cause-500")
+async def cause_500():
+    raise HTTPException(status_code=500, detail="Internal server error.")
 
 # --------------------
 # RESULTS (leaderboard)
