@@ -207,11 +207,13 @@ def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_
     prev = answer.is_correct
     answer.is_correct = data.is_correct
 
-    # начисляем балл только если стало TRUE впервые
-    if data.is_correct and not prev:
+    if prev != data.is_correct:
         user = db.query(User).filter(User.id == answer.session_id).first()
         if user:
-            user.score += 1
+            if data.is_correct:
+                user.score += 1
+            else:
+                user.score = max(0, user.score - 1)
 
     db.commit()
     logger.info(

@@ -152,6 +152,12 @@
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.28);
     }
 
+    .grade-marked {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .status-mark {
       font-size: 20px;
       font-weight: 700;
@@ -159,6 +165,23 @@
 
     .status-correct { color: #10b981; }
     .status-wrong   { color: #ef4444; }
+
+    .btn-edit {
+      background: none;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-edit:hover {
+      border-color: #94a3b8;
+      color: #475569;
+    }
 
     .empty-state {
       text-align: center;
@@ -185,10 +208,11 @@
 </div>
 
 <script>
-const openTours  = new Set();
-const openGroups = new Set();
-let cachedData    = null;
-let tourConfigs   = [];
+const openTours     = new Set();
+const openGroups    = new Set();
+const editingAnswers = new Set();
+let cachedData      = null;
+let tourConfigs     = [];
 
 function toggleTour(round) {
   openTours.has(String(round)) ? openTours.delete(String(round)) : openTours.add(String(round));
@@ -201,12 +225,32 @@ function toggleGroup(key) {
 }
 
 function gradeCell(item) {
-  if (item.is_correct === true)  return `<span class="status-mark status-correct">✔</span>`;
-  if (item.is_correct === false) return `<span class="status-mark status-wrong">✖</span>`;
-  return `
-    <button class="btn-grade btn-ok" onclick="markAnswer(${item.answer_id}, true)">✔ Верно</button>
-    <button class="btn-grade btn-no" onclick="markAnswer(${item.answer_id}, false)">✖ Неверно</button>
-  `;
+  const id = item.answer_id;
+
+  if (item.is_correct === null || item.is_correct === undefined) {
+    return `
+      <button class="btn-grade btn-ok" onclick="markAnswer(${id}, true)">✔ Верно</button>
+      <button class="btn-grade btn-no" onclick="markAnswer(${id}, false)">✖ Неверно</button>
+    `;
+  }
+
+  if (editingAnswers.has(id)) {
+    return `
+      <button class="btn-grade btn-ok" onclick="markAnswer(${id}, true)">✔ Верно</button>
+      <button class="btn-grade btn-no" onclick="markAnswer(${id}, false)">✖ Неверно</button>
+    `;
+  }
+
+  const mark = item.is_correct
+    ? `<span class="status-mark status-correct">✔</span>`
+    : `<span class="status-mark status-wrong">✖</span>`;
+
+  return `<span class="grade-marked">${mark}<button class="btn-edit" onclick="toggleEdit(${id})" title="Изменить оценку">✎</button></span>`;
+}
+
+function toggleEdit(id) {
+  editingAnswers.has(id) ? editingAnswers.delete(id) : editingAnswers.add(id);
+  renderTable();
 }
 
 function esc(str) {
@@ -331,6 +375,7 @@ async function loadAnswers() {
 }
 
 async function markAnswer(id, isCorrect) {
+  editingAnswers.delete(id);
   await fetch(`/answers/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
