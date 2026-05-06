@@ -10,8 +10,7 @@
       box-sizing: border-box;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -29,7 +28,6 @@
     .container {
       width: 100%;
       max-width: 500px;
-      min-height: 340px;
       max-height: 94vh;
       text-align: center;
       background: #111827;
@@ -40,35 +38,32 @@
       flex-direction: column;
       justify-content: center;
       gap: 18px;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
-    h3,
-    h2 {
+    h3, h2 {
       margin: 0;
       line-height: 1.2;
     }
 
     h3 {
       font-size: 18px;
-      margin-bottom: 12px;
       color: #94a3b8;
     }
 
     h2 {
       font-size: 28px;
-      margin-bottom: 24px;
     }
 
     input {
       width: 100%;
       padding: 16px 18px;
-      margin-top: 16px;
       border-radius: 16px;
       border: 1px solid #334155;
       background: #0f172a;
       color: white;
       font-size: 16px;
+      font-family: inherit;
       outline: none;
     }
 
@@ -77,7 +72,6 @@
     }
 
     button {
-      margin-top: 4px;
       padding: 16px;
       width: 100%;
       background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
@@ -86,8 +80,9 @@
       cursor: pointer;
       font-weight: 700;
       font-size: 16px;
+      font-family: inherit;
       color: #0f172a;
-      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     button:hover {
@@ -96,25 +91,92 @@
       box-shadow: 0 12px 25px rgba(56, 189, 248, 0.24);
     }
 
+    /* ===== THEMED TOUR VIEW ===== */
+
+    #themedView {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      text-align: left;
+    }
+
+    #themedView.active {
+      display: flex;
+    }
+
+    #themedTitle {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin: 0;
+    }
+
+    .themed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      max-height: 55vh;
+      padding-right: 2px;
+    }
+
+    .themed-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .themed-number {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      min-width: 22px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .themed-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+    }
+
+    .themed-input::placeholder {
+      color: #475569;
+    }
+
+    .themed-input:focus {
+      border-color: #38bdf8;
+    }
+
+    /* ===== WAITING SCREEN ===== */
+
     #tourWaiting {
       position: fixed;
       inset: 0;
       background: #080d1a;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 100;
       overflow: hidden;
-      transition: opacity 0.65s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
     }
 
     #tourWaiting.visible {
-      display: flex;
-    }
-
-    #tourWaiting.hidden {
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .glow-blob {
@@ -202,22 +264,10 @@
     }
 
     @media (max-width: 480px) {
-      body {
-        padding: 16px;
-      }
-
-      .container {
-        padding: 20px;
-        border-radius: 20px;
-      }
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .waiting-title {
-        font-size: 34px;
-      }
+      body { padding: 16px; }
+      .container { padding: 20px; border-radius: 20px; }
+      h2 { font-size: 24px; }
+      .waiting-title { font-size: 34px; }
     }
   </style>
 </head>
@@ -235,24 +285,37 @@
 
 <div class="container">
   <h3 id="username"></h3>
-  <h2 id="questionText"></h2>
 
-  <input type="text" id="answerInput" placeholder="Ваш ответ">
-  <button onclick="sendAnswer()">Ответить</button>
+  <!-- Ordinary tour view -->
+  <div id="ordinaryView">
+    <h2 id="questionText"></h2>
+    <input type="text" id="answerInput" placeholder="Ваш ответ" />
+    <button onclick="sendAnswer()">Ответить</button>
+  </div>
+
+  <!-- Themed tour view -->
+  <div id="themedView">
+    <p id="themedTitle"></p>
+    <div class="themed-list" id="themedInputs"></div>
+    <button onclick="sendThemedAnswers()">Отправить все</button>
+  </div>
 </div>
 
 <script>
 const session_id = localStorage.getItem("session_id");
-const user_name = localStorage.getItem("user_name");
+const user_name  = localStorage.getItem("user_name");
 
 document.getElementById("username").innerText = "Игрок: " + user_name;
 
-let round = 1;
-let questionNumber = 1;
-let roundLimits = {};
-let totalRounds = 0;
+let round            = 1;
+let questionNumber   = 1;
+let roundLimits      = {};
+let tourConfigs      = [];
+let totalRounds      = 0;
 let currentActiveTour = 0;
-let dotsInterval = null;
+let dotsInterval     = null;
+
+// ===== PARTICLES =====
 
 (function createParticles() {
   const container = document.getElementById("particlesContainer");
@@ -279,6 +342,8 @@ let dotsInterval = null;
   }
 })();
 
+// ===== WAITING SCREEN =====
+
 function showWaiting(tourNum) {
   const overlay = document.getElementById("tourWaiting");
   document.getElementById("waitingTitle").textContent = `Тур ${tourNum}`;
@@ -293,31 +358,71 @@ function showWaiting(tourNum) {
   }, 500);
 }
 
-function showQuestion() {
+function hideWaiting() {
   const overlay = document.getElementById("tourWaiting");
   clearInterval(dotsInterval);
   overlay.classList.add("hidden");
   setTimeout(() => overlay.classList.remove("visible", "hidden"), 650);
+}
+
+// ===== TOUR VIEWS =====
+
+function showQuestion() {
+  hideWaiting();
+  const config = tourConfigs[round - 1];
+  if (config && config.type === "themed") {
+    showThemedTour(config.questions);
+  } else {
+    showOrdinaryQuestion();
+  }
+}
+
+function showOrdinaryQuestion() {
+  document.getElementById("ordinaryView").style.display = "";
+  document.getElementById("themedView").classList.remove("active");
   loadQuestion();
 }
 
-function loadQuestion() {
-  document.getElementById("questionText").innerText =
-    `Тур ${round}, Вопрос ${questionNumber}`;
+function showThemedTour(count) {
+  document.getElementById("ordinaryView").style.display = "none";
+  document.getElementById("themedView").classList.add("active");
+  document.getElementById("themedTitle").textContent = `Тур ${round} — Тематический`;
+
+  const list = document.getElementById("themedInputs");
+  list.innerHTML = "";
+  for (let i = 1; i <= count; i++) {
+    const item = document.createElement("div");
+    item.className = "themed-item";
+    item.innerHTML = `
+      <span class="themed-number">${i}.</span>
+      <input class="themed-input" type="text" placeholder="Ответ ${i}" data-question="${i}" />
+    `;
+    list.appendChild(item);
+  }
 }
 
-function nextQuestion() {
-  questionNumber++;
+function loadQuestion() {
+  document.getElementById("questionText").innerText = `Тур ${round}, Вопрос ${questionNumber}`;
+}
 
-  if (questionNumber > roundLimits[round]) {
-    round++;
-    questionNumber = 1;
-  }
+// ===== GAME OVER =====
+
+function showGameOver() {
+  document.getElementById("ordinaryView").style.display = "";
+  document.getElementById("themedView").classList.remove("active");
+  document.getElementById("questionText").innerText = "Игра окончена";
+  document.getElementById("answerInput").style.display = "none";
+  document.querySelector("#ordinaryView button").style.display = "none";
+}
+
+// ===== ANSWER SUBMISSION =====
+
+function advanceRound() {
+  round++;
+  questionNumber = 1;
 
   if (round > totalRounds) {
-    document.getElementById("questionText").innerText = "Игра окончена";
-    document.getElementById("answerInput").style.display = "none";
-    document.querySelector("button").style.display = "none";
+    showGameOver();
     return;
   }
 
@@ -325,13 +430,23 @@ function nextQuestion() {
     showWaiting(round);
     pollTour();
   } else {
-    loadQuestion();
+    showQuestion();
   }
+}
+
+function nextQuestion() {
+  questionNumber++;
+
+  if (questionNumber > roundLimits[round]) {
+    advanceRound();
+    return;
+  }
+
+  loadQuestion();
 }
 
 async function sendAnswer() {
   const answer = document.getElementById("answerInput").value;
-
   if (!answer) {
     alert("Пожалуйста, введите ответ.");
     return;
@@ -341,8 +456,8 @@ async function sendAnswer() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      session_id: session_id,
-      round: round,
+      session_id,
+      round,
       question_number: questionNumber,
       answer_text: answer
     })
@@ -351,6 +466,28 @@ async function sendAnswer() {
   document.getElementById("answerInput").value = "";
   nextQuestion();
 }
+
+async function sendThemedAnswers() {
+  const inputs = document.querySelectorAll(".themed-input");
+
+  for (const input of inputs) {
+    const q = parseInt(input.dataset.question);
+    await fetch("/answers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id,
+        round,
+        question_number: q,
+        answer_text: input.value
+      })
+    });
+  }
+
+  advanceRound();
+}
+
+// ===== POLLING =====
 
 function pollTour() {
   fetch("/game/status")
@@ -366,15 +503,19 @@ function pollTour() {
     .catch(() => setTimeout(pollTour, 3000));
 }
 
+// ===== INIT =====
+
 async function init() {
-  const res = await fetch("/game/status");
+  const res  = await fetch("/game/status");
   const data = await res.json();
 
-  data.config.tours.forEach((tour, i) => {
+  tourConfigs   = data.config.tours;
+  totalRounds   = tourConfigs.length;
+  currentActiveTour = data.current_tour || 0;
+
+  tourConfigs.forEach((tour, i) => {
     roundLimits[i + 1] = tour.questions;
   });
-  totalRounds = data.config.tours.length;
-  currentActiveTour = data.current_tour || 0;
 
   if (currentActiveTour < 1) {
     showWaiting(1);
