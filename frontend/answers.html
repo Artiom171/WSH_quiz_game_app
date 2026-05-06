@@ -187,115 +187,147 @@
 <script>
 const openTours  = new Set();
 const openGroups = new Set();
+let cachedData    = null;
+let tourConfigs   = [];
 
 function toggleTour(round) {
-  const roundStr = String(round);
-  if (openTours.has(roundStr)) {
-    openTours.delete(roundStr);
-    document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "none");
-    openGroups.forEach(key => {
-      if (key.startsWith(`${round}-`)) {
-        const [r, q] = key.split("-");
-        document.querySelectorAll(`.arow-${r}-${q}`).forEach(el => el.style.display = "none");
-      }
-    });
-  } else {
-    openTours.add(roundStr);
-    document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "");
-    openGroups.forEach(key => {
-      if (key.startsWith(`${round}-`)) {
-        const [r, q] = key.split("-");
-        document.querySelectorAll(`.arow-${r}-${q}`).forEach(el => el.style.display = "");
-      }
-    });
-  }
+  openTours.has(String(round)) ? openTours.delete(String(round)) : openTours.add(String(round));
+  renderTable();
 }
 
-function toggleGroup(round, question) {
-  const key = `${round}-${question}`;
-  if (openGroups.has(key)) {
-    openGroups.delete(key);
-    document.querySelectorAll(`.arow-${round}-${question}`).forEach(el => el.style.display = "none");
-  } else {
-    openGroups.add(key);
-    document.querySelectorAll(`.arow-${round}-${question}`).forEach(el => el.style.display = "");
-  }
+function toggleGroup(key) {
+  openGroups.has(key) ? openGroups.delete(key) : openGroups.add(key);
+  renderTable();
 }
 
-async function loadAnswers() {
-  const res = await fetch("/answers");
-  const data = await res.json();
+function gradeCell(item) {
+  if (item.is_correct === true)  return `<span class="status-mark status-correct">✔</span>`;
+  if (item.is_correct === false) return `<span class="status-mark status-wrong">✖</span>`;
+  return `
+    <button class="btn-grade btn-ok" onclick="markAnswer(${item.answer_id}, true)">✔ Верно</button>
+    <button class="btn-grade btn-no" onclick="markAnswer(${item.answer_id}, false)">✖ Неверно</button>
+  `;
+}
 
-  const tbody = document.getElementById("answersTable");
+function esc(str) {
+  return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderTable() {
+  const tbody     = document.getElementById("answersTable");
   const emptyState = document.getElementById("emptyState");
   tbody.innerHTML = "";
 
-  if (!data || data.length === 0) {
+  if (!cachedData || cachedData.length === 0) {
     emptyState.style.display = "block";
     return;
   }
-
   emptyState.style.display = "none";
 
+  // group by round → question
   const grouped = {};
-  data.forEach(item => {
-    const round = item.round || 1;
-    const question = item.question_number;
-    if (!grouped[round]) grouped[round] = {};
-    if (!grouped[round][question]) grouped[round][question] = [];
-    grouped[round][question].push(item);
+  cachedData.forEach(item => {
+    const r = item.round || 1;
+    const q = item.question_number;
+    if (!grouped[r]) grouped[r] = {};
+    if (!grouped[r][q]) grouped[r][q] = [];
+    grouped[r][q].push(item);
   });
 
   Object.keys(grouped).sort((a, b) => a - b).forEach(round => {
     const tourOpen = openTours.has(String(round));
+    const isThemed = tourConfigs[parseInt(round) - 1]?.type === "themed";
 
-    const roundRow = document.createElement("tr");
-    roundRow.className = "round-row";
-    roundRow.innerHTML = `<td colspan="3" onclick="toggleTour(${round})">${tourOpen ? "●" : "○"} Тур ${round}</td>`;
-    tbody.appendChild(roundRow);
+    // ── Tour header ──
+    const rRow = document.createElement("tr");
+    rRow.className = "round-row";
+    rRow.innerHTML = `<td colspan="3" onclick="toggleTour(${round})">${tourOpen ? "●" : "○"} Тур ${round}${isThemed ? " — Тематический" : ""}</td>`;
+    tbody.appendChild(rRow);
 
-    Object.keys(grouped[round]).sort((a, b) => a - b).forEach(question => {
-      const key = `${round}-${question}`;
-      const groupOpen = openGroups.has(key) && tourOpen;
+    if (!tourOpen) return;
 
-      const questionRow = document.createElement("tr");
-      questionRow.className = `question-row qrow-${round}`;
-      questionRow.style.display = tourOpen ? "" : "none";
-      questionRow.innerHTML = `<td colspan="3" onclick="toggleGroup(${round}, ${question})">${groupOpen ? "●" : "○"} Вопрос ${question}</td>`;
-      tbody.appendChild(questionRow);
+    if (isThemed) {
+      // ── Themed: one collapsible row per player ──
+      const byPlayer = {};
+      Object.values(grouped[round]).forEach(answers =>
+        answers.forEach(item => {
+          if (!byPlayer[item.user_name]) byPlayer[item.user_name] = [];
+          byPlayer[item.user_name].push(item);
+        })
+      );
 
-      grouped[round][question].forEach(item => {
-        const row = document.createElement("tr");
-        row.className = `answer-row arow-${round}-${question}`;
-        row.style.display = groupOpen ? "" : "none";
+      Object.keys(byPlayer).sort().forEach(playerName => {
+        const key       = `${round}-p-${playerName}`;
+        const isOpen    = openGroups.has(key);
+        const answers   = byPlayer[playerName].sort((a, b) => a.question_number - b.question_number);
 
-        let gradeCell;
-        if (item.is_correct === true) {
-          gradeCell = `<span class="status-mark status-correct">✔</span>`;
-        } else if (item.is_correct === false) {
-          gradeCell = `<span class="status-mark status-wrong">✖</span>`;
-        } else {
-          gradeCell = `
-            <button class="btn-grade btn-ok" onclick="markAnswer(${item.answer_id}, true)">✔ Верно</button>
-            <button class="btn-grade btn-no" onclick="markAnswer(${item.answer_id}, false)">✖ Неверно</button>
+        // player header row
+        const pRow = document.createElement("tr");
+        pRow.className = "question-row";
+        pRow.innerHTML = `<td colspan="3" onclick="toggleGroup('${esc(key)}')">${isOpen ? "●" : "○"} ${esc(playerName)}</td>`;
+        tbody.appendChild(pRow);
+
+        if (!isOpen) return;
+
+        // individual answers
+        answers.forEach(item => {
+          const row = document.createElement("tr");
+          row.className = "answer-row";
+          row.innerHTML = `
+            <td class="col-player">
+              <span class="field-label">Вопрос ${item.question_number}</span>
+              <span class="player-name-text">${esc(item.answer_text || "—")}</span>
+            </td>
+            <td></td>
+            <td class="col-grade">${gradeCell(item)}</td>
           `;
-        }
-
-        row.innerHTML = `
-          <td class="col-player">
-            <span class="field-label">Имя</span>
-            <span class="player-name-text">${item.user_name}</span>
-          </td>
-          <td class="col-answer">
-            <span class="field-label">Ответ</span>
-            <span class="answer-text">${item.answer_text}</span>
-          </td>
-          <td class="col-grade">${gradeCell}</td>
-        `;
-        tbody.appendChild(row);
+          tbody.appendChild(row);
+        });
       });
-    });
+
+    } else {
+      // ── Ordinary: one collapsible row per question ──
+      Object.keys(grouped[round]).sort((a, b) => a - b).forEach(question => {
+        const key    = `${round}-q-${question}`;
+        const isOpen = openGroups.has(key);
+
+        const qRow = document.createElement("tr");
+        qRow.className = "question-row";
+        qRow.innerHTML = `<td colspan="3" onclick="toggleGroup('${key}')">${isOpen ? "●" : "○"} Вопрос ${question}</td>`;
+        tbody.appendChild(qRow);
+
+        if (!isOpen) return;
+
+        grouped[round][question].forEach(item => {
+          const row = document.createElement("tr");
+          row.className = "answer-row";
+          row.innerHTML = `
+            <td class="col-player">
+              <span class="field-label">Имя</span>
+              <span class="player-name-text">${esc(item.user_name)}</span>
+            </td>
+            <td class="col-answer">
+              <span class="field-label">Ответ</span>
+              <span class="answer-text">${esc(item.answer_text)}</span>
+            </td>
+            <td class="col-grade">${gradeCell(item)}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
+    }
   });
+}
+
+async function loadAnswers() {
+  const [answersRes, statusRes] = await Promise.all([
+    fetch("/answers"),
+    fetch("/game/status")
+  ]);
+  cachedData   = await answersRes.json();
+  const status = await statusRes.json();
+  tourConfigs  = status.config?.tours || [];
+  renderTable();
 }
 
 async function markAnswer(id, isCorrect) {
