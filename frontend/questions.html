@@ -128,24 +128,16 @@ const user_name = localStorage.getItem("user_name");
 
 document.getElementById("username").innerText = "Игрок: " + user_name;
 
-// логика игры
 let round = 1;
 let questionNumber = 1;
+let roundLimits = {};
+let totalRounds = 0;
 
-const roundLimits = {
-  1: 10,
-  2: 20,
-  3: 15,
-  4: 20
-};
-
-// показать текущий вопрос
 function loadQuestion() {
   document.getElementById("questionText").innerText =
     `Тур ${round}, Вопрос ${questionNumber}`;
 }
 
-// переход к следующему
 function nextQuestion() {
   questionNumber++;
 
@@ -154,15 +146,16 @@ function nextQuestion() {
     questionNumber = 1;
   }
 
-  if (round > 4) {
-    alert("Игра окончена");
+  if (round > totalRounds) {
+    document.getElementById("questionText").innerText = "Игра окончена";
+    document.getElementById("answerInput").style.display = "none";
+    document.querySelector("button").style.display = "none";
     return;
   }
 
   loadQuestion();
 }
 
-// отправка ответа
 async function sendAnswer() {
   const answer = document.getElementById("answerInput").value;
 
@@ -171,18 +164,9 @@ async function sendAnswer() {
     return;
   }
 
-  //function nameIncludesSymbols(answer) {
-  //  if (typeof answer !== "string") {
-  //    return false;
-  //  }
-  //  return /^[A-Za-z0-9]+$/.test(answer);
-  //}
-
   await fetch("/answers", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       session_id: session_id,
       round: round,
@@ -192,12 +176,22 @@ async function sendAnswer() {
   });
 
   document.getElementById("answerInput").value = "";
-
   nextQuestion();
 }
 
-// старт
-loadQuestion();
+async function init() {
+  const res = await fetch("/game/status");
+  const data = await res.json();
+
+  data.config.tours.forEach((tour, i) => {
+    roundLimits[i + 1] = tour.questions;
+  });
+  totalRounds = data.config.tours.length;
+
+  loadQuestion();
+}
+
+init();
 </script>
 
 </body>
