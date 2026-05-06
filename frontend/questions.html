@@ -31,13 +31,13 @@
       max-height: 94vh;
       text-align: center;
       background: #111827;
-      padding: 28px;
+      padding: 32px 28px;
       border-radius: 24px;
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.45);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 18px;
+      gap: 0;
       overflow-y: auto;
     }
 
@@ -47,12 +47,19 @@
     }
 
     h3 {
-      font-size: 18px;
-      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 28px;
     }
 
     h2 {
-      font-size: 28px;
+      font-size: 30px;
+      margin-bottom: 24px;
     }
 
     input {
@@ -65,10 +72,17 @@
       font-size: 16px;
       font-family: inherit;
       outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      margin-bottom: 12px;
+    }
+
+    input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
     }
 
     input::placeholder {
-      color: #94a3b8;
+      color: #475569;
     }
 
     button {
@@ -99,6 +113,11 @@
       gap: 14px;
       width: 100%;
       text-align: left;
+      padding-top: 4px;
+    }
+
+    #themedView button {
+      margin-top: 4px;
     }
 
     #themedView.active {
@@ -169,14 +188,12 @@
       justify-content: center;
       z-index: 100;
       overflow: hidden;
-      opacity: 0;
-      pointer-events: none;
       transition: opacity 0.5s ease;
     }
 
-    #tourWaiting.visible {
-      opacity: 1;
-      pointer-events: auto;
+    #tourWaiting.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .glow-blob {
@@ -345,10 +362,8 @@ let dotsInterval     = null;
 // ===== WAITING SCREEN =====
 
 function showWaiting(tourNum) {
-  const overlay = document.getElementById("tourWaiting");
   document.getElementById("waitingTitle").textContent = `Тур ${tourNum}`;
-  overlay.classList.remove("hidden");
-  overlay.classList.add("visible");
+  document.getElementById("tourWaiting").classList.remove("hidden");
 
   let dotsCount = 0;
   clearInterval(dotsInterval);
@@ -359,10 +374,8 @@ function showWaiting(tourNum) {
 }
 
 function hideWaiting() {
-  const overlay = document.getElementById("tourWaiting");
   clearInterval(dotsInterval);
-  overlay.classList.add("hidden");
-  setTimeout(() => overlay.classList.remove("visible", "hidden"), 650);
+  document.getElementById("tourWaiting").classList.add("hidden");
 }
 
 // ===== TOUR VIEWS =====
@@ -426,12 +439,8 @@ function advanceRound() {
     return;
   }
 
-  if (currentActiveTour < round) {
-    showWaiting(round);
-    pollTour();
-  } else {
-    showQuestion();
-  }
+  showWaiting(round);
+  pollTour();
 }
 
 function nextQuestion() {
@@ -506,6 +515,8 @@ function pollTour() {
 // ===== INIT =====
 
 async function init() {
+  showWaiting(1);
+
   const res  = await fetch("/game/status");
   const data = await res.json();
 
@@ -518,7 +529,6 @@ async function init() {
   });
 
   if (currentActiveTour < 1) {
-    showWaiting(1);
     pollTour();
   } else {
     showQuestion();
