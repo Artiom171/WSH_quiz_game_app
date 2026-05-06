@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Настройка игры</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+      color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px env(safe-area-inset-bottom, 40px);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      padding: 32px 28px;
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    h2 {
+      margin: 0 0 28px;
+      font-size: 24px;
+      text-align: center;
+      color: #0f172a;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      color: #0f172a;
+      background: #f8fafc;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #2563eb;
+      background: #ffffff;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 28px 0;
+    }
+
+    #toursSection {
+      display: none;
+    }
+
+    .tours-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+    }
+
+    .tour-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+
+    .tour-card-header {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 14px;
+    }
+
+    .tour-card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tour-card-row .field {
+      margin-bottom: 0;
+    }
+
+    .error-message {
+      margin: 0;
+      color: #b91c1c;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+      margin-top: 4px;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 24px;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      .container {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .tour-card-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Настройка игры</h2>
+
+  <div class="field">
+    <label for="numTours">Количество туров</label>
+    <input type="number" id="numTours" min="1" max="20" placeholder="Например, 4" oninput="updateTours()" />
+  </div>
+
+  <div id="toursSection">
+    <hr class="divider" />
+    <p class="tours-title">Параметры туров</p>
+    <div id="toursList"></div>
+  </div>
+
+  <p id="errorMessage" class="error-message"></p>
+
+  <button class="btn-start" onclick="startGame()">Начать игру</button>
+</div>
+
+<script>
+  function updateTours() {
+    const n = parseInt(document.getElementById("numTours").value);
+    const section = document.getElementById("toursSection");
+    const list = document.getElementById("toursList");
+
+    if (!n || n < 1 || n > 20) {
+      section.style.display = "none";
+      list.innerHTML = "";
+      return;
+    }
+
+    section.style.display = "block";
+
+    const current = list.children.length;
+
+    for (let i = current + 1; i <= n; i++) {
+      const card = document.createElement("div");
+      card.className = "tour-card";
+      card.id = `tour-card-${i}`;
+      card.innerHTML = `
+        <div class="tour-card-header">Тур ${i}</div>
+        <div class="tour-card-row">
+          <div class="field">
+            <label>Тип тура</label>
+            <select id="type-${i}">
+              <option value="ordinary">Обычный</option>
+              <option value="themed">Тематический</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Количество вопросов</label>
+            <input type="number" id="questions-${i}" min="1" max="100" value="10" />
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+
+    while (list.children.length > n) {
+      list.removeChild(list.lastChild);
+    }
+  }
+
+  function startGame() {
+    const errorEl = document.getElementById("errorMessage");
+    errorEl.classList.remove("show");
+    errorEl.textContent = "";
+
+    const n = parseInt(document.getElementById("numTours").value);
+    if (!n || n < 1) {
+      errorEl.textContent = "Укажите количество туров.";
+      errorEl.classList.add("show");
+      return;
+    }
+
+    const tours = [];
+
+    for (let i = 1; i <= n; i++) {
+      const type = document.getElementById(`type-${i}`).value;
+      const questionsVal = parseInt(document.getElementById(`questions-${i}`).value);
+
+      if (!questionsVal || questionsVal < 1) {
+        errorEl.textContent = `Тур ${i}: укажите количество вопросов.`;
+        errorEl.classList.add("show");
+        return;
+      }
+
+      tours.push({ type, questions: questionsVal });
+    }
+
+    localStorage.setItem("gameConfig", JSON.stringify({ tours }));
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>
