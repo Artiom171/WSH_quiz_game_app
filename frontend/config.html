@@ -242,7 +242,7 @@
     }
   }
 
-  function startGame() {
+  async function startGame() {
     const errorEl = document.getElementById("errorMessage");
     errorEl.classList.remove("show");
     errorEl.textContent = "";
@@ -269,8 +269,19 @@
       tours.push({ type, questions: questionsVal });
     }
 
-    localStorage.setItem("gameConfig", JSON.stringify({ tours }));
-    window.location.href = "index.html";
+    const response = await fetch("/game/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tours })
+    });
+
+    if (!response.ok) {
+      errorEl.textContent = "Ошибка сервера. Попробуйте ещё раз.";
+      errorEl.classList.add("show");
+      return;
+    }
+
+    window.location.href = "answers.html";
   }
 </script>
 

@@ -9,20 +9,135 @@
       box-sizing: border-box;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       min-height: 100vh;
-      overflow: hidden;
       font-family: Inter, Arial, sans-serif;
       background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
       color: #0f172a;
+    }
+
+    /* ===== WAITING SCREEN ===== */
+
+    #waitingScreen {
+      position: fixed;
+      inset: 0;
+      background: #080d1a;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      overflow: hidden;
+      transition: opacity 0.65s ease;
+    }
+
+    #waitingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .blob-blue {
+      width: 520px;
+      height: 520px;
+      background: rgba(37, 99, 235, 0.2);
+      top: -160px;
+      left: -120px;
+      animation: blobDrift 12s ease-in-out infinite;
+    }
+
+    .blob-purple {
+      width: 460px;
+      height: 460px;
+      background: rgba(109, 40, 217, 0.15);
+      bottom: -130px;
+      right: -110px;
+      animation: blobDrift 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes blobDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(30px, -20px) scale(1.08); }
+      66%       { transform: translate(-20px, 30px) scale(0.94); }
+    }
+
+    #particlesContainer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: riseUp linear infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes riseUp {
+      0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 0.4; }
+      100% { transform: translateY(-88vh) scale(0.9); opacity: 0; }
+    }
+
+    .waiting-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 0 24px;
+    }
+
+    .waiting-title {
+      margin: 0 0 22px;
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      text-shadow:
+        0 0 24px rgba(56, 189, 248, 0.75),
+        0 0 64px rgba(37, 99, 235, 0.4);
+      animation: titleFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .waiting-subtitle {
+      margin: 0;
+      font-size: 17px;
+      color: #475569;
+      letter-spacing: 0.03em;
+    }
+
+    /* ===== REGISTER SCREEN ===== */
+
+    #registerScreen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
       justify-content: center;
       align-items: center;
       padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .container {
@@ -54,6 +169,7 @@
       border: 1px solid #cbd5e1;
       border-radius: 16px;
       font-size: 16px;
+      font-family: inherit;
       outline: none;
       color: #0f172a;
       background: #f8fafc;
@@ -69,6 +185,7 @@
       border-radius: 16px;
       font-size: 16px;
       font-weight: 700;
+      font-family: inherit;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -97,8 +214,12 @@
     }
 
     @media (max-width: 480px) {
-      body {
-        padding: 16px;
+      .waiting-title {
+        font-size: 36px;
+      }
+
+      .waiting-subtitle {
+        font-size: 15px;
       }
 
       .container {
@@ -115,17 +236,88 @@
 
 <body>
 
-  <div class="container">
-    <h2>Введите имя</h2>
+  <!-- Waiting screen -->
+  <div id="waitingScreen">
+    <div class="glow-blob blob-blue"></div>
+    <div class="glow-blob blob-purple"></div>
+    <div id="particlesContainer"></div>
+    <div class="waiting-content">
+      <h1 class="waiting-title">Кто тут умный?</h1>
+      <p class="waiting-subtitle">Подождите начала игры<span id="waitingDots"></span></p>
+    </div>
+  </div>
 
-    <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="40" oninput="handleNameInput()" />
-    <p id="errorMessage" class="error-message"></p>
-    <button onclick="submitName()">Отправить</button>
-
-    <p id="result"></p>
+  <!-- Registration screen -->
+  <div id="registerScreen">
+    <div class="container">
+      <h2>Введите имя</h2>
+      <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="40" oninput="handleNameInput()" />
+      <p id="errorMessage" class="error-message"></p>
+      <button onclick="submitName()">Отправить</button>
+    </div>
   </div>
 
   <script>
+    // ===== WAITING SCREEN =====
+
+    (function createParticles() {
+      const container = document.getElementById("particlesContainer");
+      const colors = [
+        "rgba(56, 189, 248, 0.7)",
+        "rgba(37, 99, 235, 0.6)",
+        "rgba(147, 197, 253, 0.5)",
+        "rgba(255, 255, 255, 0.2)",
+      ];
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+        const size = Math.random() * 4 + 2;
+        p.style.cssText = [
+          `width:${size}px`,
+          `height:${size}px`,
+          `left:${(Math.random() * 100).toFixed(1)}%`,
+          `bottom:${(Math.random() * 25).toFixed(1)}%`,
+          `background:${colors[Math.floor(Math.random() * colors.length)]}`,
+          `animation-duration:${(Math.random() * 8 + 7).toFixed(1)}s`,
+          `animation-delay:${(Math.random() * 10).toFixed(1)}s`,
+        ].join(";");
+        container.appendChild(p);
+      }
+    })();
+
+    let dotsCount = 0;
+    setInterval(() => {
+      dotsCount = (dotsCount + 1) % 4;
+      document.getElementById("waitingDots").textContent = ".".repeat(dotsCount);
+    }, 500);
+
+    function checkGameStatus() {
+      fetch("/game/status")
+        .then(r => r.json())
+        .then(data => {
+          if (data.started) {
+            showRegisterScreen();
+          } else {
+            setTimeout(checkGameStatus, 2000);
+          }
+        })
+        .catch(() => setTimeout(checkGameStatus, 3000));
+    }
+
+    function showRegisterScreen() {
+      const waitingScreen = document.getElementById("waitingScreen");
+      const registerScreen = document.getElementById("registerScreen");
+      waitingScreen.classList.add("hidden");
+      setTimeout(() => {
+        waitingScreen.style.display = "none";
+        registerScreen.style.display = "flex";
+      }, 650);
+    }
+
+    checkGameStatus();
+
+    // ===== REGISTER SCREEN =====
+
     async function submitName() {
       const name = document.getElementById("nameInput").value.trim();
       const errorMessage = document.getElementById("errorMessage");
@@ -153,9 +345,7 @@
 
       const response = await fetch("/session", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name })
       });
 
@@ -167,18 +357,14 @@
         return;
       }
 
-      // сохраняем session_id
       localStorage.setItem("session_id", data.session_id);
       localStorage.setItem("user_name", name);
 
-      // переход на страницу вопроса
       window.location.href = "questions.html";
     }
 
     function nameIncludesSymbols(name) {
-      if (typeof name !== "string") {
-        return false;
-      }
+      if (typeof name !== "string") return false;
       return /^[A-Za-z0-9]+$/.test(name);
     }
 

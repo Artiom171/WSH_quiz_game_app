@@ -118,6 +118,15 @@ class AnswerCreate(BaseModel):
 class AnswerUpdate(BaseModel):
     is_correct: bool
 
+class TourConfig(BaseModel):
+    type: Literal["ordinary", "themed"]
+    questions: int
+
+class GameStartConfig(BaseModel):
+    tours: list[TourConfig]
+
+_game_state: dict = {"started": False, "config": None}
+
 # --------------------
 # SESSION (create user)
 # --------------------
@@ -260,12 +269,28 @@ def get_answers(db: Session = Depends(get_db)):
     ]
 
 
+@app.post("/game/start")
+def start_game(config: GameStartConfig):
+    _game_state["started"] = True
+    _game_state["config"] = config.model_dump()
+    logger.info(f"Game started: {len(config.tours)} tours")
+    return {"status": "ok"}
+
+@app.get("/game/status")
+def get_game_status():
+    return {
+        "started": _game_state["started"],
+        "config": _game_state["config"]
+    }
+
 @app.delete("/reset")
 def reset_database(db: Session = Depends(get_db)):
     db.query(Answer).delete()
     db.query(User).delete()
     db.commit()
-    logger.info("Database reset: all users and answers deleted")
+    _game_state["started"] = False
+    _game_state["config"] = None
+    logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
 
 
