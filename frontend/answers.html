@@ -4,31 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ответы игроков</title>
-
   <style>
     body {
-      font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(180deg, #e9efff 0%, #f7f9ff 100%);
-      color: #1f2937;
       margin: 0;
       padding: 20px;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #f3f6ff 0%, #eef2ff 100%);
+      color: #0f172a;
+      min-height: 100vh;
     }
 
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 28px;
       background: #ffffff;
       border-radius: 24px;
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.16);
     }
 
     h2 {
       font-size: 28px;
+      margin: 0 0 24px;
       text-align: center;
-      margin-bottom: 18px;
-      color: #0f172a;
+      color: #111827;
     }
 
     table {
@@ -36,67 +36,175 @@
       border-collapse: collapse;
     }
 
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid #e2e8f0;
+    /* Tour header — collapsible */
+    .round-row td {
+      padding: 14px 20px;
+      background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .round-row {
-      background: #dbeafe;
-      font-weight: bold;
-      font-size: 16px;
+    .round-row:hover td {
+      background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
     }
 
-    .question-row {
+    /* Question row — collapsible */
+    .question-row td {
+      padding: 13px 20px 13px 36px;
       background: #eff6ff;
       cursor: pointer;
       font-weight: 600;
+      font-size: 14px;
+      color: #1e40af;
+      border-bottom: 1px solid #dbeafe;
+      user-select: none;
     }
 
-    .answer-row:hover {
-      background: #f1f5f9;
+    .question-row:hover td {
+      background: #dbeafe;
     }
 
-    button {
+    /* Answer row */
+    .answer-row td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .answer-row:last-child td {
+      border-bottom: none;
+    }
+
+    .answer-row:hover td {
+      background: #f8fafc;
+    }
+
+    .col-player {
+      width: 220px;
+      white-space: nowrap;
+    }
+
+    .name-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 6px;
+    }
+
+    .player-name-text {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .col-answer {
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .col-grade {
+      text-align: right;
+      width: 240px;
+      white-space: nowrap;
+    }
+
+    .btn-grade {
       border: none;
-      padding: 8px 12px;
-      margin: 0 4px;
-      border-radius: 8px;
+      padding: 9px 20px;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .ok {
+    .btn-ok {
       background: #10b981;
       color: white;
+      margin-right: 8px;
     }
 
-    .no {
+    .btn-ok:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+    }
+
+    .btn-no {
       background: #ef4444;
       color: white;
     }
 
+    .btn-no:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.28);
+    }
+
     .status-mark {
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .status-correct { color: #10b981; }
+    .status-wrong   { color: #ef4444; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 15px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .col-player { width: auto; }
+      .col-grade  { width: auto; }
     }
   </style>
 </head>
-
 <body>
 
 <div class="container">
   <h2>Ответы игроков</h2>
-
+  <div id="emptyState" class="empty-state" style="display:none;">Ответов пока нет.</div>
   <table>
     <tbody id="answersTable"></tbody>
   </table>
 </div>
 
 <script>
-let openTours = JSON.parse(localStorage.getItem("openTours") || "[]");
+const openTours  = new Set();
+const openGroups = new Set();
 
-function saveState() {
-  localStorage.setItem("openTours", JSON.stringify(openTours));
+function toggleTour(round) {
+  const roundStr = String(round);
+  if (openTours.has(roundStr)) {
+    openTours.delete(roundStr);
+    document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "none");
+    document.querySelectorAll(`.agroup-${round}`).forEach(el => el.style.display = "none");
+  } else {
+    openTours.add(roundStr);
+    document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "");
+    document.querySelectorAll(`.agroup-${round}`).forEach(el => {
+      if (openGroups.has(el.id)) el.style.display = "table-row-group";
+    });
+  }
+}
+
+function toggleGroup(id, round) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.style.display !== "none";
+  el.style.display = isOpen ? "none" : "table-row-group";
+  if (isOpen) openGroups.delete(id);
+  else openGroups.add(id);
 }
 
 async function loadAnswers() {
@@ -104,87 +212,85 @@ async function loadAnswers() {
   const data = await res.json();
 
   const table = document.getElementById("answersTable");
+  const emptyState = document.getElementById("emptyState");
   table.innerHTML = "";
 
+  if (!data || data.length === 0) {
+    emptyState.style.display = "block";
+    return;
+  }
+
+  emptyState.style.display = "none";
+
   const grouped = {};
-
   data.forEach(item => {
-    const round = item.round_number || 1;
+    const round = item.round || 1;
     const question = item.question_number;
-
     if (!grouped[round]) grouped[round] = {};
     if (!grouped[round][question]) grouped[round][question] = [];
-
     grouped[round][question].push(item);
   });
 
-  Object.keys(grouped).forEach(round => {
+  Object.keys(grouped).sort((a, b) => a - b).forEach(round => {
+    const tourOpen = openTours.has(String(round));
+
     const roundRow = document.createElement("tr");
     roundRow.className = "round-row";
-    roundRow.innerHTML = `<td colspan="4">Тур ${round}</td>`;
+    roundRow.innerHTML = `<td colspan="3" onclick="toggleTour(${round})">
+      ${tourOpen ? "▾" : "▸"} Тур ${round}
+    </td>`;
     table.appendChild(roundRow);
 
-    Object.keys(grouped[round]).forEach(question => {
+    Object.keys(grouped[round]).sort((a, b) => a - b).forEach(question => {
       const groupId = `group-${round}-${question}`;
 
       const questionRow = document.createElement("tr");
-      questionRow.className = "question-row";
-      questionRow.innerHTML = `
-        <td colspan="4" onclick="toggle('${groupId}')">
-          ▶ Вопрос ${question}
-        </td>
-      `;
+      questionRow.className = `question-row qrow-${round}`;
+      questionRow.style.display = tourOpen ? "" : "none";
+      questionRow.innerHTML = `<td colspan="3" onclick="toggleGroup('${groupId}', ${round})">▶ Вопрос ${question}</td>`;
       table.appendChild(questionRow);
 
       const wrapper = document.createElement("tbody");
       wrapper.id = groupId;
-      wrapper.style.display = "none";
+      wrapper.className = `agroup-${round}`;
+      const groupOpen = openGroups.has(groupId) && tourOpen;
+      wrapper.style.display = groupOpen ? "table-row-group" : "none";
 
       grouped[round][question].forEach(item => {
-        const id = item.answer_id;
-
         const row = document.createElement("tr");
         row.className = "answer-row";
 
-        row.innerHTML = `
-          <td>${item.user_name}</td>
-          <td>${item.question_number}</td>
-          <td>${item.answer_text}</td>
-          <td>
-            ${
-              item.is_correct !== null
-                ? `<span class="status-mark">${item.is_correct ? '✔' : '✖'}</span>`
-                : `<button class="ok" onclick="markAnswer(${id}, true)">✔</button>
-                   <button class="no" onclick="markAnswer(${id}, false)">✖</button>`
-            }
-          </td>
-        `;
+        let gradeCell;
+        if (item.is_correct === true) {
+          gradeCell = `<span class="status-mark status-correct">✔</span>`;
+        } else if (item.is_correct === false) {
+          gradeCell = `<span class="status-mark status-wrong">✖</span>`;
+        } else {
+          gradeCell = `
+            <button class="btn-grade btn-ok" onclick="markAnswer(${item.answer_id}, true)">✔ Верно</button>
+            <button class="btn-grade btn-no" onclick="markAnswer(${item.answer_id}, false)">✖ Неверно</button>
+          `;
+        }
 
+        row.innerHTML = `
+          <td class="col-player"><span class="name-label">Имя</span><span class="player-name-text">${item.user_name}</span></td>
+          <td class="col-answer">${item.answer_text}</td>
+          <td class="col-grade">${gradeCell}</td>
+        `;
         wrapper.appendChild(row);
       });
 
       table.appendChild(wrapper);
-
     });
   });
-}
-
-function toggle(id) {
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === "none" ? "table-row-group" : "none";
 }
 
 async function markAnswer(id, isCorrect) {
   await fetch(`/answers/${id}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      is_correct: isCorrect
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ is_correct: isCorrect })
   });
-
   loadAnswers();
 }
 
