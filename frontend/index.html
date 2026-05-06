@@ -339,7 +339,7 @@
       }
 
       if (!nameIncludesSymbols(name)) {
-        errorMessage.textContent = "Имя может содержать только буквы и цифры.";
+        errorMessage.textContent = "Имя может содержать только латинские/кириллические буквы и цифры.";
         errorMessage.classList.add("show");
         return;
       }
@@ -366,7 +366,7 @@
 
     function nameIncludesSymbols(name) {
       if (typeof name !== "string") return false;
-      return /^[A-Za-z0-9]+$/.test(name);
+      return /^[A-Za-z0-9Ѐ-ӿ]+$/.test(name);
     }
 
     function handleNameInput() {
