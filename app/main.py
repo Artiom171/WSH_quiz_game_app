@@ -281,8 +281,6 @@ def start_game(config: GameStartConfig):
 
 @app.post("/game/tour")
 def set_active_tour(data: TourActivate):
-    if not _game_state["started"]:
-        raise HTTPException(status_code=400, detail="Game not started")
     _game_state["current_tour"] = data.tour_number
     logger.info(f"Active tour set to: {data.tour_number}")
     return {"status": "ok"}

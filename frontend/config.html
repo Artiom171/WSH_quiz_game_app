@@ -396,6 +396,8 @@
 
     if (!response.ok) return;
 
+    window.open("answers.html", "_blank");
+
     document.querySelectorAll(".tour-control-card").forEach(c => c.classList.remove("active"));
     document.querySelectorAll(".btn-tour").forEach(b => {
       b.classList.remove("running");
