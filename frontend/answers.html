@@ -85,17 +85,28 @@
     }
 
     .col-player {
-      width: 220px;
+      width: 1px;
       white-space: nowrap;
     }
 
-    .name-label {
+    .answer-row td.col-player {
+      padding-right: 140px;
+    }
+
+    .col-grade {
+      width: 1px;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .field-label {
+      display: block;
       font-size: 11px;
       font-weight: 700;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      margin-right: 6px;
+      margin-bottom: 3px;
     }
 
     .player-name-text {
@@ -104,15 +115,9 @@
       font-size: 14px;
     }
 
-    .col-answer {
+    .answer-text {
       color: #334155;
       font-size: 14px;
-    }
-
-    .col-grade {
-      text-align: right;
-      width: 240px;
-      white-space: nowrap;
     }
 
     .btn-grade {
@@ -188,32 +193,42 @@ function toggleTour(round) {
   if (openTours.has(roundStr)) {
     openTours.delete(roundStr);
     document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "none");
-    document.querySelectorAll(`.agroup-${round}`).forEach(el => el.style.display = "none");
+    openGroups.forEach(key => {
+      if (key.startsWith(`${round}-`)) {
+        const [r, q] = key.split("-");
+        document.querySelectorAll(`.arow-${r}-${q}`).forEach(el => el.style.display = "none");
+      }
+    });
   } else {
     openTours.add(roundStr);
     document.querySelectorAll(`.qrow-${round}`).forEach(el => el.style.display = "");
-    document.querySelectorAll(`.agroup-${round}`).forEach(el => {
-      if (openGroups.has(el.id)) el.style.display = "table-row-group";
+    openGroups.forEach(key => {
+      if (key.startsWith(`${round}-`)) {
+        const [r, q] = key.split("-");
+        document.querySelectorAll(`.arow-${r}-${q}`).forEach(el => el.style.display = "");
+      }
     });
   }
 }
 
-function toggleGroup(id, round) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const isOpen = el.style.display !== "none";
-  el.style.display = isOpen ? "none" : "table-row-group";
-  if (isOpen) openGroups.delete(id);
-  else openGroups.add(id);
+function toggleGroup(round, question) {
+  const key = `${round}-${question}`;
+  if (openGroups.has(key)) {
+    openGroups.delete(key);
+    document.querySelectorAll(`.arow-${round}-${question}`).forEach(el => el.style.display = "none");
+  } else {
+    openGroups.add(key);
+    document.querySelectorAll(`.arow-${round}-${question}`).forEach(el => el.style.display = "");
+  }
 }
 
 async function loadAnswers() {
   const res = await fetch("/answers");
   const data = await res.json();
 
-  const table = document.getElementById("answersTable");
+  const tbody = document.getElementById("answersTable");
   const emptyState = document.getElementById("emptyState");
-  table.innerHTML = "";
+  tbody.innerHTML = "";
 
   if (!data || data.length === 0) {
     emptyState.style.display = "block";
@@ -236,29 +251,23 @@ async function loadAnswers() {
 
     const roundRow = document.createElement("tr");
     roundRow.className = "round-row";
-    roundRow.innerHTML = `<td colspan="3" onclick="toggleTour(${round})">
-      ${tourOpen ? "▾" : "▸"} Тур ${round}
-    </td>`;
-    table.appendChild(roundRow);
+    roundRow.innerHTML = `<td colspan="3" onclick="toggleTour(${round})">${tourOpen ? "●" : "○"} Тур ${round}</td>`;
+    tbody.appendChild(roundRow);
 
     Object.keys(grouped[round]).sort((a, b) => a - b).forEach(question => {
-      const groupId = `group-${round}-${question}`;
+      const key = `${round}-${question}`;
+      const groupOpen = openGroups.has(key) && tourOpen;
 
       const questionRow = document.createElement("tr");
       questionRow.className = `question-row qrow-${round}`;
       questionRow.style.display = tourOpen ? "" : "none";
-      questionRow.innerHTML = `<td colspan="3" onclick="toggleGroup('${groupId}', ${round})">▶ Вопрос ${question}</td>`;
-      table.appendChild(questionRow);
-
-      const wrapper = document.createElement("tbody");
-      wrapper.id = groupId;
-      wrapper.className = `agroup-${round}`;
-      const groupOpen = openGroups.has(groupId) && tourOpen;
-      wrapper.style.display = groupOpen ? "table-row-group" : "none";
+      questionRow.innerHTML = `<td colspan="3" onclick="toggleGroup(${round}, ${question})">${groupOpen ? "●" : "○"} Вопрос ${question}</td>`;
+      tbody.appendChild(questionRow);
 
       grouped[round][question].forEach(item => {
         const row = document.createElement("tr");
-        row.className = "answer-row";
+        row.className = `answer-row arow-${round}-${question}`;
+        row.style.display = groupOpen ? "" : "none";
 
         let gradeCell;
         if (item.is_correct === true) {
@@ -273,14 +282,18 @@ async function loadAnswers() {
         }
 
         row.innerHTML = `
-          <td class="col-player"><span class="name-label">Имя</span><span class="player-name-text">${item.user_name}</span></td>
-          <td class="col-answer">${item.answer_text}</td>
+          <td class="col-player">
+            <span class="field-label">Имя</span>
+            <span class="player-name-text">${item.user_name}</span>
+          </td>
+          <td class="col-answer">
+            <span class="field-label">Ответ</span>
+            <span class="answer-text">${item.answer_text}</span>
+          </td>
           <td class="col-grade">${gradeCell}</td>
         `;
-        wrapper.appendChild(row);
+        tbody.appendChild(row);
       });
-
-      table.appendChild(wrapper);
     });
   });
 }
