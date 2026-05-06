@@ -157,6 +157,86 @@
       background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     }
 
+    .game-status {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #059669;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 20px;
+      padding: 7px 16px;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+
+    .tour-control-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tour-control-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #f8fafc;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .tour-control-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .tour-ctrl-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tour-ctrl-num {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .tour-ctrl-meta {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .btn-tour {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-tour:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.24);
+    }
+
+    .btn-tour.running {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 20px 16px;
@@ -199,6 +279,8 @@
 </div>
 
 <script>
+  let activeTourNum = 0;
+
   function updateTours() {
     const n = parseInt(document.getElementById("numTours").value);
     const section = document.getElementById("toursSection");
@@ -281,7 +363,54 @@
       return;
     }
 
-    window.location.href = "final_result.html";
+    window.open("final_result.html", "_blank");
+    showTourControl(tours);
+  }
+
+  function showTourControl(tours) {
+    const typeLabel = t => t === "themed" ? "Тематический" : "Обычный";
+
+    const cards = tours.map((tour, i) => `
+      <div class="tour-control-card" id="ctrl-${i + 1}">
+        <div class="tour-ctrl-info">
+          <span class="tour-ctrl-num">Тур ${i + 1}</span>
+          <span class="tour-ctrl-meta">${typeLabel(tour.type)} · ${tour.questions} вопросов</span>
+        </div>
+        <button class="btn-tour" onclick="activateTour(${i + 1})">Начать</button>
+      </div>
+    `).join("");
+
+    document.querySelector(".container").innerHTML = `
+      <h2>Игра началась</h2>
+      <div style="text-align:center"><span class="game-status">● Идёт игра</span></div>
+      <div class="tour-control-list">${cards}</div>
+    `;
+  }
+
+  async function activateTour(tourNumber) {
+    const response = await fetch("/game/tour", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tour_number: tourNumber })
+    });
+
+    if (!response.ok) return;
+
+    document.querySelectorAll(".tour-control-card").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".btn-tour").forEach(b => {
+      b.classList.remove("running");
+      b.textContent = "Начать";
+    });
+
+    const card = document.getElementById(`ctrl-${tourNumber}`);
+    if (card) {
+      card.classList.add("active");
+      const btn = card.querySelector(".btn-tour");
+      btn.classList.add("running");
+      btn.textContent = "Идёт";
+    }
+
+    activeTourNum = tourNumber;
   }
 </script>
 

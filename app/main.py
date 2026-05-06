@@ -125,7 +125,10 @@ class TourConfig(BaseModel):
 class GameStartConfig(BaseModel):
     tours: list[TourConfig]
 
-_game_state: dict = {"started": False, "config": None}
+class TourActivate(BaseModel):
+    tour_number: int
+
+_game_state: dict = {"started": False, "config": None, "current_tour": 0}
 
 # --------------------
 # SESSION (create user)
@@ -276,11 +279,20 @@ def start_game(config: GameStartConfig):
     logger.info(f"Game started: {len(config.tours)} tours")
     return {"status": "ok"}
 
+@app.post("/game/tour")
+def set_active_tour(data: TourActivate):
+    if not _game_state["started"]:
+        raise HTTPException(status_code=400, detail="Game not started")
+    _game_state["current_tour"] = data.tour_number
+    logger.info(f"Active tour set to: {data.tour_number}")
+    return {"status": "ok"}
+
 @app.get("/game/status")
 def get_game_status():
     return {
         "started": _game_state["started"],
-        "config": _game_state["config"]
+        "config": _game_state["config"],
+        "current_tour": _game_state["current_tour"]
     }
 
 @app.delete("/reset")
@@ -290,6 +302,7 @@ def reset_database(db: Session = Depends(get_db)):
     db.commit()
     _game_state["started"] = False
     _game_state["config"] = None
+    _game_state["current_tour"] = 0
     logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
 
