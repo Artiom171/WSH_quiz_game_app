@@ -179,6 +179,11 @@
 
     /* ===== WAITING SCREEN ===== */
 
+    @keyframes pageIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
     #tourWaiting {
       position: fixed;
       inset: 0;
@@ -189,6 +194,7 @@
       z-index: 100;
       overflow: hidden;
       transition: opacity 0.5s ease;
+      animation: pageIn 0.5s ease;
     }
 
     #tourWaiting.hidden {
@@ -362,8 +368,10 @@ let dotsInterval     = null;
 // ===== WAITING SCREEN =====
 
 function showWaiting(tourNum) {
+  const el = document.getElementById("tourWaiting");
+  el.style.display = "flex";
+  el.classList.remove("hidden");
   document.getElementById("waitingTitle").textContent = `Тур ${tourNum}`;
-  document.getElementById("tourWaiting").classList.remove("hidden");
 
   let dotsCount = 0;
   clearInterval(dotsInterval);
@@ -375,7 +383,9 @@ function showWaiting(tourNum) {
 
 function hideWaiting() {
   clearInterval(dotsInterval);
-  document.getElementById("tourWaiting").classList.add("hidden");
+  const el = document.getElementById("tourWaiting");
+  el.classList.add("hidden");
+  setTimeout(() => { el.style.display = "none"; }, 500);
 }
 
 // ===== TOUR VIEWS =====
@@ -512,23 +522,86 @@ function pollTour() {
     .catch(() => setTimeout(pollTour, 3000));
 }
 
+// ===== RESUME =====
+
+function calculateResumePoint(answers, configs) {
+  const byRound = {};
+  answers.forEach(({ round: r, question_number: q }) => {
+    if (!byRound[r]) byRound[r] = new Set();
+    byRound[r].add(q);
+  });
+  for (let r = 1; r <= configs.length; r++) {
+    const limit = configs[r - 1].questions;
+    const answered = byRound[r] ? byRound[r].size : 0;
+    if (answered < limit) {
+      return { round: r, questionNumber: answered + 1 };
+    }
+  }
+  return { round: configs.length + 1, questionNumber: 1 };
+}
+
 // ===== INIT =====
 
 async function init() {
+  if (!session_id) {
+    window.location.href = "/?t=" + Date.now();
+    return;
+  }
+  window.addEventListener("pageshow", e => { if (e.persisted) location.reload(true); });
+
   showWaiting(1);
 
-  const res  = await fetch("/game/status");
-  const data = await res.json();
+  const [statusRes, answersRes] = await Promise.all([
+    fetch("/game/status"),
+    fetch(`/answers/by-session/${session_id}`)
+  ]);
 
-  tourConfigs   = data.config.tours;
-  totalRounds   = tourConfigs.length;
+  if (!answersRes.ok) {
+    localStorage.removeItem("session_id");
+    localStorage.removeItem("user_name");
+    window.location.href = "/?t=" + Date.now();
+    return;
+  }
+
+  const data           = await statusRes.json();
+  const existingAnswers = await answersRes.json();
+
+  if (!data.config) {
+    window.location.href = "/?t=" + Date.now();
+    return;
+  }
+
+  tourConfigs       = data.config.tours;
+  totalRounds       = tourConfigs.length;
   currentActiveTour = data.current_tour || 0;
 
   tourConfigs.forEach((tour, i) => {
     roundLimits[i + 1] = tour.questions;
   });
 
-  if (currentActiveTour < 1) {
+  const serverGameId = String(data.game_id);
+  const answersForResume = localStorage.getItem("game_id") === serverGameId
+    ? existingAnswers
+    : [];
+  localStorage.setItem("game_id", serverGameId);
+
+  const resume  = calculateResumePoint(answersForResume, tourConfigs);
+  round         = resume.round;
+  questionNumber = resume.questionNumber;
+
+  if (round > currentActiveTour + 1) {
+    round = 1;
+    questionNumber = 1;
+  }
+
+  if (round > totalRounds) {
+    showGameOver();
+    return;
+  }
+
+  showWaiting(round);
+
+  if (currentActiveTour < round) {
     pollTour();
   } else {
     showQuestion();

@@ -7,7 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -23,6 +23,20 @@ from app.models import User, Answer
 # --------------------
 
 Base.metadata.create_all(bind=engine)
+
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE answers ADD COLUMN game_id INTEGER DEFAULT 0"))
+        conn.commit()
+except Exception:
+    pass
+
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN game_id INTEGER DEFAULT 0"))
+        conn.commit()
+except Exception:
+    pass
 
 # --------------------
 # APP
@@ -128,7 +142,7 @@ class GameStartConfig(BaseModel):
 class TourActivate(BaseModel):
     tour_number: int
 
-_game_state: dict = {"started": False, "config": None, "current_tour": 0}
+_game_state: dict = {"started": False, "config": None, "current_tour": 0, "game_id": 0}
 
 # --------------------
 # SESSION (create user)
@@ -146,7 +160,7 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
         logger.warning(f"Session creation failed: name already exists ('{data.name}')")
         raise HTTPException(status_code=400, detail="Игрок с таким именем уже существует")
     
-    user = User(name=data.name)
+    user = User(name=data.name, game_id=_game_state["game_id"])
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -180,7 +194,8 @@ def create_answer(data: AnswerCreate, db: Session = Depends(get_db)):
         session_id=data.session_id,
         round=data.round,
         question_number=data.question_number,
-        answer_text=data.answer_text
+        answer_text=data.answer_text,
+        game_id=_game_state["game_id"]
     )
 
     db.add(answer)
@@ -289,11 +304,29 @@ def get_answers(db: Session = Depends(get_db)):
     ]
 
 
+@app.get("/answers/by-session/{session_id}")
+def get_answers_by_session(session_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == session_id).first()
+    if not user or user.game_id != _game_state["game_id"]:
+        logger.warning(f"get_answers_by_session: session_id={session_id} not found or wrong game")
+        raise HTTPException(status_code=404, detail="Session not found")
+    answers = db.query(Answer).filter(
+        Answer.session_id == session_id,
+        Answer.game_id == _game_state["game_id"]
+    ).all()
+    logger.info(f"Retrieved {len(answers)} answers for session_id={session_id}")
+    return [
+        {"round": a.round, "question_number": a.question_number}
+        for a in answers
+    ]
+
+
 @app.post("/game/start")
 def start_game(config: GameStartConfig):
     _game_state["started"] = True
     _game_state["config"] = config.model_dump()
-    logger.info(f"Game started: {len(config.tours)} tours")
+    _game_state["game_id"] = int(datetime.now().timestamp() * 1000)
+    logger.info(f"Game started: {len(config.tours)} tours, game_id={_game_state['game_id']}")
     return {"status": "ok"}
 
 @app.post("/game/tour")
@@ -307,7 +340,8 @@ def get_game_status():
     return {
         "started": _game_state["started"],
         "config": _game_state["config"],
-        "current_tour": _game_state["current_tour"]
+        "current_tour": _game_state["current_tour"],
+        "game_id": _game_state["game_id"]
     }
 
 @app.delete("/reset")

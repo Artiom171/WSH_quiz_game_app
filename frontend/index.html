@@ -251,10 +251,15 @@
   <!-- Registration screen -->
   <div id="registerScreen">
     <div class="container">
-      <h2>Введите имя</h2>
-      <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="40" oninput="handleNameInput()" />
-      <p id="errorMessage" class="error-message"></p>
-      <button onclick="submitName()">Отправить</button>
+      <h2 id="containerTitle">Введите имя</h2>
+      <div id="formFields">
+        <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="40" oninput="handleNameInput()" />
+        <p id="errorMessage" class="error-message"></p>
+        <button onclick="submitName()">Отправить</button>
+      </div>
+      <p id="gameInProgressMsg" style="display:none; margin:0; color:#475569; font-size:15px; line-height:1.5;">
+        Игра уже началась.<br>Регистрация новых игроков закрыта.
+      </p>
     </div>
   </div>
 
@@ -297,7 +302,33 @@
         .then(r => r.json())
         .then(data => {
           if (data.started) {
-            showRegisterScreen();
+            const sessionId = localStorage.getItem("session_id");
+            if (sessionId) {
+              const localGameId = localStorage.getItem("game_id");
+              const serverGameId = String(data.game_id);
+              if (!localGameId || localGameId !== serverGameId) {
+                localStorage.removeItem("session_id");
+                localStorage.removeItem("user_name");
+                localStorage.removeItem("game_id");
+                showRegisterScreen();
+              } else {
+                fetch(`/answers/by-session/${sessionId}`)
+                  .then(r => {
+                    if (r.ok) {
+                      document.documentElement.style.background = "#0d1b3e";
+                      document.getElementById("waitingScreen").classList.add("hidden");
+                      setTimeout(() => { window.location.href = "questions.html?t=" + Date.now(); }, 650);
+                    } else {
+                      localStorage.removeItem("session_id");
+                      localStorage.removeItem("user_name");
+                      showRegisterScreen();
+                    }
+                  })
+                  .catch(() => setTimeout(checkGameStatus, 3000));
+              }
+            } else {
+              showRegisterScreen();
+            }
           } else {
             setTimeout(checkGameStatus, 2000);
           }
@@ -305,16 +336,26 @@
         .catch(() => setTimeout(checkGameStatus, 3000));
     }
 
-    function showRegisterScreen() {
+    function showScreen(gameStarted) {
       const waitingScreen = document.getElementById("waitingScreen");
       const registerScreen = document.getElementById("registerScreen");
       waitingScreen.classList.add("hidden");
       setTimeout(() => {
         waitingScreen.style.display = "none";
+        if (gameStarted) {
+          document.getElementById("containerTitle").textContent = "Игра началась";
+          document.getElementById("formFields").style.display = "none";
+          document.getElementById("gameInProgressMsg").style.display = "block";
+        }
         registerScreen.style.display = "flex";
       }, 650);
     }
 
+    function showRegisterScreen() {
+      showScreen(false);
+    }
+
+    window.addEventListener("pageshow", e => { if (e.persisted) location.reload(true); });
     checkGameStatus();
 
     // ===== REGISTER SCREEN =====
@@ -361,7 +402,7 @@
       localStorage.setItem("session_id", data.session_id);
       localStorage.setItem("user_name", name);
 
-      window.location.href = "questions.html";
+      window.location.href = "questions.html?t=" + Date.now();
     }
 
     function nameIncludesSymbols(name) {

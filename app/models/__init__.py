@@ -9,6 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     score = Column(Integer, default=0)
     name = Column(String, index=True)
+    game_id = Column(Integer, default=0, nullable=True)
 
     answers = relationship("Answer", back_populates="user")
 
@@ -23,5 +24,6 @@ class Answer(Base):
     question_number = Column(Integer)
     answer_text = Column(String)
     is_correct = Column(Boolean, nullable=True)
+    game_id = Column(Integer, default=0, nullable=True)
 
     user = relationship("User", back_populates="answers")
