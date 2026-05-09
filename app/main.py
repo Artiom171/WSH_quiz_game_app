@@ -208,12 +208,16 @@ def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_
     answer.is_correct = data.is_correct
 
     if prev != data.is_correct:
-        user = db.query(User).filter(User.id == answer.session_id).first()
-        if user:
-            if data.is_correct:
-                user.score += 1
-            else:
-                user.score = max(0, user.score - 1)
+        if data.is_correct:
+            db.query(User).filter(User.id == answer.session_id).update(
+                {"score": User.score + 1}, synchronize_session=False
+            )
+        elif prev is True:
+            # only decrement when answer was previously correct (true → false)
+            # null → false means never counted, so no score change
+            db.query(User).filter(
+                User.id == answer.session_id, User.score > 0
+            ).update({"score": User.score - 1}, synchronize_session=False)
 
     db.commit()
     logger.info(
@@ -242,14 +246,25 @@ async def cause_500(request: Request, exc: StarletteHTTPException):
 
 @app.get("/results")
 def get_results(db: Session = Depends(get_db)):
-    users = db.query(User).order_by(User.score.desc()).all()
+    score_subq = (
+        db.query(Answer.session_id, func.count(Answer.id).label("score"))
+        .filter(Answer.is_correct == True)
+        .group_by(Answer.session_id)
+        .subquery()
+    )
+    rows = (
+        db.query(User, func.coalesce(score_subq.c.score, 0).label("score"))
+        .outerjoin(score_subq, User.id == score_subq.c.session_id)
+        .order_by(func.coalesce(score_subq.c.score, 0).desc())
+        .all()
+    )
 
     logger.info(
-        f"Retrieved leaderboard: {len(users)} users, top={users[0].name if users else 'none'}"
+        f"Retrieved leaderboard: {len(rows)} users, top={rows[0][0].name if rows else 'none'}"
     )
     return [
-        {"id": u.id, "name": u.name, "score": u.score}
-        for u in users
+        {"id": u.id, "name": u.name, "score": score}
+        for u, score in rows
     ]
 
 # --------------------
