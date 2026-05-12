@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
+import json
 import re
 from typing_extensions import Literal
 
@@ -46,6 +47,21 @@ except Exception:
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
+GAME_STATE_FILE = Path(__file__).resolve().parents[1] / "game_state.json"
+
+def _load_game_state() -> dict:
+    try:
+        if GAME_STATE_FILE.exists():
+            return json.loads(GAME_STATE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {"started": False, "config": None, "current_tour": 0, "game_id": 0}
+
+def _save_game_state() -> None:
+    try:
+        GAME_STATE_FILE.write_text(json.dumps(_game_state), encoding="utf-8")
+    except Exception:
+        pass
 
 def cleanup_old_logs(hours: int = 6):
     expire_time = datetime.now() - timedelta(hours=hours)
@@ -143,7 +159,7 @@ class GameStartConfig(BaseModel):
 class TourActivate(BaseModel):
     tour_number: int
 
-_game_state: dict = {"started": False, "config": None, "current_tour": 0, "game_id": 0}
+_game_state: dict = _load_game_state()
 
 # --------------------
 # SESSION (create user)
@@ -332,12 +348,14 @@ def start_game(config: GameStartConfig):
     _game_state["started"] = True
     _game_state["config"] = config.model_dump()
     _game_state["game_id"] = int(datetime.now().timestamp() * 1000)
+    _save_game_state()
     logger.info(f"Game started: {len(config.tours)} tours, game_id={_game_state['game_id']}")
     return {"status": "ok"}
 
 @app.post("/game/tour")
 def set_active_tour(data: TourActivate):
     _game_state["current_tour"] = data.tour_number
+    _save_game_state()
     logger.info(f"Active tour set to: {data.tour_number}")
     return {"status": "ok"}
 
@@ -358,6 +376,8 @@ def reset_database(db: Session = Depends(get_db)):
     _game_state["started"] = False
     _game_state["config"] = None
     _game_state["current_tour"] = 0
+    _game_state["game_id"] = 0
+    _save_game_state()
     logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
 
