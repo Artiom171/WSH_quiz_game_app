@@ -6,3 +6,7 @@ database.db*
 
 # Ignore .claude folder
 .claude/*
+
+# Ignore postman files
+postman/*
+.postman/*

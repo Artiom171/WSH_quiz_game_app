@@ -142,6 +142,10 @@
 </div>
 
 <script>
+function esc(str) {
+  return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
 async function loadUsers() {
   try {
     const res = await fetch("/users");
@@ -160,7 +164,7 @@ async function loadUsers() {
       card.className = "card";
 
       card.innerHTML = `
-        <div class="name">${user.name}</div>
+        <div class="name">${esc(user.name)}</div>
         <div class="id">ID: ${user.id}</div>
       `;
 

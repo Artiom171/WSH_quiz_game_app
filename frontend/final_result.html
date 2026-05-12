@@ -171,6 +171,10 @@
   </div>
 
   <script>
+    function esc(str) {
+      return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
     async function loadResults() {
       const res = await fetch("/results");
       const data = await res.json();
@@ -191,7 +195,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td class="rank">${index + 1}</td>
-          <td>${user.name}</td>
+          <td>${esc(user.name)}</td>
           <td class="score">${user.score ?? 0}</td>
         `;
         table.appendChild(row);

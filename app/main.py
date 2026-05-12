@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
+import re
 from typing_extensions import Literal
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Response
@@ -156,6 +157,9 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
     elif len(data.name) > 40:
         logger.warning(f"Session creation failed: name too long ({len(data.name)} chars)")
         raise HTTPException(status_code=400, detail="Слишком длинное имя (макс 40 символов)")
+    elif not re.fullmatch(r"[A-Za-z0-9Ѐ-ӿ]+", data.name):
+        logger.warning(f"Session creation failed: invalid characters in name ('{data.name}')")
+        raise HTTPException(status_code=400, detail="Имя может содержать только латинские/кириллические буквы и цифры")
     elif db.query(User).filter(func.lower(User.name) == data.name.lower()).first():
         logger.warning(f"Session creation failed: name already exists ('{data.name}')")
         raise HTTPException(status_code=400, detail="Игрок с таким именем уже существует")
@@ -190,6 +194,8 @@ def get_users(db: Session = Depends(get_db)):
 
 @app.post("/answers")
 def create_answer(data: AnswerCreate, db: Session = Depends(get_db)):
+    if len(data.answer_text) > 500:
+        raise HTTPException(status_code=400, detail="Ответ слишком длинный (макс 500 символов)")
     answer = Answer(
         session_id=data.session_id,
         round=data.round,
