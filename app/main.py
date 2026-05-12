@@ -162,6 +162,24 @@ class TourActivate(BaseModel):
 _game_state: dict = _load_game_state()
 
 # --------------------
+# STARTUP RESET
+# --------------------
+
+def _startup_reset():
+    db = SessionLocal()
+    try:
+        db.query(Answer).delete()
+        db.query(User).delete()
+        db.commit()
+    finally:
+        db.close()
+    _game_state.update({"started": False, "config": None, "current_tour": 0, "game_id": 0})
+    _save_game_state()
+    logger.info("Startup reset: database cleared, game state reset")
+
+_startup_reset()
+
+# --------------------
 # SESSION (create user)
 # --------------------
 
