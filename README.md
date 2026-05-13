@@ -10,7 +10,6 @@ A multiplayer quiz game web app built with FastAPI and plain HTML. The host conf
 - Per-tour answer submission on players' devices via `questions.html`
 - Host reviews submitted answers and marks them correct/incorrect via `answers.html`
 - Live leaderboard auto-refreshes on `final_result.html`
-- Player list visible on `users.html`
 - Sessions are isolated per game — stale sessions from a previous game are invalidated automatically
 - Request logging to timestamped files in `logs/`, with automatic cleanup of files older than 6 hours
 - Responsive layout for mobile devices
@@ -28,7 +27,6 @@ frontend/
   config.html      — host game configuration and tour control
   answers.html     — host answer review
   final_result.html — live leaderboard
-  users.html       — registered player list
   error_page.html  — 404 error page
   server_error_page.html — 500 error page
 logs/              — rotating request log files
@@ -61,7 +59,6 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 | `http://<host>:8000/config.html` | Configure tours and start the game |
 | `http://<host>:8000/answers.html` | Review answers and mark correct/incorrect |
 | `http://<host>:8000/final_result.html` | Live leaderboard (auto-refreshes) |
-| `http://<host>:8000/users.html` | View registered players |
 
 ## Player pages
 
