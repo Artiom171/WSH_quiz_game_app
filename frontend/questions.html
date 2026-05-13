@@ -105,6 +105,30 @@
       box-shadow: 0 12px 25px rgba(56, 189, 248, 0.24);
     }
 
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    .submit-error {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      text-align: left;
+    }
+
+    .submit-error.show {
+      display: block;
+    }
+
     /* ===== THEMED TOUR VIEW ===== */
 
     #themedView {
@@ -313,14 +337,16 @@
   <div id="ordinaryView">
     <h2 id="questionText"></h2>
     <input type="text" id="answerInput" placeholder="Ваш ответ" maxlength="500" />
-    <button onclick="sendAnswer()">Ответить</button>
+    <button id="submitBtn" onclick="sendAnswer()">Ответить</button>
+    <p class="submit-error" id="answerError"></p>
   </div>
 
   <!-- Themed tour view -->
   <div id="themedView">
     <p id="themedTitle"></p>
     <div class="themed-list" id="themedInputs"></div>
-    <button onclick="sendThemedAnswers()">Отправить все</button>
+    <button id="themedSubmitBtn" onclick="sendThemedAnswers()">Отправить все</button>
+    <p class="submit-error" id="themedError"></p>
   </div>
 </div>
 
@@ -403,12 +429,16 @@ function showQuestion() {
 function showOrdinaryQuestion() {
   document.getElementById("ordinaryView").style.display = "";
   document.getElementById("themedView").classList.remove("active");
+  document.getElementById("submitBtn").disabled = false;
+  document.getElementById("answerError").classList.remove("show");
   loadQuestion();
 }
 
 function showThemedTour(count) {
   document.getElementById("ordinaryView").style.display = "none";
   document.getElementById("themedView").classList.add("active");
+  document.getElementById("themedSubmitBtn").disabled = false;
+  document.getElementById("themedError").classList.remove("show");
   document.getElementById("themedTitle").textContent = `Тур ${round} — Тематический`;
 
   const list = document.getElementById("themedInputs");
@@ -471,16 +501,29 @@ async function sendAnswer() {
     return;
   }
 
-  await fetch("/answers", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      session_id,
-      round,
-      question_number: questionNumber,
-      answer_text: answer
-    })
-  });
+  const btn   = document.getElementById("submitBtn");
+  const errEl = document.getElementById("answerError");
+  btn.disabled = true;
+  errEl.classList.remove("show");
+
+  try {
+    const res = await fetch("/answers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id,
+        round,
+        question_number: questionNumber,
+        answer_text: answer
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  } catch (_) {
+    errEl.textContent = "Не удалось отправить ответ. Проверьте соединение и попробуйте снова.";
+    errEl.classList.add("show");
+    btn.disabled = false;
+    return;
+  }
 
   document.getElementById("answerInput").value = "";
   nextQuestion();
@@ -489,18 +532,31 @@ async function sendAnswer() {
 async function sendThemedAnswers() {
   const inputs = document.querySelectorAll(".themed-input");
 
-  for (const input of inputs) {
-    const q = parseInt(input.dataset.question);
-    await fetch("/answers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        session_id,
-        round,
-        question_number: q,
-        answer_text: input.value
-      })
-    });
+  const btn   = document.getElementById("themedSubmitBtn");
+  const errEl = document.getElementById("themedError");
+  btn.disabled = true;
+  errEl.classList.remove("show");
+
+  try {
+    for (const input of inputs) {
+      const q = parseInt(input.dataset.question);
+      const res = await fetch("/answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id,
+          round,
+          question_number: q,
+          answer_text: input.value
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    }
+  } catch (_) {
+    errEl.textContent = "Не удалось отправить ответы. Проверьте соединение и попробуйте снова.";
+    errEl.classList.add("show");
+    btn.disabled = false;
+    return;
   }
 
   advanceRound();
