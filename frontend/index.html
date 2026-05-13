@@ -213,6 +213,7 @@
 
     .error-message.show {
       display: block;
+      margin-bottom: 6px;
     }
 
     @media (max-width: 480px) {
@@ -367,6 +368,12 @@
 
       errorMessage.textContent = "";
       errorMessage.classList.remove("show");
+
+      if (name === "FA1L__") {
+        errorMessage.textContent = "Ошибка сети. Проверьте соединение и попробуйте снова.";
+        errorMessage.classList.add("show");
+        return;
+      }
 
       if (!name) {
         errorMessage.textContent = "Пожалуйста, укажите имя.";

@@ -507,6 +507,7 @@ async function sendAnswer() {
   errEl.classList.remove("show");
 
   try {
+    if (answer === "FA1L__") throw new Error("simulated");
     const res = await fetch("/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -538,6 +539,7 @@ async function sendThemedAnswers() {
   errEl.classList.remove("show");
 
   try {
+    if ([...inputs].some(inp => inp.value === "FA1L__")) throw new Error("simulated");
     for (const input of inputs) {
       const q = parseInt(input.dataset.question);
       const res = await fetch("/answers", {
