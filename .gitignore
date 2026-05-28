@@ -4,6 +4,9 @@ logs/*
 # Ignore database
 database.db*
 
+# Ignore runtime game state
+game_state.json
+
 # Ignore .claude folder
 .claude/*
 
