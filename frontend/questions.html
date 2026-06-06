@@ -326,7 +326,7 @@
   <div id="particlesContainer"></div>
   <div class="waiting-content">
     <h1 class="waiting-title" id="waitingTitle"></h1>
-    <p class="waiting-subtitle">Ведущий скоро откроет тур<span id="waitingDots"></span></p>
+    <p class="waiting-subtitle"><span id="waitingSubtitleText">Ведущий скоро откроет тур</span><span id="waitingDots"></span></p>
   </div>
 </div>
 
@@ -356,13 +356,16 @@ const user_name  = localStorage.getItem("user_name");
 
 document.getElementById("username").innerText = "Игрок: " + user_name;
 
-let round            = 1;
-let questionNumber   = 1;
-let roundLimits      = {};
-let tourConfigs      = [];
-let totalRounds      = 0;
+let round             = 1;
+let questionNumber    = 1;
+let roundLimits       = {};
+let tourConfigs       = [];
+let totalRounds       = 0;
 let currentActiveTour = 0;
-let dotsInterval     = null;
+let dotsInterval      = null;
+let serverCurrentQ    = 0;
+let submittedQ        = false;
+let lockTimeout       = null;
 
 // ===== PARTICLES =====
 
@@ -393,11 +396,13 @@ let dotsInterval     = null;
 
 // ===== WAITING SCREEN =====
 
-function showWaiting(tourNum) {
+function showWaiting(tourNum, subtitle) {
   const el = document.getElementById("tourWaiting");
   el.style.display = "flex";
   el.classList.remove("hidden");
   document.getElementById("waitingTitle").textContent = `Тур ${tourNum}`;
+  document.getElementById("waitingSubtitleText").textContent =
+    subtitle || "Ведущий скоро откроет тур";
 
   let dotsCount = 0;
   clearInterval(dotsInterval);
@@ -470,36 +475,23 @@ function showGameOver() {
 
 // ===== ANSWER SUBMISSION =====
 
-function advanceRound() {
-  round++;
-  questionNumber = 1;
-
-  if (round > totalRounds) {
-    showGameOver();
-    return;
-  }
-
-  showWaiting(round);
-  pollTour();
-}
-
-function nextQuestion() {
-  questionNumber++;
-
-  if (questionNumber > roundLimits[round]) {
-    advanceRound();
-    return;
-  }
-
-  loadQuestion();
+async function postAnswer(answerText) {
+  const res = await fetch("/answers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id,
+      round,
+      question_number: questionNumber,
+      answer_text: answerText
+    })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
 }
 
 async function sendAnswer() {
   const answer = document.getElementById("answerInput").value;
-  if (!answer) {
-    alert("Пожалуйста, введите ответ.");
-    return;
-  }
+  if (!answer) { alert("Пожалуйста, введите ответ."); return; }
 
   const btn   = document.getElementById("submitBtn");
   const errEl = document.getElementById("answerError");
@@ -508,17 +500,7 @@ async function sendAnswer() {
 
   try {
     if (answer === "FA1L__") throw new Error("simulated");
-    const res = await fetch("/answers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        session_id,
-        round,
-        question_number: questionNumber,
-        answer_text: answer
-      })
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await postAnswer(answer);
   } catch (_) {
     errEl.textContent = "Не удалось отправить ответ. Проверьте соединение и попробуйте снова.";
     errEl.classList.add("show");
@@ -527,8 +509,8 @@ async function sendAnswer() {
   }
 
   document.getElementById("answerInput").value = "";
-  btn.disabled = false;
-  nextQuestion();
+  submittedQ = true;
+  showWaiting(round, "Ваш ответ принят. Ожидайте правильного ответа от ведущего");
 }
 
 async function sendThemedAnswers() {
@@ -542,16 +524,12 @@ async function sendThemedAnswers() {
   try {
     if ([...inputs].some(inp => inp.value === "FA1L__")) throw new Error("simulated");
     for (const input of inputs) {
-      const q = parseInt(input.dataset.question);
+      const q   = parseInt(input.dataset.question);
+      const val = input.value.trim() || "-";
       const res = await fetch("/answers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id,
-          round,
-          question_number: q,
-          answer_text: input.value
-        })
+        body: JSON.stringify({ session_id, round, question_number: q, answer_text: val })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
     }
@@ -562,23 +540,71 @@ async function sendThemedAnswers() {
     return;
   }
 
-  advanceRound();
+  submittedQ = true;
+  showWaiting(round, "Ваши ответы приняты. Ожидайте результатов тура");
 }
 
 // ===== POLLING =====
 
-function pollTour() {
+function scheduleLock(questionStartedAt, timerSeconds) {
+  clearLock();
+  const expiresAt = questionStartedAt + timerSeconds * 1000 + 4000;
+  const delay = Math.max(0, expiresAt - Date.now());
+  lockTimeout = setTimeout(() => {
+    lockTimeout = null;
+    if (submittedQ) return;
+    submittedQ = true;
+    postAnswer("-").catch(() => {});
+    showWaiting(round, "Время вышло. Ожидайте правильного ответа от ведущего");
+  }, delay);
+}
+
+function clearLock() {
+  if (lockTimeout) { clearTimeout(lockTimeout); lockTimeout = null; }
+}
+
+function pollState() {
   fetch("/game/status")
     .then(r => r.json())
     .then(data => {
-      currentActiveTour = data.current_tour || 0;
-      if (currentActiveTour >= round) {
-        showQuestion();
-      } else {
-        setTimeout(pollTour, 2000);
+      const newTour = data.current_tour || 0;
+      const newQ    = data.current_question || 0;
+
+      // Tour or question changed — update player view
+      if (newTour !== round || newQ !== serverCurrentQ) {
+        clearLock();
+        round          = newTour;
+        serverCurrentQ = newQ;
+        questionNumber = newQ;
+        submittedQ     = false;
+
+        if (round > totalRounds) { showGameOver(); return; }
+
+        if (newQ > 0 && newTour > 0) {
+          showQuestion();
+          // Timer may already be running when player connects mid-question
+          if (data.host_state === "timer_running" && data.question_started_at) {
+            const t = tourConfigs[round - 1];
+            if (t && t.timer_seconds) scheduleLock(data.question_started_at, t.timer_seconds);
+          }
+        } else if (newTour > 0) {
+          showWaiting(newTour, "Ведущий скоро покажет вопрос");
+        } else {
+          showWaiting(1);
+        }
+        setTimeout(pollState, 2000);
+        return;
       }
+
+      // Timer just started — schedule the lock if not already scheduled
+      if (!submittedQ && !lockTimeout && data.host_state === "timer_running" && data.question_started_at) {
+        const t = tourConfigs[round - 1];
+        if (t && t.timer_seconds) scheduleLock(data.question_started_at, t.timer_seconds);
+      }
+
+      setTimeout(pollState, 2000);
     })
-    .catch(() => setTimeout(pollTour, 3000));
+    .catch(() => setTimeout(pollState, 3000));
 }
 
 // ===== RESUME =====
@@ -658,12 +684,15 @@ async function init() {
     return;
   }
 
+  serverCurrentQ = data.current_question || 0;
+  questionNumber = serverCurrentQ || 1;
+
   showWaiting(round);
 
-  if (currentActiveTour < round) {
-    pollTour();
-  } else {
+  if (currentActiveTour >= round && serverCurrentQ > 0) {
     showQuestion();
+  } else {
+    pollState();
   }
 }
 

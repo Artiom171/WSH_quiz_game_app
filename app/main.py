@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 import logging
 import json
 import re
+import shutil
 from typing_extensions import Literal
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, Request, Response
+from fastapi import FastAPI, Depends, HTTPException, Request, Response, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -50,6 +51,8 @@ LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 GAME_STATE_FILE = Path(__file__).resolve().parents[1] / "game_state.json"
 SAVED_CONFIGS_FILE = Path(__file__).resolve().parents[1] / "saved_configs.json"
+UPLOADS_DIR = Path(__file__).resolve().parents[1] / "uploads"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 # --------------------
 # GAME STATE
@@ -162,6 +165,7 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 # --------------------
 # DB SESSION
@@ -195,6 +199,7 @@ class QuestionData(BaseModel):
     text: str = ""
     media_url: str = ""
     answer: str = ""
+    answer_image_url: str = ""
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]
@@ -538,6 +543,24 @@ def reset_database(db: Session = Depends(get_db)):
     _save_game_state()
     logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
+
+# --------------------
+# FILE UPLOAD
+# --------------------
+
+_ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    if file.content_type not in _ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail="Only image files (jpg, png, gif, webp) are allowed")
+    ext = Path(file.filename).suffix.lower() or ".jpg"
+    unique_name = f"{int(datetime.now().timestamp() * 1000)}{ext}"
+    dest = UPLOADS_DIR / unique_name
+    with dest.open("wb") as f:
+        shutil.copyfileobj(file.file, f)
+    logger.info(f"File uploaded: {unique_name}")
+    return {"url": f"/uploads/{unique_name}"}
 
 # --------------------
 # STATIC FILES

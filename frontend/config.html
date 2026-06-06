@@ -820,7 +820,7 @@
       timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "" }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_image_url: q.answer_image_url || "" }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -899,7 +899,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "" });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_image_url: "" });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1028,6 +1028,67 @@
     answerInput.addEventListener("input", () => { questionData[ti][qi].answer = answerInput.value; });
     answerRow.appendChild(answerInput);
     container.appendChild(answerRow);
+
+    // answer image upload
+    const imgSection = document.createElement("div");
+    imgSection.style.cssText = "margin-top:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;";
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.style.display = "none";
+
+    const uploadBtn = document.createElement("button");
+    uploadBtn.type = "button";
+    uploadBtn.className = "btn-secondary";
+    uploadBtn.style.cssText = "padding:7px 12px; font-size:13px; flex-shrink:0;";
+    uploadBtn.textContent = q.answer_image_url ? "✓ Фото ответа" : "+ Фото ответа";
+    uploadBtn.addEventListener("click", () => fileInput.click());
+
+    const preview = document.createElement("img");
+    preview.style.cssText = "height:48px; border-radius:6px; display:" + (q.answer_image_url ? "block" : "none") + ";";
+    if (q.answer_image_url) preview.src = q.answer_image_url;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "btn-secondary";
+    removeBtn.style.cssText = "padding:5px 10px; font-size:12px; color:#dc2626; display:" + (q.answer_image_url ? "block" : "none") + ";";
+    removeBtn.textContent = "✕";
+    removeBtn.addEventListener("click", () => {
+      questionData[ti][qi].answer_image_url = "";
+      preview.src = ""; preview.style.display = "none";
+      uploadBtn.textContent = "+ Фото ответа";
+      removeBtn.style.display = "none";
+      fileInput.value = "";
+    });
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      uploadBtn.textContent = "Загрузка...";
+      uploadBtn.disabled = true;
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/upload", { method: "POST", body: fd });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        questionData[ti][qi].answer_image_url = data.url;
+        preview.src = data.url;
+        preview.style.display = "block";
+        uploadBtn.textContent = "✓ Фото ответа";
+        removeBtn.style.display = "block";
+      } catch {
+        uploadBtn.textContent = "+ Фото ответа";
+      }
+      uploadBtn.disabled = false;
+    });
+
+    imgSection.appendChild(fileInput);
+    imgSection.appendChild(uploadBtn);
+    imgSection.appendChild(preview);
+    imgSection.appendChild(removeBtn);
+    container.appendChild(imgSection);
   }
 
   function setQType(ti, qi, newType, card) {
@@ -1109,7 +1170,8 @@
           type: q.type,
           text: q.text,
           media_url: q.media_url,
-          answer: q.answer
+          answer: q.answer,
+          answer_image_url: q.answer_image_url || ""
         }))
       }))
     };
@@ -1155,7 +1217,7 @@
     });
     if (!res.ok) return;
 
-    window.open("answers.html", "_blank");
+    window.open("host_screen.html", "_blank");
 
     document.querySelectorAll(".tour-control-card:not(.done)").forEach(c => c.classList.remove("active"));
     document.querySelectorAll(".btn-tour:not(.done)").forEach(b => {

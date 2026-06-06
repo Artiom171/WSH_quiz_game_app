@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Экран ведущего</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100vh;
+      overflow: hidden;
+      font-family: Inter, Arial, sans-serif;
+      background: #091228;
+      color: white;
+    }
+
+    /* ===== SCREENS ===== */
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen.active { display: flex; }
+
+    /* ===== GLOW BLOBS (waiting atmosphere) ===== */
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .blob-blue {
+      width: 600px; height: 600px;
+      background: rgba(37, 99, 235, 0.28);
+      top: -200px; left: -160px;
+      animation: blobDrift 14s ease-in-out infinite;
+    }
+
+    .blob-purple {
+      width: 520px; height: 520px;
+      background: rgba(109, 40, 217, 0.22);
+      bottom: -160px; right: -140px;
+      animation: blobDrift 17s ease-in-out infinite reverse;
+    }
+
+    @keyframes blobDrift {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33%       { transform: translate(40px,-30px) scale(1.08); }
+      66%       { transform: translate(-30px,40px) scale(0.94); }
+    }
+
+    /* ===== WAITING SCREEN ===== */
+
+    #screen-waiting .waiting-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 0 40px;
+    }
+
+    .waiting-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 0 0 20px;
+    }
+
+    .waiting-title {
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      text-shadow: 0 0 32px rgba(56,189,248,0.6), 0 0 80px rgba(37,99,235,0.35);
+      margin: 0 0 20px;
+      animation: titleFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    .waiting-subtitle {
+      font-size: 20px;
+      color: #475569;
+      margin: 0;
+    }
+
+    /* ===== QUESTION SCREEN ===== */
+
+    #screen-question {
+      padding: 24px 60px 90px;
+      gap: 0;
+      text-align: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .q-badge {
+      font-size: 14px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    #q-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .q-text {
+      font-size: clamp(28px, 3.2vw, 48px);
+      font-weight: 800;
+      line-height: 1.25;
+      color: white;
+      margin: 0 auto 32px;
+      max-width: 1000px;
+    }
+
+    .q-media {
+      margin: 0 auto 32px;
+      border-radius: 18px;
+      overflow: hidden;
+      max-width: 860px;
+      width: 100%;
+    }
+
+    .q-media img {
+      max-width: 100%;
+      max-height: 56vh;
+      border-radius: 18px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .q-media iframe {
+      width: 860px;
+      height: 484px;
+      border: none;
+      border-radius: 18px;
+      display: block;
+    }
+
+    .q-media audio {
+      width: 480px;
+      height: 54px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .q-subtext {
+      font-size: 34px;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin: 0 auto 32px;
+      max-width: 900px;
+      line-height: 1.3;
+    }
+
+    /* ===== TIMER ===== */
+
+    .timer-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .timer-ring {
+      width: 130px;
+      height: 130px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 9;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke: #38bdf8;
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-dasharray: 339.29;
+      stroke-dashoffset: 0;
+      transition: stroke 0.4s ease;
+    }
+
+    .timer-num {
+      position: absolute;
+      font-size: 42px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    /* ===== ANSWER SCREEN ===== */
+
+    #screen-answer {
+      gap: 0;
+      padding: 24px 60px 90px;
+      text-align: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .a-tour-badge {
+      font-size: 15px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 28px;
+    }
+
+    .a-divider {
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, #059669, #34d399);
+      border-radius: 2px;
+      margin: 0 auto 36px;
+    }
+
+    .a-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #34d399;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 0 0 16px;
+    }
+
+    .a-answer-img {
+      max-height: 52vh;
+      max-width: 80vw;
+      border-radius: 18px;
+      object-fit: contain;
+      margin: 0 auto;
+      animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .a-answer {
+      font-size: clamp(36px, 5vw, 68px);
+      font-weight: 900;
+      color: #10b981;
+      max-width: 1000px;
+      margin: 0 auto;
+      line-height: 1.1;
+      text-shadow: 0 0 48px rgba(16,185,129,0.45);
+      animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    @keyframes answerReveal {
+      from { opacity: 0; transform: translateY(28px) scale(0.93); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ===== FINISH SCREEN ===== */
+
+    #screen-finish .finish-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 0 40px;
+    }
+
+    .finish-title {
+      font-size: 68px;
+      font-weight: 900;
+      color: white;
+      margin: 0 0 20px;
+      text-shadow: 0 0 32px rgba(251,191,36,0.4);
+      animation: titleFloat 4s ease-in-out infinite;
+    }
+
+    .finish-subtitle {
+      font-size: 22px;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    /* ===== CONTROL PANEL ===== */
+
+    #controls {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(9,18,40,0.92);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 14px 18px;
+      backdrop-filter: blur(16px);
+      z-index: 200;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .ctrl-btn {
+      padding: 11px 20px;
+      border-radius: 11px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .ctrl-btn:hover:not(:disabled) { opacity: 0.82; transform: translateY(-1px); }
+    .ctrl-btn:active { transform: translateY(0); }
+    .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .ctrl-primary { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: white; }
+    .ctrl-green   { background: linear-gradient(135deg,#059669,#047857); color: white; }
+    .ctrl-orange  { background: linear-gradient(135deg,#d97706,#b45309); color: white; }
+    .ctrl-ghost   { background: rgba(255,255,255,0.1); color: #cbd5e1; }
+
+    .ctrl-sep {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.12);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== WAITING SCREEN ===== -->
+<div class="screen active" id="screen-waiting">
+  <div class="glow-blob blob-blue"></div>
+  <div class="glow-blob blob-purple"></div>
+  <div class="waiting-content">
+    <p class="waiting-label" id="waiting-label">Ожидание</p>
+    <h1 class="waiting-title" id="waiting-title">Экран ведущего</h1>
+    <p class="waiting-subtitle" id="waiting-subtitle">Запустите игру из панели настройки</p>
+  </div>
+</div>
+
+<!-- ===== QUESTION SCREEN ===== -->
+<div class="screen" id="screen-question">
+  <div class="timer-wrap" id="timer-wrap">
+    <svg class="timer-ring" viewBox="0 0 120 120">
+      <circle class="ring-track" cx="60" cy="60" r="54" />
+      <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="54" />
+    </svg>
+    <span class="timer-num" id="timer-num">--</span>
+  </div>
+  <div class="q-badge" id="q-badge"></div>
+  <div id="q-content"></div>
+</div>
+
+<!-- ===== ANSWER SCREEN ===== -->
+<div class="screen" id="screen-answer">
+  <div class="a-tour-badge" id="a-tour-badge"></div>
+  <img class="a-answer-img" id="a-answer-img" src="" alt="" style="display:none" />
+  <div class="a-divider"></div>
+  <p class="a-label">Правильный ответ</p>
+  <p class="a-answer" id="a-answer"></p>
+</div>
+
+<!-- ===== FINISH SCREEN (themed tour end) ===== -->
+<div class="screen" id="screen-finish">
+  <div class="glow-blob blob-blue"></div>
+  <div class="glow-blob blob-purple"></div>
+  <div class="finish-content">
+    <h1 class="finish-title">Заканчивайте ответы!</h1>
+    <p class="finish-subtitle">Успейте заполнить все ответы на своих устройствах</p>
+  </div>
+</div>
+
+<!-- ===== CONTROL PANEL ===== -->
+<div id="controls">
+  <button class="ctrl-btn ctrl-primary" id="btn-begin-tour"   onclick="doBeginTour()"      style="display:none">Начать тур →</button>
+  <button class="ctrl-btn ctrl-primary" id="btn-start-timer"  onclick="doStartTimer()"     style="display:none">▶ Запустить таймер</button>
+  <button class="ctrl-btn ctrl-orange"  id="btn-show-answer"  onclick="doShowAnswer()"     style="display:none">Показать ответ</button>
+  <button class="ctrl-btn ctrl-green"   id="btn-next-q"       onclick="doNextQuestion()"   style="display:none">Следующий вопрос →</button>
+  <button class="ctrl-btn ctrl-ghost"   id="btn-finish-ans"   onclick="doFinishAnswers()"  style="display:none">Завершить вопросы</button>
+</div>
+
+<script>
+  const CIRC = 2 * Math.PI * 54; // 339.29
+
+  let status = {};
+  let timerInterval = null;
+
+  // ===== HELPERS =====
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function ytEmbedUrl(url) {
+    const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/);
+    return m ? `https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0` : null;
+  }
+
+  function tour()     { return status.config?.tours?.[status.current_tour - 1] ?? null; }
+  function question() { const t = tour(); return t?.questions_data?.[status.current_question - 1] ?? null; }
+  function isLast()   { const t = tour(); return t && status.current_question >= t.questions; }
+
+  function timerMs() {
+    const t = tour();
+    if (!status.question_started_at || !t?.timer_seconds) return null;
+    return Math.max(0, status.question_started_at + t.timer_seconds * 1000 - Date.now());
+  }
+
+  // ===== SCREEN SWITCHER =====
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  const ALL_BTNS = ['btn-begin-tour','btn-start-timer','btn-show-answer','btn-next-q','btn-finish-ans'];
+
+  function showBtns(...ids) {
+    ALL_BTNS.forEach(id => {
+      document.getElementById(id).style.display = ids.includes(id) ? '' : 'none';
+    });
+  }
+
+  // ===== RENDER =====
+
+  function render() {
+    stopTimer();
+
+    const { started, config, current_tour, current_question, host_state, question_started_at } = status;
+
+    if (!started || !config) {
+      setWaiting('Ожидание', 'Экран ведущего', 'Запустите игру из панели настройки');
+      showBtns(); return;
+    }
+
+    if (!current_tour) {
+      setWaiting('Ожидание', 'Активируйте тур', 'Откройте панель настройки и нажмите «Начать»');
+      showBtns(); return;
+    }
+
+    const t = tour();
+    if (!t) { showBtns(); return; }
+
+    if (!current_question) {
+      setWaiting(`Тур ${current_tour}`, t.type === 'themed' ? 'Тематический тур' : 'Обычный тур', 'Нажмите кнопку, чтобы показать первый вопрос');
+      showScreen('screen-waiting');
+      showBtns('btn-begin-tour'); return;
+    }
+
+    const q = question();
+
+    if (host_state === 'show_answer') {
+      renderAnswer(q, t);
+      showBtns(isLast() ? '' : 'btn-next-q');
+      return;
+    }
+
+    if (host_state === 'finish_answers') {
+      showScreen('screen-finish');
+      showBtns(); return;
+    }
+
+    // question active
+    renderQuestion(q, t);
+
+    const rem = timerMs();
+    const expired = rem !== null && rem <= 0;
+    const hasTimer = !!t.timer_seconds;
+
+    if (host_state === 'waiting') {
+      if (hasTimer) {
+        showBtns('btn-start-timer');
+      } else {
+        // no timer — ordinary: show answer; themed: advance
+        if (t.type === 'ordinary') showBtns('btn-show-answer');
+        else showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
+      }
+      return;
+    }
+
+    if (host_state === 'timer_running') {
+      if (hasTimer && !expired) startTimer(t.timer_seconds, question_started_at);
+
+      if (expired) {
+        if (t.type === 'ordinary') showBtns('btn-show-answer');
+        else showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
+      } else {
+        if (t.type === 'themed') showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
+        else showBtns(); // ordinary: wait for timer
+      }
+    }
+  }
+
+  function setWaiting(label, title, subtitle) {
+    document.getElementById('waiting-label').textContent   = label;
+    document.getElementById('waiting-title').textContent   = title;
+    document.getElementById('waiting-subtitle').textContent = subtitle;
+    showScreen('screen-waiting');
+  }
+
+  function renderQuestion(q, t) {
+    document.getElementById('q-badge').textContent =
+      `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
+
+    const content = document.getElementById('q-content');
+    content.innerHTML = '';
+
+    if (q.type === 'text') {
+      const p = document.createElement('p');
+      p.className = 'q-text';
+      p.textContent = q.text || '—';
+      content.appendChild(p);
+    } else {
+      const wrap = document.createElement('div');
+      wrap.className = 'q-media';
+
+      if (q.type === 'youtube') {
+        const url = ytEmbedUrl(q.media_url);
+        if (url) wrap.innerHTML = `<iframe src="${esc(url)}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+      } else if (q.type === 'image') {
+        wrap.innerHTML = `<img src="${esc(q.media_url)}" alt="" />`;
+      } else if (q.type === 'audio') {
+        wrap.innerHTML = `<audio src="${esc(q.media_url)}" controls autoplay></audio>`;
+      }
+
+      content.appendChild(wrap);
+
+      if (q.text) {
+        const p = document.createElement('p');
+        p.className = 'q-subtext';
+        p.textContent = q.text;
+        content.appendChild(p);
+      }
+    }
+
+    const timerWrap = document.getElementById('timer-wrap');
+    timerWrap.style.display = t.timer_seconds ? '' : 'none';
+
+    showScreen('screen-question');
+  }
+
+  function renderAnswer(q, t) {
+    document.getElementById('a-tour-badge').textContent =
+      `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
+
+    const img = document.getElementById('a-answer-img');
+    if (q?.answer_image_url) {
+      img.src = q.answer_image_url;
+      img.style.display = 'block';
+    } else {
+      img.src = '';
+      img.style.display = 'none';
+    }
+
+    const old = document.getElementById('a-answer');
+    const fresh = old.cloneNode(false);
+    fresh.textContent = q?.answer || '—';
+    old.replaceWith(fresh);
+
+    showScreen('screen-answer');
+  }
+
+  // ===== TIMER =====
+
+  function startTimer(seconds, startedAt) {
+    const total = seconds * 1000;
+    const ring = document.getElementById('ring-fill');
+    const num  = document.getElementById('timer-num');
+
+    function tick() {
+      const rem  = Math.max(0, startedAt + total - Date.now());
+      const secs = Math.ceil(rem / 1000);
+      const pct  = rem / total;
+
+      num.textContent = secs;
+      ring.style.strokeDashoffset = CIRC * (1 - pct);
+
+      if (pct > 0.3)      ring.style.stroke = '#38bdf8';
+      else if (pct > 0.1) ring.style.stroke = '#fbbf24';
+      else                 ring.style.stroke = '#f87171';
+
+      if (rem <= 0) { stopTimer(); render(); }
+    }
+
+    tick();
+    timerInterval = setInterval(tick, 100);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  // ===== CONTROL ACTIONS =====
+
+  async function post(url, body) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  }
+
+  async function doBeginTour() {
+    await post('/game/question', { question_number: 1 });
+    status.current_question = 1;
+    status.host_state = 'waiting';
+    status.question_started_at = null;
+    render();
+  }
+
+  async function doStartTimer() {
+    await post('/game/host-state', { state: 'timer_running' });
+    status.host_state = 'timer_running';
+    status.question_started_at = Date.now();
+    render();
+  }
+
+  async function doShowAnswer() {
+    await post('/game/host-state', { state: 'show_answer' });
+    status.host_state = 'show_answer';
+    render();
+  }
+
+  async function doNextQuestion() {
+    const next = (status.current_question || 0) + 1;
+    await post('/game/question', { question_number: next });
+    status.current_question = next;
+    status.host_state = 'waiting';
+    status.question_started_at = null;
+    render();
+  }
+
+  async function doFinishAnswers() {
+    await post('/game/host-state', { state: 'finish_answers' });
+    status.host_state = 'finish_answers';
+    render();
+  }
+
+  // ===== POLLING =====
+
+  async function poll() {
+    try {
+      const data = await fetch('/game/status').then(r => r.json());
+      const changed =
+        data.started        !== status.started        ||
+        data.current_tour   !== status.current_tour   ||
+        data.current_question !== status.current_question ||
+        data.host_state     !== status.host_state;
+      status = data;
+      if (changed) render();
+    } catch (_) {}
+  }
+
+  async function init() {
+    status = await fetch('/game/status').then(r => r.json());
+    render();
+    setInterval(poll, 2000);
+  }
+
+  init();
+</script>
+</body>
+</html>
