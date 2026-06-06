@@ -816,6 +816,7 @@
     editingConfigId = configId;
     tourSettings = config.tours.map(t => ({
       type: t.type,
+      name: t.name || "",
       questionCount: t.questions_data ? t.questions_data.length : t.questions,
       timerSeconds: t.timer_seconds || ""
     }));
@@ -837,7 +838,7 @@
     section.style.display = "block";
 
     // sync tourSettings array length
-    while (tourSettings.length < n) tourSettings.push({ type: "ordinary", questionCount: 10, timerSeconds: 60 });
+    while (tourSettings.length < n) tourSettings.push({ type: "ordinary", questionCount: 10, timerSeconds: 60, name: "" });
     tourSettings = tourSettings.slice(0, n);
     while (questionData.length < n) questionData.push([]);
     questionData = questionData.slice(0, n);
@@ -853,6 +854,12 @@
       card.className = "tour-card";
       card.innerHTML = `
         <div class="tour-card-header">Тур ${i + 1}</div>
+        <div class="field" style="margin-bottom:10px">
+          <label>Название тура</label>
+          <input type="text" id="name-${i}" placeholder="Например, Музыкальный тур"
+            value="${esc(t.name || "")}"
+            oninput="tourSettings[${i}].name = this.value" />
+        </div>
         <div class="tour-card-grid">
           <div class="field">
             <label>Тип тура</label>
@@ -1165,6 +1172,7 @@
       name,
       tours: tourSettings.map((t, i) => ({
         type: t.type,
+        name: t.name || "",
         timer_seconds: t.timerSeconds || null,
         questions_data: (questionData[i] || []).map(q => ({
           type: q.type,

@@ -469,7 +469,8 @@
     if (!t) { showBtns(); return; }
 
     if (!current_question) {
-      setWaiting(`Тур ${current_tour}`, t.type === 'themed' ? 'Тематический тур' : 'Обычный тур', 'Нажмите кнопку, чтобы показать первый вопрос');
+      const tourName = t.name || (t.type === 'themed' ? 'Тематический тур' : 'Обычный тур');
+      setWaiting(`Тур ${current_tour}`, tourName, 'Нажмите кнопку, чтобы показать первый вопрос');
       showScreen('screen-waiting');
       showBtns('btn-begin-tour'); return;
     }

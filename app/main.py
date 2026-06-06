@@ -203,6 +203,7 @@ class QuestionData(BaseModel):
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]
+    name: str = ""
     timer_seconds: Optional[int] = None
     questions_data: list[QuestionData]
 
