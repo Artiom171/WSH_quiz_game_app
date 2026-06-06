@@ -1,0 +1,277 @@
+[
+  {
+    "id": "1780745534757",
+    "name": "Кто тут умный? Лето 2026",
+    "created_at": "2026-06-06T13:32:14.762077",
+    "tours": [
+      {
+        "type": "ordinary",
+        "timer_seconds": 60,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "Современное название этой страны, переводится как “страна Ариев”. Однако до первой половины ХХ века официальное название было другим. Поэтому популярные - кот, ковёр и принц нам известны с этим самым старым названием. Назовите современное название этой страны",
+            "media_url": "",
+            "answer": "Иран"
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          }
+        ],
+        "questions": 10
+      },
+      {
+        "type": "ordinary",
+        "timer_seconds": 60,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          }
+        ],
+        "questions": 10
+      },
+      {
+        "type": "themed",
+        "timer_seconds": 60,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          }
+        ],
+        "questions": 10
+      },
+      {
+        "type": "ordinary",
+        "timer_seconds": null,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": ""
+          }
+        ],
+        "questions": 10
+      }
+    ]
+  }
+]

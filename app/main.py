@@ -4,6 +4,7 @@ import logging
 import json
 import re
 from typing_extensions import Literal
+from typing import Optional
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,20 +49,60 @@ FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 GAME_STATE_FILE = Path(__file__).resolve().parents[1] / "game_state.json"
+SAVED_CONFIGS_FILE = Path(__file__).resolve().parents[1] / "saved_configs.json"
+
+# --------------------
+# GAME STATE
+# --------------------
+
+_GAME_STATE_DEFAULTS = {
+    "started": False,
+    "config": None,
+    "current_tour": 0,
+    "current_question": 0,
+    "question_started_at": None,
+    "host_state": "waiting",
+    "game_id": 0,
+}
 
 def _load_game_state() -> dict:
     try:
         if GAME_STATE_FILE.exists():
-            return json.loads(GAME_STATE_FILE.read_text(encoding="utf-8"))
+            loaded = json.loads(GAME_STATE_FILE.read_text(encoding="utf-8"))
+            return {**_GAME_STATE_DEFAULTS, **loaded}
     except Exception:
         pass
-    return {"started": False, "config": None, "current_tour": 0, "game_id": 0}
+    return dict(_GAME_STATE_DEFAULTS)
 
 def _save_game_state() -> None:
     try:
         GAME_STATE_FILE.write_text(json.dumps(_game_state), encoding="utf-8")
     except Exception:
         pass
+
+# --------------------
+# SAVED CONFIGS
+# --------------------
+
+def _load_saved_configs() -> list:
+    try:
+        if SAVED_CONFIGS_FILE.exists():
+            return json.loads(SAVED_CONFIGS_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return []
+
+def _save_saved_configs(configs: list) -> None:
+    try:
+        SAVED_CONFIGS_FILE.write_text(
+            json.dumps(configs, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+# --------------------
+# LOGGING
+# --------------------
 
 def cleanup_old_logs(hours: int = 6):
     expire_time = datetime.now() - timedelta(hours=hours)
@@ -149,15 +190,32 @@ class AnswerCreate(BaseModel):
 class AnswerUpdate(BaseModel):
     is_correct: bool
 
-class TourConfig(BaseModel):
-    type: Literal["ordinary", "themed"]
-    questions: int
+class QuestionData(BaseModel):
+    type: Literal["text", "youtube", "image", "audio"] = "text"
+    text: str = ""
+    media_url: str = ""
+    answer: str = ""
 
-class GameStartConfig(BaseModel):
-    tours: list[TourConfig]
+class TourConfigFull(BaseModel):
+    type: Literal["ordinary", "themed"]
+    timer_seconds: Optional[int] = None
+    questions_data: list[QuestionData]
+
+class ConfigSave(BaseModel):
+    name: str
+    tours: list[TourConfigFull]
+
+class GameStartWithConfig(BaseModel):
+    config_id: str
 
 class TourActivate(BaseModel):
     tour_number: int
+
+class QuestionActivate(BaseModel):
+    question_number: int
+
+class HostStateUpdate(BaseModel):
+    state: Literal["waiting", "timer_running", "show_answer", "finish_answers"]
 
 _game_state: dict = _load_game_state()
 
@@ -173,7 +231,7 @@ def _startup_reset():
         db.commit()
     finally:
         db.close()
-    _game_state.update({"started": False, "config": None, "current_tour": 0, "game_id": 0})
+    _game_state.update(dict(_GAME_STATE_DEFAULTS))
     _save_game_state()
     logger.info("Startup reset: database cleared, game state reset")
 
@@ -197,15 +255,13 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
     elif db.query(User).filter(func.lower(User.name) == data.name.lower()).first():
         logger.warning(f"Session creation failed: name already exists ('{data.name}')")
         raise HTTPException(status_code=400, detail="Игрок с таким именем уже существует")
-    
+
     user = User(name=data.name, game_id=_game_state["game_id"])
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    logger.info(
-        f"Created session: name='{data.name}', session_id={user.id}, score={user.score}"
-    )
+    logger.info(f"Created session: name='{data.name}', session_id={user.id}, score={user.score}")
     return {"session_id": user.id}
 
 # --------------------
@@ -215,12 +271,8 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
 @app.get("/users")
 def get_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
-
     logger.info(f"Retrieved {len(users)} users")
-    return [
-        {"id": u.id, "name": u.name, "score": u.score}
-        for u in users
-    ]
+    return [{"id": u.id, "name": u.name, "score": u.score} for u in users]
 
 # --------------------
 # CREATE ANSWER
@@ -237,23 +289,22 @@ def create_answer(data: AnswerCreate, db: Session = Depends(get_db)):
         answer_text=data.answer_text,
         game_id=_game_state["game_id"]
     )
-
     db.add(answer)
     db.commit()
     db.refresh(answer)
 
     logger.info(
-        f"Created answer: answer_id={answer.id}, session_id={data.session_id}, round={data.round}, question_number={data.question_number}, answer_text='{data.answer_text}'"
+        f"Created answer: answer_id={answer.id}, session_id={data.session_id}, round={data.round}, "
+        f"question_number={data.question_number}, answer_text='{data.answer_text}'"
     )
     return {"status": "ok", "answer_id": answer.id}
 
 # --------------------
-# UPDATE ANSWER (CHECK / NOT CHECK)
+# UPDATE ANSWER
 # --------------------
 
 @app.patch("/answers/{answer_id}")
 def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_db)):
-
     answer = db.query(Answer).filter(Answer.id == answer_id).first()
     if not answer:
         logger.warning(f"Update failed: answer id={answer_id} not found")
@@ -268,29 +319,25 @@ def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_
                 {"score": User.score + 1}, synchronize_session=False
             )
         elif prev is True:
-            # only decrement when answer was previously correct (true → false)
-            # null → false means never counted, so no score change
             db.query(User).filter(
                 User.id == answer.session_id, User.score > 0
             ).update({"score": User.score - 1}, synchronize_session=False)
 
     db.commit()
     logger.info(
-        f"Updated answer id={answer_id}: from is_correct={prev} to is_correct={data.is_correct}, session_id={answer.session_id}, question_number={answer.question_number}"
+        f"Updated answer id={answer_id}: from is_correct={prev} to is_correct={data.is_correct}, "
+        f"session_id={answer.session_id}, question_number={answer.question_number}"
     )
-
     return {"status": "ok"}
 
-
 # --------------------
-# Expecting 404 and 500
+# ERROR PAGES
 # --------------------
 
 @app.exception_handler(404)
 async def cause_404(request: Request, exc: StarletteHTTPException):
     return RedirectResponse(url="/error_page.html")
 
-# Example route that triggers a 500
 @app.exception_handler(500)
 async def cause_500(request: Request, exc: StarletteHTTPException):
     return RedirectResponse(url="/server_error_page.html")
@@ -313,14 +360,8 @@ def get_results(db: Session = Depends(get_db)):
         .order_by(func.coalesce(score_subq.c.score, 0).desc())
         .all()
     )
-
-    logger.info(
-        f"Retrieved leaderboard: {len(rows)} users, top={rows[0][0].name if rows else 'none'}"
-    )
-    return [
-        {"id": u.id, "name": u.name, "score": score}
-        for u, score in rows
-    ]
+    logger.info(f"Retrieved leaderboard: {len(rows)} users, top={rows[0][0].name if rows else 'none'}")
+    return [{"id": u.id, "name": u.name, "score": score} for u, score in rows]
 
 # --------------------
 # ANSWERS LIST
@@ -329,7 +370,6 @@ def get_results(db: Session = Depends(get_db)):
 @app.get("/answers")
 def get_answers(db: Session = Depends(get_db)):
     results = db.query(Answer, User).join(User, Answer.session_id == User.id).all()
-
     logger.info(f"Retrieved {len(results)} answers")
     return [
         {
@@ -343,7 +383,6 @@ def get_answers(db: Session = Depends(get_db)):
         for answer, user in results
     ]
 
-
 @app.get("/answers/by-session/{session_id}")
 def get_answers_by_session(session_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == session_id).first()
@@ -355,26 +394,127 @@ def get_answers_by_session(session_id: int, db: Session = Depends(get_db)):
         Answer.game_id == _game_state["game_id"]
     ).all()
     logger.info(f"Retrieved {len(answers)} answers for session_id={session_id}")
+    return [{"round": a.round, "question_number": a.question_number} for a in answers]
+
+# --------------------
+# SAVED CONFIGS CRUD
+# --------------------
+
+@app.get("/configs")
+def list_configs():
+    configs = _load_saved_configs()
     return [
-        {"round": a.round, "question_number": a.question_number}
-        for a in answers
+        {
+            "id": c["id"],
+            "name": c["name"],
+            "created_at": c.get("created_at", ""),
+            "tour_count": len(c["tours"]),
+        }
+        for c in configs
     ]
 
+@app.post("/configs")
+def create_config(data: ConfigSave):
+    configs = _load_saved_configs()
+    config_id = str(int(datetime.now().timestamp() * 1000))
+    tours = []
+    for t in data.tours:
+        td = t.model_dump()
+        td["questions"] = len(t.questions_data)
+        tours.append(td)
+    configs.append({
+        "id": config_id,
+        "name": data.name,
+        "created_at": datetime.now().isoformat(),
+        "tours": tours,
+    })
+    _save_saved_configs(configs)
+    logger.info(f"Config created: id={config_id}, name='{data.name}'")
+    return {"status": "ok", "id": config_id}
+
+@app.get("/configs/{config_id}")
+def get_config(config_id: str):
+    configs = _load_saved_configs()
+    config = next((c for c in configs if c["id"] == config_id), None)
+    if not config:
+        raise HTTPException(status_code=404, detail="Config not found")
+    return config
+
+@app.put("/configs/{config_id}")
+def update_config(config_id: str, data: ConfigSave):
+    configs = _load_saved_configs()
+    idx = next((i for i, c in enumerate(configs) if c["id"] == config_id), None)
+    if idx is None:
+        raise HTTPException(status_code=404, detail="Config not found")
+    tours = []
+    for t in data.tours:
+        td = t.model_dump()
+        td["questions"] = len(t.questions_data)
+        tours.append(td)
+    configs[idx].update({
+        "name": data.name,
+        "tours": tours,
+        "updated_at": datetime.now().isoformat(),
+    })
+    _save_saved_configs(configs)
+    logger.info(f"Config updated: id={config_id}, name='{data.name}'")
+    return {"status": "ok"}
+
+@app.delete("/configs/{config_id}")
+def delete_config(config_id: str):
+    configs = _load_saved_configs()
+    configs = [c for c in configs if c["id"] != config_id]
+    _save_saved_configs(configs)
+    logger.info(f"Config deleted: id={config_id}")
+    return {"status": "ok"}
+
+# --------------------
+# GAME CONTROL
+# --------------------
 
 @app.post("/game/start")
-def start_game(config: GameStartConfig):
+def start_game(data: GameStartWithConfig):
+    configs = _load_saved_configs()
+    config = next((c for c in configs if c["id"] == data.config_id), None)
+    if not config:
+        raise HTTPException(status_code=404, detail="Config not found")
     _game_state["started"] = True
-    _game_state["config"] = config.model_dump()
+    _game_state["config"] = {"tours": config["tours"]}
     _game_state["game_id"] = int(datetime.now().timestamp() * 1000)
+    _game_state["current_tour"] = 0
+    _game_state["current_question"] = 0
+    _game_state["question_started_at"] = None
+    _game_state["host_state"] = "waiting"
     _save_game_state()
-    logger.info(f"Game started: {len(config.tours)} tours, game_id={_game_state['game_id']}")
+    logger.info(f"Game started: config='{config['name']}', game_id={_game_state['game_id']}")
     return {"status": "ok"}
 
 @app.post("/game/tour")
 def set_active_tour(data: TourActivate):
     _game_state["current_tour"] = data.tour_number
+    _game_state["current_question"] = 0
+    _game_state["question_started_at"] = None
+    _game_state["host_state"] = "waiting"
     _save_game_state()
     logger.info(f"Active tour set to: {data.tour_number}")
+    return {"status": "ok"}
+
+@app.post("/game/question")
+def set_active_question(data: QuestionActivate):
+    _game_state["current_question"] = data.question_number
+    _game_state["question_started_at"] = None
+    _game_state["host_state"] = "waiting"
+    _save_game_state()
+    logger.info(f"Active question set to: {data.question_number}")
+    return {"status": "ok"}
+
+@app.post("/game/host-state")
+def set_host_state(data: HostStateUpdate):
+    _game_state["host_state"] = data.state
+    if data.state == "timer_running":
+        _game_state["question_started_at"] = int(datetime.now().timestamp() * 1000)
+    _save_game_state()
+    logger.info(f"Host state set to: {data.state}")
     return {"status": "ok"}
 
 @app.get("/game/status")
@@ -383,7 +523,10 @@ def get_game_status():
         "started": _game_state["started"],
         "config": _game_state["config"],
         "current_tour": _game_state["current_tour"],
-        "game_id": _game_state["game_id"]
+        "current_question": _game_state.get("current_question", 0),
+        "question_started_at": _game_state.get("question_started_at"),
+        "host_state": _game_state.get("host_state", "waiting"),
+        "game_id": _game_state["game_id"],
     }
 
 @app.delete("/reset")
@@ -391,14 +534,14 @@ def reset_database(db: Session = Depends(get_db)):
     db.query(Answer).delete()
     db.query(User).delete()
     db.commit()
-    _game_state["started"] = False
-    _game_state["config"] = None
-    _game_state["current_tour"] = 0
-    _game_state["game_id"] = 0
+    _game_state.update(dict(_GAME_STATE_DEFAULTS))
     _save_game_state()
     logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
 
+# --------------------
+# STATIC FILES
+# --------------------
 
 @app.get("/", response_class=FileResponse)
 async def serve_index():

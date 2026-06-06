@@ -5,42 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Настройка игры</title>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; }
 
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100vh;
+      margin: 0; padding: 0;
+      width: 100%; min-height: 100vh;
       font-family: Inter, Arial, sans-serif;
       background: linear-gradient(180deg, #ddeaff 0%, #e8f2ff 100%);
       color: #0f172a;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 40px 20px env(safe-area-inset-bottom, 40px);
+      padding: 40px 20px 60px;
     }
 
     .container {
       width: 100%;
-      max-width: 560px;
+      max-width: 600px;
       background: #ffffff;
       padding: 32px 28px;
       border-radius: 24px;
       box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     }
 
+    /* ===== TYPOGRAPHY ===== */
+
     h2 {
-      margin: 0 0 28px;
+      margin: 0 0 6px;
       font-size: 24px;
-      text-align: center;
       color: #0f172a;
     }
 
-    .field {
-      margin-bottom: 20px;
+    .page-subtitle {
+      margin: 0 0 28px;
+      font-size: 14px;
+      color: #64748b;
     }
 
     label {
@@ -53,11 +52,14 @@
       letter-spacing: 0.04em;
     }
 
+    /* ===== INPUTS ===== */
+
     input[type="number"],
     input[type="text"],
+    textarea,
     select {
       width: 100%;
-      padding: 14px 16px;
+      padding: 13px 16px;
       border: 1px solid #cbd5e1;
       border-radius: 12px;
       font-size: 15px;
@@ -70,92 +72,438 @@
       -webkit-appearance: none;
     }
 
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    select:focus {
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    input:focus, textarea:focus, select:focus {
       border-color: #2563eb;
       background: #ffffff;
     }
 
-    .divider {
-      border: none;
-      border-top: 1px solid #e2e8f0;
-      margin: 28px 0;
-    }
+    /* ===== BUTTONS ===== */
 
-    #toursSection {
-      display: none;
-    }
-
-    .tours-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 16px;
-    }
-
-    .tour-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 16px 18px;
-      margin-bottom: 12px;
-    }
-
-    .tour-card-header {
-      font-size: 14px;
-      font-weight: 700;
-      color: #2563eb;
-      margin-bottom: 14px;
-    }
-
-    .tour-card-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .tour-card-row .field {
-      margin-bottom: 0;
-    }
-
-    .error-message {
-      margin: 0;
-      color: #b91c1c;
-      background: rgba(248, 113, 113, 0.12);
-      border: 1px solid rgba(248, 113, 113, 0.35);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 14px;
-      line-height: 1.4;
-      display: none;
-      margin-top: 4px;
-    }
-
-    .error-message.show {
-      display: block;
-    }
-
-    .btn-start {
+    .btn-primary {
       width: 100%;
-      padding: 16px 18px;
+      padding: 15px 18px;
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: white;
       border: none;
-      border-radius: 16px;
-      font-size: 16px;
+      border-radius: 14px;
+      font-size: 15px;
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-top: 24px;
     }
 
-    .btn-start:hover {
+    .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24);
       background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     }
+
+    .btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-back:hover { background: #eff6ff; }
+
+    /* ===== DIVIDER ===== */
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 24px 0;
+    }
+
+    /* ===== ERROR ===== */
+
+    .error-msg {
+      margin: 12px 0 0;
+      color: #b91c1c;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    /* ===== FIELD ===== */
+
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+
+    /* ===== LANDING VIEW ===== */
+
+    .new-config-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 14px;
+      background: none;
+      color: #2563eb;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      margin-bottom: 16px;
+    }
+
+    .new-config-btn:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .configs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .config-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .config-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .config-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .config-meta {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .config-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+
+    .btn-action:hover { opacity: 0.8; }
+
+    .btn-edit {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .btn-start-game {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+    }
+
+    .btn-delete {
+      background: #fff0f0;
+      color: #dc2626;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      padding: 24px 0;
+      margin: 0;
+    }
+
+    /* ===== STEP 1 — TOUR STRUCTURE ===== */
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .step-dot {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: #e2e8f0;
+    }
+
+    .step-dot.active { background: #2563eb; }
+    .step-dot.done { background: #93c5fd; }
+
+    .tour-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+    }
+
+    .tour-card-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tour-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .tour-card-grid .field { margin-bottom: 0; }
+
+    /* ===== STEP 2 — QUESTION EDITOR ===== */
+
+    .tour-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      margin-bottom: 20px;
+    }
+
+    .tour-nav-info {
+      text-align: center;
+      flex: 1;
+    }
+
+    .tour-nav-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .tour-nav-meta {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .btn-nav {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2563eb;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .btn-nav:hover:not(:disabled) { background: #eff6ff; }
+    .btn-nav:disabled { color: #cbd5e1; cursor: not-allowed; }
+
+    .question-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .question-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2563eb;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .type-selector {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .type-btn {
+      padding: 5px 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      background: white;
+      color: #64748b;
+      transition: all 0.15s ease;
+    }
+
+    .type-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .type-btn:not(.active):hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .q-media-url {
+      margin-bottom: 10px;
+    }
+
+    .btn-toggle-text {
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 8px;
+    }
+
+    .answer-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .answer-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #059669;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .answer-input {
+      flex: 1;
+      padding: 10px 14px !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+      background: rgba(240, 253, 244, 0.8) !important;
+      font-size: 14px !important;
+    }
+
+    .answer-input:focus {
+      border-color: #059669 !important;
+      background: #f0fdf4 !important;
+    }
+
+    /* ===== SAVE PANEL ===== */
+
+    .save-panel {
+      margin-top: 24px;
+      padding: 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+    }
+
+    .save-panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 14px;
+    }
+
+    .save-panel-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .save-panel-row input {
+      flex: 1;
+    }
+
+    /* ===== GAME CONTROL VIEW ===== */
 
     .game-status {
       text-align: center;
@@ -200,11 +548,12 @@
       background: #eff6ff;
     }
 
-    .tour-ctrl-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+    .tour-control-card.done {
+      border-color: #10b981;
+      background: #f0fdf4;
     }
+
+    .tour-ctrl-info { display: flex; flex-direction: column; gap: 3px; }
 
     .tour-ctrl-num {
       font-size: 15px;
@@ -212,10 +561,9 @@
       color: #0f172a;
     }
 
-    .tour-ctrl-meta {
-      font-size: 13px;
-      color: #64748b;
-    }
+    .tour-control-card.done .tour-ctrl-num { color: #059669; }
+
+    .tour-ctrl-meta { font-size: 13px; color: #64748b; }
 
     .btn-tour {
       flex-shrink: 0;
@@ -232,255 +580,580 @@
       white-space: nowrap;
     }
 
-    .btn-tour:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.24);
-    }
+    .btn-tour:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(37, 99, 235, 0.24); }
 
     .btn-tour.running {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      cursor: default;
-      transform: none;
-      box-shadow: none;
-      pointer-events: none;
+      cursor: default; transform: none; box-shadow: none; pointer-events: none;
     }
 
     .btn-tour.done {
       background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-      cursor: default;
-      transform: none;
-      box-shadow: none;
-      pointer-events: none;
+      cursor: default; transform: none; box-shadow: none; pointer-events: none;
     }
 
-    .tour-control-card.done {
-      border-color: #10b981;
-      background: #f0fdf4;
+    /* ===== RESPONSIVE ===== */
+
+    @media (max-width: 520px) {
+      body { padding: 20px 14px 40px; }
+      .container { padding: 22px 16px; border-radius: 20px; }
+      h2 { font-size: 21px; }
+      .tour-card-grid { grid-template-columns: 1fr 1fr; }
+      .config-actions { flex-wrap: wrap; }
     }
 
-    .tour-control-card.done .tour-ctrl-num {
-      color: #059669;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 20px 16px;
-      }
-
-      .container {
-        padding: 24px 18px;
-        border-radius: 20px;
-      }
-
-      h2 {
-        font-size: 22px;
-      }
-
-      .tour-card-row {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 380px) {
+      .tour-card-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+<div class="container" id="mainContainer">
 
-<div class="container">
-  <h2>Настройка игры</h2>
+  <!-- ===== LANDING VIEW ===== -->
+  <div id="landing-view">
+    <h2>Настройка игры</h2>
+    <p class="page-subtitle">Конфигурации сохраняются и доступны после перезапуска сервера.</p>
 
-  <div class="field">
-    <label for="numTours">Количество туров</label>
-    <input type="number" id="numTours" min="1" max="20" placeholder="Например, 4" oninput="updateTours()" />
+    <button class="new-config-btn" onclick="showStep1(null)">+ Новая конфигурация</button>
+
+    <div class="configs-list" id="configs-list">
+      <p class="empty-state">Загрузка...</p>
+    </div>
   </div>
 
-  <div id="toursSection">
-    <hr class="divider" />
-    <p class="tours-title">Параметры туров</p>
-    <div id="toursList"></div>
+  <!-- ===== STEP 1 — TOUR STRUCTURE ===== -->
+  <div id="step1-view" style="display:none">
+    <button class="btn-back" onclick="showLanding()">← Назад</button>
+
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+    </div>
+
+    <h2>Структура туров</h2>
+    <p class="page-subtitle">Шаг 1 из 2 — задайте количество туров и их параметры.</p>
+
+    <div class="field">
+      <label for="numTours">Количество туров</label>
+      <input type="number" id="numTours" min="1" max="20" placeholder="Например, 4" oninput="updateTourCards()" />
+    </div>
+
+    <div id="toursSection" style="display:none">
+      <hr class="divider" />
+      <div id="toursList"></div>
+    </div>
+
+    <p id="step1Error" class="error-msg"></p>
+    <button class="btn-primary" style="margin-top:24px" onclick="goToStep2()">Далее: Вопросы →</button>
   </div>
 
-  <p id="errorMessage" class="error-message"></p>
+  <!-- ===== STEP 2 — QUESTION EDITOR ===== -->
+  <div id="step2-view" style="display:none">
+    <button class="btn-back" onclick="goToStep1()">← Назад</button>
 
-  <button class="btn-start" onclick="startGame()">Начать игру</button>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+    </div>
+
+    <h2>Вопросы</h2>
+    <p class="page-subtitle">Шаг 2 из 2 — введите текст или медиа для каждого вопроса.</p>
+
+    <div class="tour-nav">
+      <button class="btn-nav" id="btn-prev-tour" onclick="changeTour(-1)">‹</button>
+      <div class="tour-nav-info">
+        <div class="tour-nav-title" id="tour-nav-title">Тур 1</div>
+        <div class="tour-nav-meta" id="tour-nav-meta"></div>
+      </div>
+      <button class="btn-nav" id="btn-next-tour" onclick="changeTour(1)">›</button>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <div class="save-panel">
+      <p class="save-panel-title">Сохранить конфигурацию</p>
+      <div class="save-panel-row">
+        <input type="text" id="configNameInput" placeholder="Название (например, Игра июнь 2026)" />
+        <button class="btn-secondary" onclick="saveConfig()">Сохранить</button>
+      </div>
+      <p id="saveError" class="error-msg"></p>
+      <div id="saveAsNewRow" style="display:none; margin-top:10px;">
+        <button class="btn-secondary" onclick="saveAsNew()">Сохранить как новую</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GAME CONTROL VIEW ===== -->
+  <div id="game-view" style="display:none"></div>
+
 </div>
 
 <script>
+  // ===== HELPERS =====
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function showView(id) {
+    ["landing-view", "step1-view", "step2-view", "game-view"].forEach(v => {
+      document.getElementById(v).style.display = v === id ? "" : "none";
+    });
+  }
+
+  function typeLabel(t) {
+    return t === "themed" ? "Тематический" : "Обычный";
+  }
+
+  function pluralTours(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return "тур";
+    if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return "тура";
+    return "туров";
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+    } catch { return ""; }
+  }
+
+  // ===== STATE =====
+
+  let editingConfigId = null;
+  let currentTourIdx = 0;
+  let tourSettings = []; // [{type, questionCount, timerSeconds}]
+  let questionData = []; // questionData[tourIdx][qIdx] = {type, text, media_url}
+
+  // game control state
   let activeTourNum = 0;
   let completedTours = new Set();
   let tourData = [];
   let completionInterval = null;
 
-  function markTourDone(tourNum) {
-    completedTours.add(tourNum);
-    const card = document.getElementById(`ctrl-${tourNum}`);
-    if (!card) return;
-    card.classList.remove("active");
-    card.classList.add("done");
-    const btn = card.querySelector(".btn-tour");
-    btn.classList.remove("running");
-    btn.classList.add("done");
-    btn.textContent = "Завершён";
-    btn.disabled = true;
-    if (activeTourNum === tourNum) activeTourNum = 0;
+  // ===== LANDING =====
 
-    if (tourData.length && completedTours.size === tourData.length) {
-      const title = document.getElementById("gameTitle");
-      if (title) title.textContent = "Игра завершена";
-      const badge = document.getElementById("gameStatus");
-      if (badge) {
-        badge.textContent = "● Игра завершена";
-        badge.classList.add("finished");
-      }
-      if (completionInterval) clearInterval(completionInterval);
-    }
-  }
-
-  async function pollCompletion() {
-    if (!tourData.length) return;
+  async function showLanding() {
+    editingConfigId = null;
     try {
-      const [answersRes, usersRes] = await Promise.all([
-        fetch("/answers"),
-        fetch("/users")
-      ]);
-      const answers = await answersRes.json();
-      const users   = await usersRes.json();
-      const totalPlayers = users.length;
-      if (totalPlayers === 0) return;
-
-      tourData.forEach((tour, i) => {
-        const tourNum = i + 1;
-        if (completedTours.has(tourNum)) return;
-        const countByPlayer = {};
-        answers.forEach(a => {
-          if (a.round === tourNum) {
-            countByPlayer[a.user_name] = (countByPlayer[a.user_name] || 0) + 1;
-          }
-        });
-        const finished = Object.values(countByPlayer).filter(c => c >= tour.questions).length;
-        if (finished >= totalPlayers) markTourDone(tourNum);
-      });
-    } catch (_) {}
+      const res = await fetch("/configs");
+      const configs = await res.json();
+      renderConfigsList(configs);
+    } catch {
+      document.getElementById("configs-list").innerHTML =
+        '<p class="empty-state">Не удалось загрузить конфигурации.</p>';
+    }
+    showView("landing-view");
   }
 
-  function updateTours() {
-    const n = parseInt(document.getElementById("numTours").value);
-    const section = document.getElementById("toursSection");
-    const list = document.getElementById("toursList");
-
-    if (!n || n < 1 || n > 20) {
-      section.style.display = "none";
-      list.innerHTML = "";
+  function renderConfigsList(configs) {
+    const list = document.getElementById("configs-list");
+    if (!configs.length) {
+      list.innerHTML = '<p class="empty-state">Нет сохранённых конфигураций. Создайте первую!</p>';
       return;
     }
+    list.innerHTML = configs.map(c => `
+      <div class="config-card">
+        <div class="config-info">
+          <span class="config-name">${esc(c.name)}</span>
+          <span class="config-meta">${c.tour_count} ${pluralTours(c.tour_count)} · ${formatDate(c.created_at)}</span>
+        </div>
+        <div class="config-actions">
+          <button class="btn-action btn-edit" onclick="editConfig('${esc(c.id)}')">Изменить</button>
+          <button class="btn-action btn-start-game" onclick="startGame('${esc(c.id)}')">Начать игру</button>
+          <button class="btn-action btn-delete" onclick="deleteConfig('${esc(c.id)}', this)">✕</button>
+        </div>
+      </div>
+    `).join("");
+  }
 
+  async function deleteConfig(id, btn) {
+    if (!confirm("Удалить эту конфигурацию?")) return;
+    btn.disabled = true;
+    await fetch(`/configs/${id}`, { method: "DELETE" });
+    showLanding();
+  }
+
+  async function startGame(configId) {
+    const res = await fetch("/game/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ config_id: configId })
+    });
+    if (!res.ok) { alert("Не удалось начать игру."); return; }
+    const statusRes = await fetch("/game/status");
+    const data = await statusRes.json();
+    window.open("final_result.html", "_blank");
+    showGameControl(data.config.tours);
+  }
+
+  // ===== STEP 1 — TOUR STRUCTURE =====
+
+  function showStep1(configId) {
+    editingConfigId = configId;
+    if (configId === null) {
+      tourSettings = [];
+      questionData = [];
+      document.getElementById("numTours").value = "";
+      document.getElementById("toursList").innerHTML = "";
+      document.getElementById("toursSection").style.display = "none";
+    }
+    document.getElementById("step1Error").classList.remove("show");
+    showView("step1-view");
+  }
+
+  async function editConfig(configId) {
+    const res = await fetch(`/configs/${configId}`);
+    if (!res.ok) { alert("Не удалось загрузить конфигурацию."); return; }
+    const config = await res.json();
+
+    editingConfigId = configId;
+    tourSettings = config.tours.map(t => ({
+      type: t.type,
+      questionCount: t.questions_data ? t.questions_data.length : t.questions,
+      timerSeconds: t.timer_seconds || ""
+    }));
+    questionData = config.tours.map(t =>
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "" }))
+    );
+
+    document.getElementById("numTours").value = tourSettings.length;
+    renderTourCards();
+    document.getElementById("toursSection").style.display = "block";
+    document.getElementById("step1Error").classList.remove("show");
+    showView("step1-view");
+  }
+
+  function updateTourCards() {
+    const n = parseInt(document.getElementById("numTours").value);
+    const section = document.getElementById("toursSection");
+    if (!n || n < 1 || n > 20) { section.style.display = "none"; tourSettings = []; return; }
     section.style.display = "block";
 
-    const current = list.children.length;
+    // sync tourSettings array length
+    while (tourSettings.length < n) tourSettings.push({ type: "ordinary", questionCount: 10, timerSeconds: 60 });
+    tourSettings = tourSettings.slice(0, n);
+    while (questionData.length < n) questionData.push([]);
+    questionData = questionData.slice(0, n);
 
-    for (let i = current + 1; i <= n; i++) {
+    renderTourCards();
+  }
+
+  function renderTourCards() {
+    const list = document.getElementById("toursList");
+    list.innerHTML = "";
+    tourSettings.forEach((t, i) => {
       const card = document.createElement("div");
       card.className = "tour-card";
-      card.id = `tour-card-${i}`;
       card.innerHTML = `
-        <div class="tour-card-header">Тур ${i}</div>
-        <div class="tour-card-row">
+        <div class="tour-card-header">Тур ${i + 1}</div>
+        <div class="tour-card-grid">
           <div class="field">
             <label>Тип тура</label>
-            <select id="type-${i}">
-              <option value="ordinary">Обычный</option>
-              <option value="themed">Тематический</option>
+            <select id="type-${i}" onchange="tourSettings[${i}].type = this.value">
+              <option value="ordinary" ${t.type === "ordinary" ? "selected" : ""}>Обычный</option>
+              <option value="themed" ${t.type === "themed" ? "selected" : ""}>Тематический</option>
             </select>
           </div>
           <div class="field">
-            <label>Количество вопросов</label>
-            <input type="number" id="questions-${i}" min="1" max="100" value="10" />
+            <label>Вопросов</label>
+            <input type="number" id="questions-${i}" min="1" max="100"
+              value="${t.questionCount}"
+              oninput="tourSettings[${i}].questionCount = parseInt(this.value) || 0" />
+          </div>
+          <div class="field">
+            <label>Таймер (сек)</label>
+            <input type="number" id="timer-${i}" min="5" max="600"
+              placeholder="нет"
+              value="${t.timerSeconds || ""}"
+              oninput="tourSettings[${i}].timerSeconds = parseInt(this.value) || null" />
           </div>
         </div>
       `;
       list.appendChild(card);
-    }
-
-    while (list.children.length > n) {
-      list.removeChild(list.lastChild);
-    }
+    });
   }
 
-  async function startGame() {
-    const errorEl = document.getElementById("errorMessage");
+  function goToStep2() {
+    const errorEl = document.getElementById("step1Error");
     errorEl.classList.remove("show");
-    errorEl.textContent = "";
 
-    const n = parseInt(document.getElementById("numTours").value);
-    if (!n || n < 1) {
-      errorEl.textContent = "Укажите количество туров.";
-      errorEl.classList.add("show");
-      return;
-    }
+    const n = tourSettings.length;
+    if (!n) { errorEl.textContent = "Укажите количество туров."; errorEl.classList.add("show"); return; }
 
-    const tours = [];
-
-    for (let i = 1; i <= n; i++) {
-      const type = document.getElementById(`type-${i}`).value;
-      const questionsVal = parseInt(document.getElementById(`questions-${i}`).value);
-
-      if (!questionsVal || questionsVal < 1) {
-        errorEl.textContent = `Тур ${i}: укажите количество вопросов.`;
-        errorEl.classList.add("show");
-        return;
+    for (let i = 0; i < n; i++) {
+      const count = tourSettings[i].questionCount;
+      if (!count || count < 1) {
+        errorEl.textContent = `Тур ${i + 1}: укажите количество вопросов.`;
+        errorEl.classList.add("show"); return;
       }
-
-      tours.push({ type, questions: questionsVal });
     }
 
-    const response = await fetch("/game/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tours })
+    // reconcile questionData with current tourSettings
+    tourSettings.forEach((t, i) => {
+      if (!questionData[i]) questionData[i] = [];
+      while (questionData[i].length < t.questionCount)
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "" });
+      questionData[i] = questionData[i].slice(0, t.questionCount);
+    });
+    questionData = questionData.slice(0, n);
+
+    // pre-fill config name if editing
+    if (editingConfigId) {
+      document.getElementById("saveAsNewRow").style.display = "block";
+    } else {
+      document.getElementById("saveAsNewRow").style.display = "none";
+    }
+
+    currentTourIdx = 0;
+    renderQuestionEditor(0);
+    showView("step2-view");
+  }
+
+  function goToStep1() {
+    showView("step1-view");
+  }
+
+  // ===== STEP 2 — QUESTION EDITOR =====
+
+  function changeTour(delta) {
+    const newIdx = currentTourIdx + delta;
+    if (newIdx < 0 || newIdx >= tourSettings.length) return;
+    currentTourIdx = newIdx;
+    renderQuestionEditor(newIdx);
+  }
+
+  function renderQuestionEditor(tourIdx) {
+    const t = tourSettings[tourIdx];
+    document.getElementById("tour-nav-title").textContent = `Тур ${tourIdx + 1} из ${tourSettings.length}`;
+    document.getElementById("tour-nav-meta").textContent =
+      `${typeLabel(t.type)} · ${t.questionCount} вопр.${t.timerSeconds ? " · " + t.timerSeconds + " сек" : " · без таймера"}`;
+    document.getElementById("btn-prev-tour").disabled = tourIdx === 0;
+    document.getElementById("btn-next-tour").disabled = tourIdx === tourSettings.length - 1;
+
+    const container = document.getElementById("questions-container");
+    container.innerHTML = "";
+    questionData[tourIdx].forEach((q, qi) => {
+      container.appendChild(buildQuestionCard(tourIdx, qi, q));
     });
 
-    if (!response.ok) {
-      errorEl.textContent = "Ошибка сервера. Попробуйте ещё раз.";
-      errorEl.classList.add("show");
-      return;
+    // pre-fill config name
+    if (editingConfigId && !document.getElementById("configNameInput").value) {
+      // name was set during editConfig — don't overwrite
     }
-
-    window.open("final_result.html", "_blank");
-    showTourControl(tours);
   }
 
-  function showTourControl(tours) {
-    const typeLabel = t => t === "themed" ? "Тематический" : "Обычный";
-    tourData = tours;
+  function buildQuestionCard(ti, qi, q) {
+    const card = document.createElement("div");
+    card.className = "question-card";
+    card.id = `qcard-${ti}-${qi}`;
 
+    const typeButtons = ["text", "youtube", "image", "audio"].map(type => `
+      <button class="type-btn ${q.type === type ? "active" : ""}"
+        onclick="setQType(${ti}, ${qi}, '${type}', this.closest('.question-card'))">
+        ${type === "text" ? "Текст" : type === "youtube" ? "YouTube" : type === "image" ? "Фото" : "Аудио"}
+      </button>
+    `).join("");
+
+    card.innerHTML = `
+      <div class="question-header">
+        <span class="question-num">Вопрос ${qi + 1}</span>
+        <div class="type-selector">${typeButtons}</div>
+      </div>
+      <div class="question-content" id="qcontent-${ti}-${qi}"></div>
+    `;
+
+    renderQuestionContent(card.querySelector(`#qcontent-${ti}-${qi}`), ti, qi, q);
+    return card;
+  }
+
+  function renderQuestionContent(container, ti, qi, q) {
+    container.innerHTML = "";
+
+    if (q.type === "text") {
+      const ta = document.createElement("textarea");
+      ta.placeholder = "Текст вопроса...";
+      ta.value = q.text;
+      ta.addEventListener("input", () => { questionData[ti][qi].text = ta.value; });
+      container.appendChild(ta);
+    } else {
+      const placeholders = {
+        youtube: "URL YouTube видео (https://youtube.com/...)",
+        image: "URL изображения",
+        audio: "URL аудио"
+      };
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.className = "q-media-url";
+      urlInput.placeholder = placeholders[q.type] || "URL...";
+      urlInput.value = q.media_url;
+      urlInput.addEventListener("input", () => { questionData[ti][qi].media_url = urlInput.value; });
+      container.appendChild(urlInput);
+
+      const toggleBtn = document.createElement("button");
+      toggleBtn.className = "btn-toggle-text";
+      toggleBtn.textContent = q.text ? "− Текст" : "+ Добавить текст";
+      container.appendChild(toggleBtn);
+
+      const ta = document.createElement("textarea");
+      ta.placeholder = "Дополнительный текст вопроса (опционально)...";
+      ta.value = q.text;
+      ta.style.display = q.text ? "" : "none";
+      ta.addEventListener("input", () => { questionData[ti][qi].text = ta.value; });
+      container.appendChild(ta);
+
+      toggleBtn.addEventListener("click", () => {
+        const visible = ta.style.display !== "none";
+        ta.style.display = visible ? "none" : "";
+        toggleBtn.textContent = visible ? "+ Добавить текст" : "− Текст";
+        if (visible) { questionData[ti][qi].text = ""; ta.value = ""; }
+      });
+    }
+
+    // answer field (always shown)
+    const answerRow = document.createElement("div");
+    answerRow.className = "answer-row";
+    answerRow.innerHTML = `<span class="answer-label">Ответ</span>`;
+    const answerInput = document.createElement("input");
+    answerInput.type = "text";
+    answerInput.className = "answer-input";
+    answerInput.placeholder = "Правильный ответ...";
+    answerInput.value = q.answer;
+    answerInput.addEventListener("input", () => { questionData[ti][qi].answer = answerInput.value; });
+    answerRow.appendChild(answerInput);
+    container.appendChild(answerRow);
+  }
+
+  function setQType(ti, qi, newType, card) {
+    questionData[ti][qi].type = newType;
+    questionData[ti][qi].text = "";
+    questionData[ti][qi].media_url = "";
+    card.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+    card.querySelectorAll(".type-btn").forEach(b => {
+      const t = b.textContent.trim();
+      const map = { "Текст": "text", "YouTube": "youtube", "Фото": "image", "Аудио": "audio" };
+      if (map[t] === newType) b.classList.add("active");
+    });
+    renderQuestionContent(card.querySelector(`#qcontent-${ti}-${qi}`), ti, qi, questionData[ti][qi]);
+  }
+
+  // ===== SAVE CONFIG =====
+
+  async function saveConfig() {
+    const errorEl = document.getElementById("saveError");
+    errorEl.classList.remove("show");
+    const name = document.getElementById("configNameInput").value.trim();
+    if (!name) { errorEl.textContent = "Введите название конфигурации."; errorEl.classList.add("show"); return; }
+
+    const payload = buildPayload(name);
+
+    let res;
+    if (editingConfigId) {
+      res = await fetch(`/configs/${editingConfigId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch("/configs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    if (!res.ok) { errorEl.textContent = "Ошибка сохранения. Попробуйте ещё раз."; errorEl.classList.add("show"); return; }
+    if (!editingConfigId) {
+      const data = await res.json();
+      editingConfigId = data.id;
+      document.getElementById("saveAsNewRow").style.display = "block";
+    }
+    showLanding();
+  }
+
+  async function saveAsNew() {
+    const errorEl = document.getElementById("saveError");
+    errorEl.classList.remove("show");
+    const name = document.getElementById("configNameInput").value.trim();
+    if (!name) { errorEl.textContent = "Введите название конфигурации."; errorEl.classList.add("show"); return; }
+
+    const payload = buildPayload(name + " (копия)");
+    document.getElementById("configNameInput").value = payload.name;
+
+    const res = await fetch("/configs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) { errorEl.textContent = "Ошибка сохранения."; errorEl.classList.add("show"); return; }
+    const data = await res.json();
+    editingConfigId = data.id;
+    document.getElementById("saveAsNewRow").style.display = "block";
+    showLanding();
+  }
+
+  function buildPayload(name) {
+    return {
+      name,
+      tours: tourSettings.map((t, i) => ({
+        type: t.type,
+        timer_seconds: t.timerSeconds || null,
+        questions_data: (questionData[i] || []).map(q => ({
+          type: q.type,
+          text: q.text,
+          media_url: q.media_url,
+          answer: q.answer
+        }))
+      }))
+    };
+  }
+
+  // ===== GAME CONTROL =====
+
+  function showGameControl(tours) {
+    tourData = tours;
+    activeTourNum = 0;
+    completedTours = new Set();
+    if (completionInterval) clearInterval(completionInterval);
+
+    const typeLabel2 = t => t === "themed" ? "Тематический" : "Обычный";
     const cards = tours.map((tour, i) => `
       <div class="tour-control-card" id="ctrl-${i + 1}">
         <div class="tour-ctrl-info">
           <span class="tour-ctrl-num">Тур ${i + 1}</span>
-          <span class="tour-ctrl-meta">${typeLabel(tour.type)} · ${tour.questions} вопросов</span>
+          <span class="tour-ctrl-meta">${typeLabel2(tour.type)} · ${tour.questions} вопросов</span>
         </div>
         <button class="btn-tour" onclick="activateTour(${i + 1})">Начать</button>
       </div>
     `).join("");
 
-    document.querySelector(".container").innerHTML = `
+    document.getElementById("game-view").innerHTML = `
       <h2 id="gameTitle">Игра началась</h2>
-      <div style="text-align:center"><span class="game-status" id="gameStatus">● Идёт игра</span></div>
+      <div style="text-align:center; margin-bottom:24px">
+        <span class="game-status" id="gameStatus">● Идёт игра</span>
+      </div>
       <div class="tour-control-list">${cards}</div>
     `;
 
-    if (completionInterval) clearInterval(completionInterval);
+    showView("game-view");
     completionInterval = setInterval(pollCompletion, 3000);
   }
 
   async function activateTour(tourNumber) {
     if (completedTours.has(tourNumber)) return;
-
-    const response = await fetch("/game/tour", {
+    const res = await fetch("/game/tour", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ tour_number: tourNumber })
     });
-
-    if (!response.ok) return;
+    if (!res.ok) return;
 
     window.open("answers.html", "_blank");
 
@@ -499,10 +1172,67 @@
       btn.textContent = "Идёт";
       btn.disabled = true;
     }
-
     activeTourNum = tourNumber;
   }
-</script>
 
+  function markTourDone(tourNum) {
+    completedTours.add(tourNum);
+    const card = document.getElementById(`ctrl-${tourNum}`);
+    if (!card) return;
+    card.classList.remove("active");
+    card.classList.add("done");
+    const btn = card.querySelector(".btn-tour");
+    btn.classList.remove("running");
+    btn.classList.add("done");
+    btn.textContent = "Завершён";
+    btn.disabled = true;
+    if (activeTourNum === tourNum) activeTourNum = 0;
+
+    if (tourData.length && completedTours.size === tourData.length) {
+      const title = document.getElementById("gameTitle");
+      if (title) title.textContent = "Игра завершена";
+      const badge = document.getElementById("gameStatus");
+      if (badge) { badge.textContent = "● Игра завершена"; badge.classList.add("finished"); }
+      if (completionInterval) clearInterval(completionInterval);
+    }
+  }
+
+  async function pollCompletion() {
+    if (!tourData.length) return;
+    try {
+      const [answersRes, usersRes] = await Promise.all([fetch("/answers"), fetch("/users")]);
+      const answers = await answersRes.json();
+      const users = await usersRes.json();
+      const totalPlayers = users.length;
+      if (totalPlayers === 0) return;
+      tourData.forEach((tour, i) => {
+        const tourNum = i + 1;
+        if (completedTours.has(tourNum)) return;
+        const countByPlayer = {};
+        answers.forEach(a => {
+          if (a.round === tourNum) countByPlayer[a.user_name] = (countByPlayer[a.user_name] || 0) + 1;
+        });
+        const finished = Object.values(countByPlayer).filter(c => c >= tour.questions).length;
+        if (finished >= totalPlayers) markTourDone(tourNum);
+      });
+    } catch (_) {}
+  }
+
+  // ===== INIT =====
+
+  async function init() {
+    try {
+      const res = await fetch("/game/status");
+      const data = await res.json();
+      if (data.started && data.config) {
+        showGameControl(data.config.tours);
+        return;
+      }
+    } catch (_) {}
+    showLanding();
+  }
+
+  init();
+</script>
 </body>
 </html>
