@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -12,7 +12,7 @@
       width: 100%; height: 100vh;
       overflow: hidden;
       font-family: Inter, Arial, sans-serif;
-      background: #091228;
+      background: #0c1008;
       color: white;
     }
 
@@ -41,14 +41,14 @@
 
     .blob-blue {
       width: 600px; height: 600px;
-      background: rgba(37, 99, 235, 0.28);
+      background: rgba(130, 175, 0, 0.28);
       top: -200px; left: -160px;
       animation: blobDrift 14s ease-in-out infinite;
     }
 
     .blob-purple {
       width: 520px; height: 520px;
-      background: rgba(109, 40, 217, 0.22);
+      background: rgba(210, 55, 105, 0.22);
       bottom: -160px; right: -140px;
       animation: blobDrift 17s ease-in-out infinite reverse;
     }
@@ -71,7 +71,7 @@
     .waiting-label {
       font-size: 16px;
       font-weight: 700;
-      color: #38bdf8;
+      color: #cce840;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       margin: 0 0 20px;
@@ -112,7 +112,7 @@
     .q-badge {
       font-size: 14px;
       font-weight: 700;
-      color: #38bdf8;
+      color: #cce840;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 24px;
@@ -202,7 +202,7 @@
 
     .ring-fill {
       fill: none;
-      stroke: #38bdf8;
+      stroke: #cce840;
       stroke-width: 9;
       stroke-linecap: round;
       stroke-dasharray: 339.29;
@@ -232,7 +232,7 @@
     .a-tour-badge {
       font-size: 15px;
       font-weight: 700;
-      color: #38bdf8;
+      color: #cce840;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 28px;
@@ -313,7 +313,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(9,18,40,0.92);
+      background: rgba(12,16,8,0.92);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 18px;
       padding: 14px 18px;
@@ -338,7 +338,7 @@
     .ctrl-btn:active { transform: translateY(0); }
     .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .ctrl-primary { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: white; }
+    .ctrl-primary { background: linear-gradient(135deg,#a8d800,#80b000); color: #1a2000; }
     .ctrl-green   { background: linear-gradient(135deg,#059669,#047857); color: white; }
     .ctrl-orange  { background: linear-gradient(135deg,#d97706,#b45309); color: white; }
     .ctrl-ghost   { background: rgba(255,255,255,0.1); color: #cbd5e1; }
@@ -603,7 +603,7 @@
       num.textContent = secs;
       ring.style.strokeDashoffset = CIRC * (1 - pct);
 
-      if (pct > 0.3)      ring.style.stroke = '#38bdf8';
+      if (pct > 0.3)      ring.style.stroke = '#cce840';
       else if (pct > 0.1) ring.style.stroke = '#fbbf24';
       else                 ring.style.stroke = '#f87171';
 

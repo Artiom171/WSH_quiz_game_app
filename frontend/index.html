@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -16,7 +16,7 @@
       min-height: 100vh;
       overflow: hidden;
       font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(180deg, #e0ecff 0%, #eef4ff 100%);
+      background: linear-gradient(180deg, #e2e6d4 0%, #eeeee2 100%);
       color: #0f172a;
     }
 
@@ -50,7 +50,7 @@
     .blob-blue {
       width: 520px;
       height: 520px;
-      background: rgba(37, 99, 235, 0.32);
+      background: rgba(130, 175, 0, 0.32);
       top: -160px;
       left: -120px;
       animation: blobDrift 12s ease-in-out infinite;
@@ -59,7 +59,7 @@
     .blob-purple {
       width: 460px;
       height: 460px;
-      background: rgba(109, 40, 217, 0.25);
+      background: rgba(210, 55, 105, 0.25);
       bottom: -130px;
       right: -110px;
       animation: blobDrift 15s ease-in-out infinite reverse;
@@ -106,8 +106,8 @@
       letter-spacing: -0.02em;
       color: #ffffff;
       text-shadow:
-        0 0 24px rgba(56, 189, 248, 0.75),
-        0 0 64px rgba(37, 99, 235, 0.4);
+        0 0 24px rgba(200, 224, 40, 0.75),
+        0 0 64px rgba(168, 216, 0, 0.4);
       animation: titleFloat 5s ease-in-out infinite;
     }
 
@@ -181,7 +181,7 @@
       width: 100%;
       max-width: 100%;
       padding: 16px 18px;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      background: linear-gradient(135deg, #a8d800 0%, #80b000 100%);
       color: white;
       border: none;
       border-radius: 16px;
@@ -194,8 +194,8 @@
 
     button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
-      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      box-shadow: 0 12px 24px rgba(168, 216, 0, 0.24);
+      background: linear-gradient(135deg, #80b000 0%, #a8d800 100%);
     }
 
     .error-message {
@@ -271,9 +271,9 @@
     (function createParticles() {
       const container = document.getElementById("particlesContainer");
       const colors = [
-        "rgba(56, 189, 248, 0.7)",
-        "rgba(37, 99, 235, 0.6)",
-        "rgba(147, 197, 253, 0.5)",
+        "rgba(200, 224, 40, 0.7)",
+        "rgba(168, 216, 0, 0.6)",
+        "rgba(210, 230, 40, 0.5)",
         "rgba(255, 255, 255, 0.2)",
       ];
       for (let i = 0; i < 22; i++) {
