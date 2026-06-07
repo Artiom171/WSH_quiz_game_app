@@ -554,7 +554,8 @@ function scheduleLock(questionStartedAt, timerSeconds) {
     lockTimeout = null;
     if (submittedQ) return;
     submittedQ = true;
-    postAnswer("-").catch(() => {});
+    const typed = (document.getElementById("answerInput")?.value || "").trim();
+    postAnswer(typed || "-").catch(() => {});
     showWaiting(round, "Время вышло. Ожидайте правильного ответа от ведущего");
   }, delay);
 }
