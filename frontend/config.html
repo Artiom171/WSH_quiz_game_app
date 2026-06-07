@@ -1036,9 +1036,12 @@
     answerRow.appendChild(answerInput);
     container.appendChild(answerRow);
 
-    // answer image upload
+    // answer image section
     const imgSection = document.createElement("div");
-    imgSection.style.cssText = "margin-top:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;";
+    imgSection.style.cssText = "margin-top:8px; display:flex; flex-direction:column; gap:8px;";
+
+    const uploadRow = document.createElement("div");
+    uploadRow.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap;";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -1067,6 +1070,7 @@
       uploadBtn.textContent = "+ Фото ответа";
       removeBtn.style.display = "none";
       fileInput.value = "";
+      urlInput.value = "";
     });
 
     fileInput.addEventListener("change", async () => {
@@ -1085,16 +1089,42 @@
         preview.style.display = "block";
         uploadBtn.textContent = "✓ Фото ответа";
         removeBtn.style.display = "block";
+        urlInput.value = "";
       } catch {
         uploadBtn.textContent = "+ Фото ответа";
       }
       uploadBtn.disabled = false;
     });
 
-    imgSection.appendChild(fileInput);
-    imgSection.appendChild(uploadBtn);
-    imgSection.appendChild(preview);
-    imgSection.appendChild(removeBtn);
+    uploadRow.appendChild(fileInput);
+    uploadRow.appendChild(uploadBtn);
+    uploadRow.appendChild(preview);
+    uploadRow.appendChild(removeBtn);
+
+    const urlRow = document.createElement("div");
+    urlRow.style.cssText = "display:flex; align-items:center; gap:8px;";
+    const urlLabel = document.createElement("span");
+    urlLabel.textContent = "или URL:";
+    urlLabel.style.cssText = "font-size:12px; color:#64748b; white-space:nowrap; flex-shrink:0;";
+    const urlInput = document.createElement("input");
+    urlInput.type = "text";
+    urlInput.placeholder = "https://example.com/image.jpg";
+    urlInput.style.cssText = "flex:1; font-size:13px;";
+    if (q.answer_image_url && q.answer_image_url.startsWith("http")) urlInput.value = q.answer_image_url;
+    urlInput.addEventListener("input", () => {
+      const url = urlInput.value.trim();
+      questionData[ti][qi].answer_image_url = url;
+      preview.src = url || "";
+      preview.style.display = url ? "block" : "none";
+      removeBtn.style.display = url ? "block" : "none";
+      uploadBtn.textContent = url ? "✓ Фото ответа" : "+ Фото ответа";
+      if (url) fileInput.value = "";
+    });
+    urlRow.appendChild(urlLabel);
+    urlRow.appendChild(urlInput);
+
+    imgSection.appendChild(uploadRow);
+    imgSection.appendChild(urlRow);
     container.appendChild(imgSection);
 
     // background music field (all question types)

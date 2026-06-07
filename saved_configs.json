@@ -13,8 +13,8 @@
             "type": "text",
             "text": "Современное название этой страны, переводится как “страна Ариев”. Однако до первой половины ХХ века официальное название было другим. Поэтому популярные - кот, ковёр и принц нам известны с этим самым старым названием. Назовите современное название этой страны",
             "media_url": "",
-            "answer": "Земля",
-            "answer_image_url": "/uploads/1780749163994.png",
+            "answer": "Иран",
+            "answer_image_url": "",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
           },
           {
@@ -93,94 +93,390 @@
         "questions": 10
       },
       {
+        "type": "ordinary",
+        "name": "Визуальный ",
+        "timer_seconds": 60,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          }
+        ],
+        "questions": 15
+      },
+      {
         "type": "themed",
         "name": "Связь",
         "timer_seconds": 60,
         "questions_data": [
           {
             "type": "text",
-            "text": "Назовите интернет домен Эстонии",
+            "text": "",
             "media_url": "",
-            "answer": "ee",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Назовите по-английски - специализированное учреждение Организации Объединённых Наций по вопросам образования, науки и культуры, включающее достопримечательности в список Всемирного наследия.",
+            "text": "",
             "media_url": "",
-            "answer": "UNESCO",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Назовите по-английски - специализированное учреждение Организации Объединённых Наций по вопросам образования, науки и культуры, включающее достопримечательности в список Всемирного наследия.",
+            "text": "",
             "media_url": "",
-            "answer": "UNESCO",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Известные маски активистов «Анонимус» появились в поп-культуре именно из-за этого фильма. Всё название не обязательно, назовите ту самую букву из названия фильма",
+            "text": "",
             "media_url": "",
-            "answer": "V",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Назовите основанную в Швеции производственно-рознично торговую группу, одну из крупнейших в мире торговых сетей по продаже мебели и товаров для дома. ",
+            "text": "",
             "media_url": "",
-            "answer": "IKEA",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Назовите международный сигнал бедствия в радиотелеграфной (с использованием азбуки Морзе) связи.",
+            "text": "",
             "media_url": "",
-            "answer": "SOS",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Как сокращенно по-английски называют концепцию сети передачи данных между физическими объектами («вещами»), оснащенными встроенными средствами и технологиями для взаимодействия друг с другом или с внешней средой",
+            "text": "",
             "media_url": "",
-            "answer": "IoT",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "СЛОВО на английском языке означает как и цвет так и фрукт. Конечно сам фрукт мы часто знаем именно этого же цвета. Назовите СЛОВО",
+            "text": "",
             "media_url": "",
-            "answer": "Orange",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Что получилось?",
+            "text": "",
             "media_url": "",
-            "answer": "Something",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           },
           {
             "type": "text",
-            "text": "Что получилось?",
+            "text": "",
             "media_url": "",
-            "answer": "End",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
             "answer_image_url": "",
             "bg_music_url": ""
           }
         ],
-        "questions": 10
+        "questions": 15
+      },
+      {
+        "type": "ordinary",
+        "name": "Звуковой",
+        "timer_seconds": null,
+        "questions_data": [
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "",
+            "answer_image_url": "",
+            "bg_music_url": ""
+          }
+        ],
+        "questions": 15
       }
     ],
-    "updated_at": "2026-06-07T12:32:49.621447"
+    "updated_at": "2026-06-07T13:01:28.836932"
   }
 ]
