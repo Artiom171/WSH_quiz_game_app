@@ -200,6 +200,7 @@ class QuestionData(BaseModel):
     media_url: str = ""
     answer: str = ""
     answer_image_url: str = ""
+    bg_music_url: str = ""
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]

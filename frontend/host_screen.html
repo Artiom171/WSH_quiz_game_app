@@ -99,6 +99,13 @@
       margin: 0;
     }
 
+    /* lift content above blobs on question + answer screens */
+    #screen-question > *:not(.glow-blob),
+    #screen-answer  > *:not(.glow-blob) {
+      position: relative;
+      z-index: 1;
+    }
+
     /* ===== QUESTION SCREEN ===== */
 
     #screen-question {
@@ -376,6 +383,8 @@
 
 <!-- ===== QUESTION SCREEN ===== -->
 <div class="screen" id="screen-question">
+  <div class="glow-blob blob-blue"></div>
+  <div class="glow-blob blob-purple"></div>
   <div class="timer-wrap" id="timer-wrap">
     <svg class="timer-ring" viewBox="0 0 120 120">
       <circle class="ring-track" cx="60" cy="60" r="54" />
@@ -389,6 +398,8 @@
 
 <!-- ===== ANSWER SCREEN ===== -->
 <div class="screen" id="screen-answer">
+  <div class="glow-blob blob-blue"></div>
+  <div class="glow-blob blob-purple"></div>
   <div class="a-tour-badge" id="a-tour-badge"></div>
   <img class="a-answer-img" id="a-answer-img" src="" alt="" style="display:none" />
   <div class="a-divider"></div>
@@ -413,6 +424,8 @@
   <button class="ctrl-btn ctrl-orange"  id="btn-show-answer"  onclick="doShowAnswer()"     style="display:none">Показать ответ</button>
   <button class="ctrl-btn ctrl-green"   id="btn-next-q"       onclick="doNextQuestion()"   style="display:none">Следующий вопрос →</button>
   <button class="ctrl-btn ctrl-ghost"   id="btn-finish-ans"   onclick="doFinishAnswers()"  style="display:none">Завершить вопросы</button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn ctrl-ghost" id="btn-fullscreen" onclick="toggleFullscreen()" title="Полный экран">⛶</button>
 </div>
 
 <script>
@@ -631,7 +644,9 @@
       else if (pct > 0.1) ring.style.stroke = '#fbbf24';
       else                 ring.style.stroke = '#f87171';
 
-      if (rem <= 0) { stopTimer(); render(); }
+      if (rem > 0 && rem <= 5000) setBgMusicVolume(Math.round((rem / 5000) * 100));
+
+      if (rem <= 0) { stopBgMusic(); stopTimer(); render(); }
     }
 
     tick();
@@ -640,6 +655,31 @@
 
   function stopTimer() {
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  // ===== BACKGROUND MUSIC =====
+
+  function startBgMusic(youtubeUrl) {
+    stopBgMusic();
+    const m = youtubeUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/);
+    if (!m) return;
+    const iframe = document.createElement('iframe');
+    iframe.id = 'bg-music-frame';
+    iframe.src = `https://www.youtube.com/embed/${m[1]}?autoplay=1&mute=0&rel=0&controls=0&enablejsapi=1`;
+    iframe.allow = 'autoplay';
+    iframe.style.cssText = 'position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none;border:0;';
+    document.body.appendChild(iframe);
+  }
+
+  function stopBgMusic() {
+    const el = document.getElementById('bg-music-frame');
+    if (el) el.remove();
+  }
+
+  function setBgMusicVolume(vol) {
+    const el = document.getElementById('bg-music-frame');
+    if (!el) return;
+    el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [vol] }), '*');
   }
 
   // ===== CONTROL ACTIONS =====
@@ -660,16 +700,20 @@
     await post('/game/host-state', { state: 'timer_running' });
     status.host_state = 'timer_running';
     status.question_started_at = Date.now();
+    const q = question();
+    if (q?.bg_music_url) startBgMusic(q.bg_music_url);
     render();
   }
 
   async function doShowAnswer() {
+    stopBgMusic();
     await post('/game/host-state', { state: 'show_answer' });
     status.host_state = 'show_answer';
     render();
   }
 
   async function doNextQuestion() {
+    stopBgMusic();
     const next = (status.current_question || 0) + 1;
     await post('/game/question', { question_number: next });
     status.current_question = next;
@@ -679,6 +723,7 @@
   }
 
   async function doFinishAnswers() {
+    stopBgMusic();
     await post('/game/host-state', { state: 'finish_answers' });
     status.host_state = 'finish_answers';
     render();
@@ -704,6 +749,18 @@
     render();
     setInterval(poll, 2000);
   }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    document.getElementById('btn-fullscreen').textContent = document.fullscreenElement ? '✕ Выйти' : '⛶';
+  });
 
   init();
 </script>

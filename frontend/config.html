@@ -821,7 +821,7 @@
       timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_image_url: q.answer_image_url || "" }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "" }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -906,7 +906,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_image_url: "" });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_image_url: "", bg_music_url: "" });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1096,6 +1096,22 @@
     imgSection.appendChild(preview);
     imgSection.appendChild(removeBtn);
     container.appendChild(imgSection);
+
+    // background music field (all question types)
+    const musicRow = document.createElement("div");
+    musicRow.style.cssText = "margin-top:10px; display:flex; align-items:center; gap:8px;";
+    const musicLabel = document.createElement("span");
+    musicLabel.textContent = "♪ Фоновая музыка";
+    musicLabel.style.cssText = "font-size:12px; font-weight:600; color:#80b000; white-space:nowrap; flex-shrink:0;";
+    const musicInput = document.createElement("input");
+    musicInput.type = "text";
+    musicInput.placeholder = "YouTube URL (необязательно)...";
+    musicInput.value = q.bg_music_url || "";
+    musicInput.style.cssText = "flex:1; font-size:13px;";
+    musicInput.addEventListener("input", () => { questionData[ti][qi].bg_music_url = musicInput.value; });
+    musicRow.appendChild(musicLabel);
+    musicRow.appendChild(musicInput);
+    container.appendChild(musicRow);
   }
 
   function setQType(ti, qi, newType, card) {
@@ -1179,7 +1195,8 @@
           text: q.text,
           media_url: q.media_url,
           answer: q.answer,
-          answer_image_url: q.answer_image_url || ""
+          answer_image_url: q.answer_image_url || "",
+          bg_music_url: q.bg_music_url || ""
         }))
       }))
     };
