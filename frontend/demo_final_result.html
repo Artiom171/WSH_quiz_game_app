@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Финальный результат — Демо</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px 20px 72px;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #e2e6d4 0%, #d8dcc8 100%);
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    h2 {
+      font-size: 32px;
+      margin: 0 0 16px;
+      text-align: center;
+      color: #111827;
+    }
+
+    p.subtitle {
+      text-align: center;
+      margin: 0 0 24px;
+      color: #475569;
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #a8d800 0%, #aace28 100%);
+    }
+
+    th, td {
+      padding: 16px 18px;
+      text-align: left;
+    }
+
+    th {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    tbody tr:hover {
+      background: #e4ecd0;
+    }
+
+    td.rank {
+      width: 72px;
+      font-weight: 700;
+      color: #3a4e15;
+    }
+
+    td.score {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    /* Rank 1 special style */
+    tr.rank-first td.rank {
+      font-size: 20px;
+      color: #a8d800;
+    }
+
+    /* ===== ROW REVEAL ANIMATION ===== */
+    @keyframes rowReveal {
+      from {
+        opacity: 0;
+        transform: translateX(-32px);
+        background: rgba(168, 216, 0, 0.18);
+      }
+      60% {
+        background: rgba(168, 216, 0, 0.1);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+        background: transparent;
+      }
+    }
+
+    @keyframes rowRevealFirst {
+      0% {
+        opacity: 0;
+        transform: scale(0.92) translateX(-24px);
+        background: rgba(168, 216, 0, 0.35);
+      }
+      60% {
+        transform: scale(1.02) translateX(0);
+        background: rgba(168, 216, 0, 0.2);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        background: transparent;
+      }
+    }
+
+    .reveal-anim {
+      animation: rowReveal 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .reveal-anim-first {
+      animation: rowRevealFirst 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ===== HINT BAR ===== */
+    #hint-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(20, 26, 4, 0.92);
+      color: #cce840;
+      text-align: center;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    #hint-bar .counter {
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    #hint-bar .done-msg {
+      color: #a8d800;
+      display: none;
+    }
+
+    /* ===== FULLSCREEN BUTTON ===== */
+    #btn-fullscreen {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(26,32,0,0.82);
+      color: #cce840;
+      border: 1px solid rgba(204,232,64,0.3);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 18px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      line-height: 1;
+    }
+    #btn-fullscreen:hover { background: rgba(26,32,0,0.95); }
+
+    @media (max-width: 720px) {
+      .container { padding: 20px; }
+      table { display: block; overflow-x: auto; }
+      th, td { padding: 14px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="btn-fullscreen" onclick="toggleFullscreen()" title="Полный экран">⛶</button>
+
+  <div class="container">
+    <h2>Финальный результат</h2>
+    <p class="subtitle" id="subtitle">Загрузка...</p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Игрок</th>
+          <th>Баллы</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable"></tbody>
+    </table>
+  </div>
+
+  <div id="hint-bar">
+    <span id="hint-text">Пробел — открыть следующего игрока</span>
+    <span class="counter" id="hint-counter"></span>
+    <span class="done-msg" id="hint-done">Все результаты открыты · R — начать заново</span>
+  </div>
+
+<script>
+  function esc(str) {
+    return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  let allData = [];
+  let revealIndex = -1; // points to next row to reveal (descending: last rank first)
+
+  async function loadResults() {
+    try {
+      const res = await fetch("/results");
+      allData = await res.json();
+    } catch (_) {
+      allData = [];
+    }
+
+    document.getElementById("resultsTable").innerHTML = "";
+    revealIndex = allData.length - 1;
+    updateHint();
+
+    const subtitle = document.getElementById("subtitle");
+    if (allData.length === 0) {
+      subtitle.textContent = "Пока нет зарегистрированных игроков.";
+    } else {
+      subtitle.textContent = `${allData.length} игрок${allData.length === 1 ? '' : allData.length < 5 ? 'а' : 'ов'} · результаты скрыты`;
+    }
+  }
+
+  function updateHint() {
+    const total = allData.length;
+    const revealed = total - 1 - revealIndex;
+    const counter = document.getElementById("hint-counter");
+    const hintText = document.getElementById("hint-text");
+    const doneMsgEl = document.getElementById("hint-done");
+
+    if (revealIndex < 0) {
+      hintText.style.display = "none";
+      counter.style.display = "none";
+      doneMsgEl.style.display = "";
+    } else {
+      hintText.style.display = "";
+      counter.style.display = "";
+      doneMsgEl.style.display = "none";
+      counter.textContent = `${revealed} из ${total}`;
+    }
+  }
+
+  function revealNext() {
+    if (revealIndex < 0) return;
+
+    const player = allData[revealIndex];
+    const rank = revealIndex + 1;
+    const isFirst = revealIndex === 0;
+
+    const tbody = document.getElementById("resultsTable");
+    const tr = document.createElement("tr");
+    if (isFirst) tr.classList.add("rank-first");
+    tr.classList.add(isFirst ? "reveal-anim-first" : "reveal-anim");
+    tr.innerHTML = `
+      <td class="rank">${isFirst ? '🏆 1' : rank}</td>
+      <td>${esc(player.name)}</td>
+      <td class="score">${player.score ?? 0}</td>
+    `;
+
+    tbody.prepend(tr);
+    revealIndex--;
+    updateHint();
+
+    if (revealIndex < 0) {
+      document.getElementById("subtitle").textContent = "Итоговые результаты игры";
+    }
+  }
+
+  function resetReveal() {
+    document.getElementById("resultsTable").innerHTML = "";
+    revealIndex = allData.length - 1;
+    updateHint();
+    document.getElementById("subtitle").textContent =
+      allData.length > 0
+        ? `${allData.length} игрок${allData.length === 1 ? '' : allData.length < 5 ? 'а' : 'ов'} · результаты скрыты`
+        : "Пока нет зарегистрированных игроков.";
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      revealNext();
+    } else if (e.code === "KeyR") {
+      resetReveal();
+    }
+  });
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  document.addEventListener("fullscreenchange", () => {
+    document.getElementById("btn-fullscreen").textContent =
+      document.fullscreenElement ? "✕ Выйти" : "⛶";
+  });
+
+  loadResults();
+</script>
+</body>
+</html>
