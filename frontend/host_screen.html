@@ -282,6 +282,16 @@
       animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
 
+    .a-description {
+      font-size: clamp(18px, 2vw, 30px);
+      font-weight: 500;
+      color: #94a3b8;
+      max-width: 900px;
+      margin: 20px auto 0;
+      line-height: 1.4;
+      animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
     .a-answer {
       font-size: clamp(36px, 5vw, 68px);
       font-weight: 900;
@@ -405,6 +415,7 @@
   <div class="a-divider"></div>
   <p class="a-label">Правильный ответ</p>
   <p class="a-answer" id="a-answer"></p>
+  <p class="a-description" id="a-description" style="display:none"></p>
 </div>
 
 <!-- ===== FINISH SCREEN (themed tour end) ===== -->
@@ -424,6 +435,7 @@
   <button class="ctrl-btn ctrl-orange"  id="btn-show-answer"  onclick="doShowAnswer()"     style="display:none">Показать ответ</button>
   <button class="ctrl-btn ctrl-green"   id="btn-next-q"       onclick="doNextQuestion()"   style="display:none">Следующий вопрос →</button>
   <button class="ctrl-btn ctrl-ghost"   id="btn-finish-ans"   onclick="doFinishAnswers()"  style="display:none">Завершить вопросы</button>
+  <button class="ctrl-btn ctrl-ghost"   id="btn-stop-music"   onclick="doStopMusicOrAnswer()" style="display:none">Завершить сейчас</button>
   <div class="ctrl-sep"></div>
   <button class="ctrl-btn ctrl-ghost" id="btn-fullscreen" onclick="toggleFullscreen()" title="Полный экран">⛶</button>
 </div>
@@ -464,7 +476,15 @@
     document.getElementById(id).classList.add('active');
   }
 
-  const ALL_BTNS = ['btn-begin-tour','btn-start-timer','btn-show-answer','btn-next-q','btn-finish-ans'];
+  const ALL_BTNS = ['btn-begin-tour','btn-start-timer','btn-show-answer','btn-next-q','btn-finish-ans','btn-stop-music'];
+  let musicBtnStage = 0; // 0 = stop music, 1 = show answer
+
+  function resetStopMusicBtn() {
+    musicBtnStage = 0;
+    const btn = document.getElementById('btn-stop-music');
+    btn.textContent = 'Завершить сейчас';
+    btn.className = 'ctrl-btn ctrl-ghost';
+  }
 
   function showBtns(...ids) {
     ALL_BTNS.forEach(id => {
@@ -538,7 +558,7 @@
         else showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
       } else {
         if (t.type === 'themed') showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
-        else showBtns(); // ordinary: wait for timer
+        else showBtns('btn-stop-music'); // ordinary: wait for timer
       }
     }
   }
@@ -617,6 +637,15 @@
       img.style.display = 'none';
     }
 
+    const descEl = document.getElementById('a-description');
+    if (q?.answer_description) {
+      descEl.textContent = q.answer_description;
+      descEl.style.display = '';
+    } else {
+      descEl.textContent = '';
+      descEl.style.display = 'none';
+    }
+
     const old = document.getElementById('a-answer');
     const fresh = old.cloneNode(false);
     fresh.textContent = q?.answer || '—';
@@ -689,6 +718,7 @@
   }
 
   async function doBeginTour() {
+    resetStopMusicBtn();
     await post('/game/question', { question_number: 1 });
     status.current_question = 1;
     status.host_state = 'waiting';
@@ -705,6 +735,18 @@
     render();
   }
 
+  function doStopMusicOrAnswer() {
+    if (musicBtnStage === 0) {
+      stopBgMusic();
+      musicBtnStage = 1;
+      const btn = document.getElementById('btn-stop-music');
+      btn.textContent = '→ Показать ответ';
+      btn.className = 'ctrl-btn ctrl-orange';
+    } else {
+      doShowAnswer();
+    }
+  }
+
   async function doShowAnswer() {
     stopBgMusic();
     await post('/game/host-state', { state: 'show_answer' });
@@ -714,6 +756,7 @@
 
   async function doNextQuestion() {
     stopBgMusic();
+    resetStopMusicBtn();
     const next = (status.current_question || 0) + 1;
     await post('/game/question', { question_number: next });
     status.current_question = next;

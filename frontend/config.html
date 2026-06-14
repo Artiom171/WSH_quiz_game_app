@@ -821,7 +821,7 @@
       timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "" }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "" }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -906,7 +906,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_image_url: "", bg_music_url: "" });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "" });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1035,6 +1035,22 @@
     answerInput.addEventListener("input", () => { questionData[ti][qi].answer = answerInput.value; });
     answerRow.appendChild(answerInput);
     container.appendChild(answerRow);
+
+    // answer description field
+    const descRow = document.createElement("div");
+    descRow.style.cssText = "margin-top:6px; display:flex; align-items:center; gap:8px;";
+    const descLabel = document.createElement("span");
+    descLabel.textContent = "Описание";
+    descLabel.style.cssText = "font-size:12px; font-weight:600; color:#64748b; white-space:nowrap; flex-shrink:0;";
+    const descInput = document.createElement("input");
+    descInput.type = "text";
+    descInput.placeholder = "Короткое описание к ответу (опционально)...";
+    descInput.value = q.answer_description || "";
+    descInput.style.cssText = "flex:1; font-size:13px;";
+    descInput.addEventListener("input", () => { questionData[ti][qi].answer_description = descInput.value; });
+    descRow.appendChild(descLabel);
+    descRow.appendChild(descInput);
+    container.appendChild(descRow);
 
     // answer image section
     const imgSection = document.createElement("div");
@@ -1225,6 +1241,7 @@
           text: q.text,
           media_url: q.media_url,
           answer: q.answer,
+          answer_description: q.answer_description || "",
           answer_image_url: q.answer_image_url || "",
           bg_music_url: q.bg_music_url || ""
         }))

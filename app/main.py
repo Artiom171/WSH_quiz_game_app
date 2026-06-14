@@ -199,6 +199,7 @@ class QuestionData(BaseModel):
     text: str = ""
     media_url: str = ""
     answer: str = ""
+    answer_description: str = ""
     answer_image_url: str = ""
     bg_music_url: str = ""
 
