@@ -401,6 +401,24 @@
       white-space: nowrap;
     }
 
+    .btn-save-q {
+      background: transparent;
+      border: 1px solid #a8d800;
+      color: #a8d800;
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      margin-left: auto;
+    }
+    .btn-save-q:hover:not(:disabled) { background: #a8d800; color: #1a1a2e; }
+    .btn-save-q:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-save-q.saved { border-color: #4ade80; color: #4ade80; }
+    .btn-save-q.error { border-color: #ef4444; color: #ef4444; }
+
     .type-selector {
       display: flex;
       gap: 6px;
@@ -704,6 +722,7 @@
     ["landing-view", "step1-view", "step2-view", "game-view"].forEach(v => {
       document.getElementById(v).style.display = v === id ? "" : "none";
     });
+    window.scrollTo(0, 0);
   }
 
   function typeLabel(t) {
@@ -973,6 +992,7 @@
       <div class="question-header">
         <span class="question-num">Вопрос ${qi + 1}</span>
         <div class="type-selector">${typeButtons}</div>
+        <button class="btn-save-q" id="save-q-${ti}-${qi}" onclick="saveQuestion(${ti}, ${qi})">Сохранить</button>
       </div>
       <div class="question-content" id="qcontent-${ti}-${qi}"></div>
     `;
@@ -1324,6 +1344,58 @@
     editingConfigId = data.id;
     document.getElementById("saveAsNewRow").style.display = "block";
     showLanding();
+  }
+
+  async function saveQuestion(ti, qi) {
+    const btn = document.getElementById(`save-q-${ti}-${qi}`);
+    const name = document.getElementById("configNameInput").value.trim();
+
+    if (!name && !editingConfigId) {
+      document.getElementById("configNameInput").focus();
+      const errorEl = document.getElementById("saveError");
+      errorEl.textContent = "Сначала введите название конфигурации внизу страницы.";
+      errorEl.classList.add("show");
+      return;
+    }
+
+    btn.textContent = "Сохранение...";
+    btn.disabled = true;
+    btn.classList.remove("saved", "error");
+
+    try {
+      const payload = buildPayload(name);
+      let res;
+      if (editingConfigId) {
+        res = await fetch(`/configs/${editingConfigId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch("/configs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          editingConfigId = data.id;
+          document.getElementById("saveAsNewRow").style.display = "block";
+        }
+      }
+      if (!res.ok) throw new Error();
+      btn.textContent = "✓ Сохранено";
+      btn.classList.add("saved");
+    } catch {
+      btn.textContent = "Ошибка";
+      btn.classList.add("error");
+    } finally {
+      setTimeout(() => {
+        btn.textContent = "Сохранить";
+        btn.classList.remove("saved", "error");
+        btn.disabled = false;
+      }, 2000);
+    }
   }
 
   function buildPayload(name) {
