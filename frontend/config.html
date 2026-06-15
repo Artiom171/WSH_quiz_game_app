@@ -394,11 +394,13 @@
 
     .question-num {
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       color: #a8d800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.07em;
       white-space: nowrap;
+      padding-left: 12px;
+      border-left: 3px solid #a8d800;
     }
 
     .btn-save-q {
@@ -465,21 +467,40 @@
       margin-bottom: 8px;
     }
 
-    .answer-row {
-      margin-top: 10px;
+    .q-section {
+      margin-top: 16px;
+      padding-top: 12px;
+      padding-left: 12px;
+      border-top: 1px solid #e2e8f0;
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .q-section-label {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .answer-row {
+      margin-top: 16px;
+      padding-top: 12px;
+      padding-left: 12px;
+      border-top: 1px solid #e2e8f0;
+      border-left: 3px solid #16a34a;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
 
     .answer-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #059669;
+      font-size: 13px;
+      font-weight: 800;
+      color: #16a34a;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      flex-shrink: 0;
+      letter-spacing: 0.07em;
     }
 
     .answer-input {
@@ -1008,6 +1029,7 @@
       const ta = document.createElement("textarea");
       ta.placeholder = "Текст вопроса...";
       ta.value = q.text;
+      ta.style.minHeight = "160px";
       ta.addEventListener("input", () => { questionData[ti][qi].text = ta.value; });
       container.appendChild(ta);
     } else {
@@ -1095,7 +1117,7 @@
         urlRow.style.cssText = "display:flex; align-items:center; gap:8px;";
         const urlLabel = document.createElement("span");
         urlLabel.textContent = "или URL:";
-        urlLabel.style.cssText = "font-size:12px; color:#64748b; white-space:nowrap; flex-shrink:0;";
+        urlLabel.style.cssText = "font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; flex-shrink:0;";
         urlInput.placeholder = q.type === "image" ? "URL изображения..." : q.type === "audio" ? "URL аудио..." : "URL видео...";
         urlInput.value = isUploaded ? "" : (q.media_url || "");
         urlInput.addEventListener("input", () => {
@@ -1155,15 +1177,17 @@
 
     // answer description field
     const descRow = document.createElement("div");
-    descRow.style.cssText = "margin-top:6px; display:flex; align-items:center; gap:8px;";
+    descRow.className = "q-section";
     const descLabel = document.createElement("span");
-    descLabel.textContent = "Описание";
-    descLabel.style.cssText = "font-size:12px; font-weight:600; color:#64748b; white-space:nowrap; flex-shrink:0;";
+    descLabel.textContent = "Описание к ответу";
+    descLabel.className = "q-section-label";
+    descLabel.style.color = "#7c3aed";
+    descRow.style.borderLeft = "3px solid #7c3aed";
     const descInput = document.createElement("input");
     descInput.type = "text";
-    descInput.placeholder = "Короткое описание к ответу (опционально)...";
+    descInput.placeholder = "Короткое описание (опционально)...";
     descInput.value = q.answer_description || "";
-    descInput.style.cssText = "flex:1; font-size:13px;";
+    descInput.style.cssText = "font-size:13px;";
     descInput.addEventListener("input", () => { questionData[ti][qi].answer_description = descInput.value; });
     descRow.appendChild(descLabel);
     descRow.appendChild(descInput);
@@ -1171,7 +1195,13 @@
 
     // answer image section
     const imgSection = document.createElement("div");
-    imgSection.style.cssText = "margin-top:8px; display:flex; flex-direction:column; gap:8px;";
+    imgSection.className = "q-section";
+    const imgLabel = document.createElement("span");
+    imgLabel.textContent = "Фото к ответу";
+    imgLabel.className = "q-section-label";
+    imgLabel.style.color = "#0284c7";
+    imgSection.style.borderLeft = "3px solid #0284c7";
+    imgSection.appendChild(imgLabel);
 
     const uploadRow = document.createElement("div");
     uploadRow.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap;";
@@ -1238,7 +1268,7 @@
     urlRow.style.cssText = "display:flex; align-items:center; gap:8px;";
     const urlLabel = document.createElement("span");
     urlLabel.textContent = "или URL:";
-    urlLabel.style.cssText = "font-size:12px; color:#64748b; white-space:nowrap; flex-shrink:0;";
+    urlLabel.style.cssText = "font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; flex-shrink:0;";
     const urlInput = document.createElement("input");
     urlInput.type = "text";
     urlInput.placeholder = "https://example.com/image.jpg";
@@ -1262,15 +1292,17 @@
 
     // background music field (all question types)
     const musicRow = document.createElement("div");
-    musicRow.style.cssText = "margin-top:10px; display:flex; align-items:center; gap:8px;";
+    musicRow.className = "q-section";
     const musicLabel = document.createElement("span");
     musicLabel.textContent = "♪ Фоновая музыка";
-    musicLabel.style.cssText = "font-size:12px; font-weight:600; color:#80b000; white-space:nowrap; flex-shrink:0;";
+    musicLabel.className = "q-section-label";
+    musicLabel.style.color = "#a8d800";
+    musicRow.style.borderLeft = "3px solid #a8d800";
     const musicInput = document.createElement("input");
     musicInput.type = "text";
     musicInput.placeholder = "YouTube URL (необязательно)...";
     musicInput.value = q.bg_music_url || "";
-    musicInput.style.cssText = "flex:1; font-size:13px;";
+    musicInput.style.cssText = "font-size:13px;";
     musicInput.addEventListener("input", () => { questionData[ti][qi].bg_music_url = musicInput.value; });
     musicRow.appendChild(musicLabel);
     musicRow.appendChild(musicInput);
