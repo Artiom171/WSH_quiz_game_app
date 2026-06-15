@@ -38,11 +38,11 @@
           },
           {
             "type": "text",
-            "text": "",
+            "text": "Несмотря на многолетнее соперничество на рынке, КОМПАНИЯ является одним из важнейших поставщиков компонентов для Apple. Назовите КОМПАНИЮ",
             "media_url": "",
-            "answer": "",
+            "answer": "Samsung ",
             "answer_description": "",
-            "answer_image_url": "",
+            "answer_image_url": "https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/mo/360_197_1.png?$720_N_PNG$",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
           },
           {
@@ -108,13 +108,22 @@
         "timer_seconds": 60,
         "questions_data": [
           {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "",
+            "type": "image",
+            "text": "Кто на фото в детстве? ",
+            "media_url": "https://persono.ru/Upload/images/1%28493%29.jpg",
+            "answer": "Маским Галкин ",
             "answer_description": "",
-            "answer_image_url": "",
-            "bg_music_url": ""
+            "answer_image_url": "https://www.maxgalkin.ru/_next/image?url=%2Fmax1.webp&w=3840&q=75",
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+          },
+          {
+            "type": "image",
+            "text": "Что за логотип?",
+            "media_url": "/uploads/1781554299943.png",
+            "answer": "Michelin",
+            "answer_description": "",
+            "answer_image_url": "https://michelinmedia.com/site/user/images/Michelin_Corporate_Logo___on_blue.jpg",
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -123,7 +132,16 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+          },
+          {
+            "type": "text",
+            "text": "",
+            "media_url": "",
+            "answer": "Samsung ",
+            "answer_description": "",
+            "answer_image_url": "",
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -132,7 +150,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -141,7 +159,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -150,7 +168,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -159,7 +177,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -168,7 +186,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -177,7 +195,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -186,7 +204,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -195,7 +213,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -204,7 +222,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -213,7 +231,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           },
           {
             "type": "text",
@@ -222,25 +240,7 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
-          },
-          {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
-            "bg_music_url": ""
-          },
-          {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
           }
         ],
         "questions": 15
@@ -532,6 +532,6 @@
         "questions": 15
       }
     ],
-    "updated_at": "2026-06-14T14:59:40.628465"
+    "updated_at": "2026-06-15T22:12:34.855898"
   }
 ]

@@ -195,7 +195,7 @@ class AnswerUpdate(BaseModel):
     is_correct: bool
 
 class QuestionData(BaseModel):
-    type: Literal["text", "youtube", "image", "audio"] = "text"
+    type: Literal["text", "youtube", "image", "video", "audio"] = "text"
     text: str = ""
     media_url: str = ""
     answer: str = ""
@@ -551,13 +551,17 @@ def reset_database(db: Session = Depends(get_db)):
 # FILE UPLOAD
 # --------------------
 
-_ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+_ALLOWED_UPLOAD_TYPES = {
+    "image/jpeg", "image/png", "image/gif", "image/webp",
+    "video/mp4", "video/webm", "video/ogg", "video/quicktime",
+    "audio/mpeg", "audio/ogg", "audio/wav", "audio/webm", "audio/mp4", "audio/aac", "audio/flac",
+}
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    if file.content_type not in _ALLOWED_IMAGE_TYPES:
-        raise HTTPException(status_code=400, detail="Only image files (jpg, png, gif, webp) are allowed")
-    ext = Path(file.filename).suffix.lower() or ".jpg"
+    if file.content_type not in _ALLOWED_UPLOAD_TYPES:
+        raise HTTPException(status_code=400, detail="Only image, video, or audio files are allowed")
+    ext = Path(file.filename).suffix.lower() or ".bin"
     unique_name = f"{int(datetime.now().timestamp() * 1000)}{ext}"
     dest = UPLOADS_DIR / unique_name
     with dest.open("wb") as f:

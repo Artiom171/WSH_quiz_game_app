@@ -961,10 +961,11 @@
     card.className = "question-card";
     card.id = `qcard-${ti}-${qi}`;
 
-    const typeButtons = ["text", "youtube", "image", "audio"].map(type => `
+    const typeLabels = { text: "Текст", youtube: "YouTube", image: "Фото", video: "Видео", audio: "Аудио" };
+    const typeButtons = ["text", "youtube", "image", "video", "audio"].map(type => `
       <button class="type-btn ${q.type === type ? "active" : ""}"
         onclick="setQType(${ti}, ${qi}, '${type}', this.closest('.question-card'))">
-        ${type === "text" ? "Текст" : type === "youtube" ? "YouTube" : type === "image" ? "Фото" : "Аудио"}
+        ${typeLabels[type]}
       </button>
     `).join("");
 
@@ -990,18 +991,114 @@
       ta.addEventListener("input", () => { questionData[ti][qi].text = ta.value; });
       container.appendChild(ta);
     } else {
-      const placeholders = {
-        youtube: "URL YouTube видео (https://youtube.com/...)",
-        image: "URL изображения",
-        audio: "URL аудио"
-      };
+      const isUploadable = q.type === "image" || q.type === "video" || q.type === "audio";
+      const isUploaded = isUploadable && q.media_url && q.media_url.startsWith("/uploads/");
+
+      // --- URL input (declared early so upload callbacks can reference it) ---
       const urlInput = document.createElement("input");
       urlInput.type = "text";
       urlInput.className = "q-media-url";
-      urlInput.placeholder = placeholders[q.type] || "URL...";
-      urlInput.value = q.media_url;
-      urlInput.addEventListener("input", () => { questionData[ti][qi].media_url = urlInput.value; });
-      container.appendChild(urlInput);
+
+      if (isUploadable) {
+        // --- file upload row ---
+        const uploadRow = document.createElement("div");
+        uploadRow.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;";
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = q.type === "image" ? "image/*" : q.type === "audio" ? "audio/*" : "video/*";
+        fileInput.style.display = "none";
+
+        const uploadBtn = document.createElement("button");
+        uploadBtn.type = "button";
+        uploadBtn.className = "btn-secondary";
+        uploadBtn.style.cssText = "padding:7px 12px; font-size:13px; flex-shrink:0;";
+        uploadBtn.textContent = isUploaded ? "✓ Файл загружен" : "+ Загрузить файл";
+        uploadBtn.addEventListener("click", () => fileInput.click());
+
+        const preview = document.createElement("img");
+        preview.style.cssText = "max-height:60px; max-width:100px; border-radius:4px; object-fit:contain;";
+        preview.style.display = (q.type === "image" && isUploaded) ? "block" : "none";
+        if (q.type === "image" && isUploaded) preview.src = q.media_url;
+
+        const filenameSpan = document.createElement("span");
+        filenameSpan.style.cssText = "font-size:12px; color:#64748b; word-break:break-all;";
+        filenameSpan.textContent = (q.type !== "image" && isUploaded) ? q.media_url.split("/").pop() : "";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn-secondary";
+        removeBtn.style.cssText = "padding:5px 10px; font-size:12px; color:#ef4444; flex-shrink:0;";
+        removeBtn.textContent = "✕";
+        removeBtn.style.display = isUploaded ? "block" : "none";
+        removeBtn.addEventListener("click", () => {
+          questionData[ti][qi].media_url = "";
+          preview.src = ""; preview.style.display = "none";
+          filenameSpan.textContent = "";
+          removeBtn.style.display = "none";
+          uploadBtn.textContent = "+ Загрузить файл";
+          fileInput.value = "";
+          urlInput.value = "";
+        });
+
+        fileInput.addEventListener("change", async () => {
+          const file = fileInput.files[0];
+          if (!file) return;
+          uploadBtn.textContent = "Загрузка...";
+          uploadBtn.disabled = true;
+          try {
+            const fd = new FormData();
+            fd.append("file", file);
+            const res = await fetch("/upload", { method: "POST", body: fd });
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            questionData[ti][qi].media_url = data.url;
+            if (q.type === "image") { preview.src = data.url; preview.style.display = "block"; }
+            else { filenameSpan.textContent = data.url.split("/").pop(); }
+            uploadBtn.textContent = "✓ Файл загружен";
+            removeBtn.style.display = "block";
+            urlInput.value = "";
+          } catch {
+            uploadBtn.textContent = "+ Загрузить файл";
+          }
+          uploadBtn.disabled = false;
+        });
+
+        uploadRow.appendChild(fileInput);
+        uploadRow.appendChild(uploadBtn);
+        uploadRow.appendChild(q.type === "image" ? preview : filenameSpan);
+        uploadRow.appendChild(removeBtn);
+        container.appendChild(uploadRow);
+
+        // URL as secondary option
+        const urlRow = document.createElement("div");
+        urlRow.style.cssText = "display:flex; align-items:center; gap:8px;";
+        const urlLabel = document.createElement("span");
+        urlLabel.textContent = "или URL:";
+        urlLabel.style.cssText = "font-size:12px; color:#64748b; white-space:nowrap; flex-shrink:0;";
+        urlInput.placeholder = q.type === "image" ? "URL изображения..." : q.type === "audio" ? "URL аудио..." : "URL видео...";
+        urlInput.value = isUploaded ? "" : (q.media_url || "");
+        urlInput.addEventListener("input", () => {
+          const val = urlInput.value;
+          questionData[ti][qi].media_url = val;
+          if (val) {
+            preview.src = ""; preview.style.display = "none";
+            filenameSpan.textContent = "";
+            removeBtn.style.display = "none";
+            uploadBtn.textContent = "+ Загрузить файл";
+            fileInput.value = "";
+          }
+        });
+        urlRow.appendChild(urlLabel);
+        urlRow.appendChild(urlInput);
+        container.appendChild(urlRow);
+      } else {
+        // youtube: URL only
+        urlInput.placeholder = "URL YouTube видео (https://youtube.com/...)";
+        urlInput.value = q.media_url;
+        urlInput.addEventListener("input", () => { questionData[ti][qi].media_url = urlInput.value; });
+        container.appendChild(urlInput);
+      }
 
       const toggleBtn = document.createElement("button");
       toggleBtn.className = "btn-toggle-text";
@@ -1167,7 +1264,7 @@
     card.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
     card.querySelectorAll(".type-btn").forEach(b => {
       const t = b.textContent.trim();
-      const map = { "Текст": "text", "YouTube": "youtube", "Фото": "image", "Аудио": "audio" };
+      const map = { "Текст": "text", "YouTube": "youtube", "Фото": "image", "Видео": "video", "Аудио": "audio" };
       if (map[t] === newType) b.classList.add("active");
     });
     renderQuestionContent(card.querySelector(`#qcontent-${ti}-${qi}`), ti, qi, questionData[ti][qi]);
