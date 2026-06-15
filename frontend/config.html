@@ -403,10 +403,14 @@
       border-left: 3px solid #a8d800;
     }
 
-    .btn-save-q {
-      background: transparent;
-      border: 1px solid #a8d800;
-      color: #a8d800;
+    .q-card-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .btn-save-q, .btn-preview-q {
       border-radius: 8px;
       padding: 5px 14px;
       font-size: 12px;
@@ -414,12 +418,156 @@
       cursor: pointer;
       transition: all 0.15s;
       white-space: nowrap;
-      margin-left: auto;
+    }
+
+    .btn-save-q {
+      background: transparent;
+      border: 1px solid #a8d800;
+      color: #a8d800;
     }
     .btn-save-q:hover:not(:disabled) { background: #a8d800; color: #1a1a2e; }
     .btn-save-q:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-save-q.saved { border-color: #4ade80; color: #4ade80; }
     .btn-save-q.error { border-color: #ef4444; color: #ef4444; }
+
+    .btn-preview-q {
+      background: transparent;
+      border: 1px solid #64748b;
+      color: #64748b;
+    }
+    .btn-preview-q:hover { border-color: #a8d800; color: #a8d800; }
+
+    /* ===== PREVIEW MODAL — replicates host_screen ===== */
+    #preview-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: #0c1008;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: Inter, Arial, sans-serif;
+    }
+    #preview-modal.open { display: flex; }
+
+    #preview-modal .pv-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+    #preview-modal .pv-blob-green {
+      width: 600px; height: 600px;
+      background: rgba(130,175,0,0.28);
+      top: -200px; left: -160px;
+    }
+    #preview-modal .pv-blob-pink {
+      width: 520px; height: 520px;
+      background: rgba(210,55,105,0.22);
+      bottom: -160px; right: -140px;
+    }
+
+    #pv-controls {
+      position: absolute;
+      top: 16px; right: 20px;
+      display: flex; gap: 10px; z-index: 10;
+    }
+    .pv-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .pv-btn:hover { background: rgba(255,255,255,0.16); }
+    .pv-btn-reveal {
+      background: linear-gradient(135deg, #a8d800, #80b000);
+      border-color: transparent;
+    }
+
+    #pv-question {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      width: 100%; height: 100vh;
+      padding: 16px 60px 100px;
+      position: relative; z-index: 1;
+      text-align: center; overflow: hidden;
+    }
+    .pv-badge {
+      font-size: 14px; font-weight: 700;
+      color: #cce840; text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 8px 0 12px; flex-shrink: 0;
+    }
+    #pv-q-content {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      width: 100%; max-width: 1200px; overflow: hidden;
+    }
+    .pv-q-text {
+      font-size: clamp(18px, 2.8vw, 48px);
+      font-weight: 800; line-height: 1.28;
+      color: white; margin: 0 auto; max-width: 1040px;
+    }
+    .pv-q-media {
+      flex: 1; min-height: 0; margin: 0 auto;
+      border-radius: 18px; overflow: hidden;
+      max-width: 960px; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pv-q-media img { max-width:100%; max-height:100%; border-radius:18px; object-fit:contain; display:block; }
+    .pv-q-media iframe { width:100%; max-width:860px; height:min(484px,55vh); border:none; border-radius:18px; display:block; }
+    .pv-q-media video { max-width:100%; max-height:100%; border-radius:8px; }
+    .pv-q-media audio { width:min(480px,90%); height:54px; display:block; }
+    .pv-q-subtext {
+      font-size: clamp(18px,2.4vw,36px); font-weight:700;
+      color: #cbd5e1; margin:16px auto 0;
+      max-width:960px; line-height:1.3; flex-shrink:0;
+    }
+    .pv-timer-wrap {
+      position: relative; display: inline-flex;
+      align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 12px;
+    }
+    .pv-timer-ring { width:90px; height:90px; transform:rotate(-90deg); }
+    .pv-ring-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:9; }
+    .pv-ring-fill  { fill:none; stroke:#cce840; stroke-width:9; stroke-linecap:round; stroke-dasharray:239; stroke-dashoffset:0; }
+    .pv-timer-num  { position:absolute; font-size:28px; font-weight:900; color:white; line-height:1; letter-spacing:-0.02em; }
+
+    #pv-answer {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      width: 100%; height: 100vh;
+      padding: 16px 60px 80px;
+      text-align: center; position: relative; z-index:1; overflow: hidden;
+    }
+    .pv-a-badge { font-size:15px; font-weight:700; color:#cce840; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:28px; }
+    .pv-a-divider { width:100px; height:4px; background:linear-gradient(90deg,#059669,#34d399); border-radius:2px; margin:0 auto 36px; }
+    .pv-a-answer {
+      font-size: clamp(36px,5vw,68px); font-weight:900;
+      color: #10b981; max-width:1000px; margin:0 auto;
+      line-height:1.1; text-shadow:0 0 48px rgba(16,185,129,0.45);
+      animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+    .pv-a-desc {
+      font-size: clamp(18px,2vw,30px); font-weight:500;
+      color: #94a3b8; max-width:900px; margin:20px auto 0;
+      line-height:1.4; animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+    .pv-a-img {
+      max-height:45vh; max-width:80vw; border-radius:18px;
+      object-fit:contain; margin:20px auto 0; display:block;
+      animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes pvReveal {
+      from { opacity:0; transform:translateY(28px) scale(0.93); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
 
     .type-selector {
       display: flex;
@@ -1013,7 +1161,10 @@
       <div class="question-header">
         <span class="question-num">Вопрос ${qi + 1}</span>
         <div class="type-selector">${typeButtons}</div>
-        <button class="btn-save-q" id="save-q-${ti}-${qi}" onclick="saveQuestion(${ti}, ${qi})">Сохранить</button>
+        <div class="q-card-actions">
+          <button class="btn-preview-q" onclick="showQuestionPreview(${ti}, ${qi})">👁 Просмотр</button>
+          <button class="btn-save-q" id="save-q-${ti}-${qi}" onclick="saveQuestion(${ti}, ${qi})">Сохранить</button>
+        </div>
       </div>
       <div class="question-content" id="qcontent-${ti}-${qi}"></div>
     `;
@@ -1573,6 +1724,143 @@
   }
 
   init();
+
+  // ===== QUESTION PREVIEW =====
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  let _pvTi = 0, _pvQi = 0;
+
+  function showQuestionPreview(ti, qi) {
+    _pvTi = ti; _pvQi = qi;
+    const q = questionData[ti][qi];
+    const t = tourSettings[ti];
+
+    // Badge
+    document.getElementById("pv-badge").textContent =
+      `Тур ${ti + 1} · Вопрос ${qi + 1} из ${t.questionCount}`;
+
+    // Timer
+    document.getElementById("pv-timer-num").textContent = t.timerSeconds || 60;
+
+    // Question content
+    const qEl = document.getElementById("pv-q-content");
+    qEl.innerHTML = "";
+
+    if (q.type === "text") {
+      if (q.text) {
+        const p = document.createElement("p");
+        p.className = "pv-q-text";
+        p.textContent = q.text;
+        qEl.appendChild(p);
+      } else {
+        qEl.innerHTML = `<p style="color:#475569;font-style:italic;font-size:18px;">Текст не введён</p>`;
+      }
+    } else {
+      const wrap = document.createElement("div");
+      wrap.className = "pv-q-media";
+      if (q.type === "youtube" && q.media_url) {
+        const m = q.media_url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/);
+        if (m) wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${m[1]}?rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+      } else if (q.type === "image" && q.media_url) {
+        wrap.innerHTML = `<img src="${escHtml(q.media_url)}" alt="">`;
+      } else if (q.type === "video" && q.media_url) {
+        wrap.innerHTML = `<video src="${escHtml(q.media_url)}" controls></video>`;
+      } else if (q.type === "audio" && q.media_url) {
+        wrap.innerHTML = `<audio src="${escHtml(q.media_url)}" controls></audio>`;
+      } else {
+        wrap.innerHTML = `<p style="color:#475569;font-style:italic;font-size:18px;">Медиа не добавлено</p>`;
+      }
+      qEl.appendChild(wrap);
+      if (q.text) {
+        const sub = document.createElement("p");
+        sub.className = "pv-q-subtext";
+        sub.textContent = q.text;
+        qEl.appendChild(sub);
+      }
+    }
+
+    // Show question view
+    document.getElementById("pv-question").style.display = "flex";
+    document.getElementById("pv-answer").style.display = "none";
+    document.getElementById("pv-reveal-btn").style.display = "";
+    document.getElementById("pv-back-btn").style.display = "none";
+
+    document.getElementById("preview-modal").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function showPreviewAnswer() {
+    const q = questionData[_pvTi][_pvQi];
+
+    document.getElementById("pv-a-text").textContent = q.answer || "";
+    document.getElementById("pv-a-text").style.display = q.answer ? "" : "none";
+
+    document.getElementById("pv-a-desc").textContent = q.answer_description || "";
+    document.getElementById("pv-a-desc").style.display = q.answer_description ? "" : "none";
+
+    const img = document.getElementById("pv-a-img");
+    img.src = q.answer_image_url || "";
+    img.style.display = q.answer_image_url ? "block" : "none";
+
+    document.getElementById("pv-question").style.display = "none";
+    document.getElementById("pv-answer").style.display = "flex";
+    document.getElementById("pv-reveal-btn").style.display = "none";
+    document.getElementById("pv-back-btn").style.display = "";
+  }
+
+  function showPreviewQuestion() {
+    document.getElementById("pv-question").style.display = "flex";
+    document.getElementById("pv-answer").style.display = "none";
+    document.getElementById("pv-reveal-btn").style.display = "";
+    document.getElementById("pv-back-btn").style.display = "none";
+  }
+
+  function closePreview() {
+    document.getElementById("preview-modal").classList.remove("open");
+    document.body.style.overflow = "";
+    // stop any playing media
+    document.querySelectorAll("#pv-q-content audio, #pv-q-content video").forEach(m => m.pause());
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePreview();
+  });
+
 </script>
+
+<div id="preview-modal">
+  <div class="pv-blob pv-blob-green"></div>
+  <div class="pv-blob pv-blob-pink"></div>
+
+  <div id="pv-controls">
+    <button class="pv-btn" id="pv-back-btn" onclick="showPreviewQuestion()" style="display:none">← Вопрос</button>
+    <button class="pv-btn pv-btn-reveal" id="pv-reveal-btn" onclick="showPreviewAnswer()">Показать ответ</button>
+    <button class="pv-btn" onclick="closePreview()">✕ Закрыть</button>
+  </div>
+
+  <div id="pv-question">
+    <p class="pv-badge" id="pv-badge"></p>
+    <div id="pv-q-content"></div>
+    <div class="pv-timer-wrap">
+      <svg class="pv-timer-ring" viewBox="0 0 90 90">
+        <circle class="pv-ring-track" cx="45" cy="45" r="38"/>
+        <circle class="pv-ring-fill"  cx="45" cy="45" r="38"/>
+      </svg>
+      <span class="pv-timer-num" id="pv-timer-num">60</span>
+    </div>
+  </div>
+
+  <div id="pv-answer">
+    <p class="pv-a-badge">Правильный ответ</p>
+    <div class="pv-a-divider"></div>
+    <p class="pv-a-answer" id="pv-a-text"></p>
+    <p class="pv-a-desc"   id="pv-a-desc"></p>
+    <img class="pv-a-img"  id="pv-a-img">
+  </div>
+</div>
+
 </body>
 </html>
