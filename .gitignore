@@ -1,6 +1,9 @@
 # Ignore uploaded media files
 uploads/*
 
+# FFmpeg WASM binaries (large, downloaded on first use)
+frontend/ffmpeg/
+
 # Ignore logs folder
 logs/*
 

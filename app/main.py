@@ -4,10 +4,14 @@ import logging
 import json
 import re
 import shutil
+import asyncio
+import tempfile
+import os
+import uuid
 from typing_extensions import Literal
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, Request, Response, File, UploadFile
+from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException, Request, Response, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -164,6 +168,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
@@ -203,6 +208,7 @@ class QuestionData(BaseModel):
     answer_image_url: str = ""
     bg_music_url: str = ""
     playback_rate: float = 1.0
+    muted: bool = False
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]
@@ -571,6 +577,127 @@ async def upload_file(file: UploadFile = File(...)):
     return {"url": f"/uploads/{unique_name}"}
 
 # --------------------
+# VIDEO SPEEDUP
+# --------------------
+
+_speedup_uploads: dict = {}   # job_id -> upload info
+_speedup_results: dict = {}   # result_id -> output info
+
+@app.get("/api/check-ffmpeg")
+def check_ffmpeg():
+    return {"available": shutil.which("ffmpeg") is not None}
+
+@app.post("/api/speedup/upload")
+async def speedup_upload(
+    file: UploadFile = File(...),
+    speed: float = Form(...),
+    remove_audio: bool = Form(True),
+):
+    if not shutil.which("ffmpeg"):
+        raise HTTPException(status_code=400, detail="FFmpeg is not installed on this machine.")
+    job_id = uuid.uuid4().hex[:10]
+    tmp_dir = tempfile.mkdtemp()
+    ext = Path(file.filename).suffix.lower().lstrip(".") or "mp4"
+    input_path = os.path.join(tmp_dir, f"input.{ext}")
+    with open(input_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+    _speedup_uploads[job_id] = {
+        "input_path": input_path,
+        "tmp_dir": tmp_dir,
+        "stem": Path(file.filename).stem,
+        "speed": speed,
+        "remove_audio": remove_audio,
+    }
+    return {"job_id": job_id}
+
+@app.get("/api/speedup/process/{job_id}")
+async def speedup_process(job_id: str):
+    from fastapi.responses import StreamingResponse as SR
+    upload = _speedup_uploads.pop(job_id, None)
+    if not upload:
+        raise HTTPException(status_code=404, detail="Job not found.")
+
+    input_path = upload["input_path"]
+    tmp_dir    = upload["tmp_dir"]
+    speed      = upload["speed"]
+    remove_audio = upload["remove_audio"]
+    stem       = upload["stem"]
+    output_path = os.path.join(tmp_dir, "output.mp4")
+
+    # Cap output fps for faster encoding at high speeds
+    if speed > 5:
+        target_fps = max(5, int(30 / speed))
+        fps_args = ["-r", str(target_fps)]
+    else:
+        fps_args = []
+
+    cmd = ["ffmpeg", "-y", "-i", input_path,
+           "-vf", f"setpts=PTS/{speed}",
+           *fps_args]
+    if remove_audio or speed > 2:
+        cmd.append("-an")
+    cmd += ["-c:v", "libx264", "-preset", "ultrafast", "-threads", "0", output_path]
+
+    async def event_stream():
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            duration = None
+            buf = ""
+            # FFmpeg writes progress with \r, not \n — read in chunks
+            while True:
+                chunk = await proc.stderr.read(512)
+                if not chunk:
+                    break
+                buf += chunk.decode("utf-8", errors="replace")
+                parts = re.split(r"[\r\n]+", buf)
+                buf = parts.pop()
+                for line in parts:
+                    if duration is None:
+                        m = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.?\d*)", line)
+                        if m:
+                            duration = int(m.group(1))*3600 + int(m.group(2))*60 + float(m.group(3))
+                    m = re.search(r"time=(\d+):(\d+):(\d+\.?\d*)", line)
+                    if m and duration:
+                        cur = int(m.group(1))*3600 + int(m.group(2))*60 + float(m.group(3))
+                        out_dur = duration / speed
+                        ratio = min(0.99, cur / out_dur) if out_dur > 0 else 0
+                        yield f"data: {json.dumps({'type':'progress','ratio':ratio})}\n\n"
+            await proc.wait()
+            if proc.returncode == 0:
+                rid = uuid.uuid4().hex[:10]
+                _speedup_results[rid] = {
+                    "path": output_path,
+                    "tmp_dir": tmp_dir,
+                    "filename": f"{stem}_{speed}x.mp4",
+                }
+                yield f"data: {json.dumps({'type':'done','result_id':rid})}\n\n"
+            else:
+                shutil.rmtree(tmp_dir, ignore_errors=True)
+                yield f"data: {json.dumps({'type':'error','message':'FFmpeg processing failed'})}\n\n"
+        except Exception as exc:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            yield f"data: {json.dumps({'type':'error','message':str(exc)})}\n\n"
+
+    return SR(event_stream(), media_type="text/event-stream",
+              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+@app.get("/api/speedup/download/{result_id}")
+async def speedup_download(result_id: str, background_tasks: BackgroundTasks):
+    result = _speedup_results.pop(result_id, None)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found or already downloaded.")
+    background_tasks.add_task(shutil.rmtree, result["tmp_dir"], True)
+    return FileResponse(
+        result["path"],
+        media_type="video/mp4",
+        headers={"Content-Disposition": f'attachment; filename="{result["filename"]}"'},
+    )
+
+# --------------------
 # STATIC FILES
 # --------------------
 
@@ -597,10 +724,8 @@ async def serve_frontend(full_path: str):
         logger.warning(f"Frontend file not found: {full_path}")
         raise HTTPException(status_code=404, detail="Not found")
     logger.info(f"Served frontend file: {full_path}")
-    return FileResponse(
-        target_path,
-        headers={
-            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-            "Pragma": "no-cache"
-        },
-    )
+    headers = {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+    }
+    return FileResponse(target_path, headers=headers)

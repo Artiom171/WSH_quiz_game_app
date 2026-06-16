@@ -1009,7 +1009,7 @@
       timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0 }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -1094,7 +1094,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0 });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0, muted: false });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1321,27 +1321,64 @@
           container.appendChild(tip);
         }
 
-        // Playback speed (video and audio only)
+        // Playback speed + mute (video and audio only)
         if (q.type === "video" || q.type === "audio") {
           const speedRow = document.createElement("div");
           speedRow.className = "q-section";
           speedRow.style.borderLeft = "3px solid #f59e0b";
+
           const speedLabel = document.createElement("span");
           speedLabel.className = "q-section-label";
           speedLabel.textContent = "⚡ Скорость воспроизведения";
           speedLabel.style.color = "#f59e0b";
-          const speedSelect = document.createElement("select");
-          speedSelect.style.cssText = "font-size:13px; width:auto;";
-          [["0.25", "0.25×"], ["0.5", "0.5×"], ["0.75", "0.75×"], ["1", "1× (обычная)"], ["1.5", "1.5×"], ["2", "2×"], ["3", "3×"], ["5", "5×"], ["10", "10×"]].forEach(([val, label]) => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = label;
-            if (parseFloat(val) === (q.playback_rate || 1.0)) opt.selected = true;
-            speedSelect.appendChild(opt);
+
+          // number input
+          const speedInput = document.createElement("input");
+          speedInput.type = "number";
+          speedInput.min = "0.01";
+          speedInput.step = "0.1";
+          speedInput.value = q.playback_rate || 1.0;
+          speedInput.style.cssText = "font-size:13px; width:120px;";
+          speedInput.addEventListener("input", () => {
+            const v = parseFloat(speedInput.value);
+            if (v > 0) questionData[ti][qi].playback_rate = v;
           });
-          speedSelect.addEventListener("change", () => { questionData[ti][qi].playback_rate = parseFloat(speedSelect.value); });
+
+          // preset buttons
+          const presets = document.createElement("div");
+          presets.style.cssText = "display:flex; gap:5px; flex-wrap:wrap; margin-top:6px;";
+          [0.25, 0.5, 1, 2, 5, 10, 50, 100, 1000].forEach(v => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = v + "×";
+            btn.style.cssText = "padding:3px 9px; font-size:12px; font-weight:600; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; cursor:pointer;";
+            btn.addEventListener("click", () => {
+              speedInput.value = v;
+              questionData[ti][qi].playback_rate = v;
+            });
+            presets.appendChild(btn);
+          });
+
+          // mute toggle
+          const muteRow = document.createElement("div");
+          muteRow.style.cssText = "display:flex; align-items:center; gap:8px; margin-top:10px;";
+          const muteCheck = document.createElement("input");
+          muteCheck.type = "checkbox";
+          muteCheck.id = `mute-${ti}-${qi}`;
+          muteCheck.checked = q.muted || false;
+          muteCheck.style.cssText = "width:16px; height:16px; cursor:pointer; accent-color:#f59e0b;";
+          muteCheck.addEventListener("change", () => { questionData[ti][qi].muted = muteCheck.checked; });
+          const muteLabel = document.createElement("label");
+          muteLabel.htmlFor = `mute-${ti}-${qi}`;
+          muteLabel.textContent = "Без звука";
+          muteLabel.style.cssText = "font-size:13px; font-weight:600; color:#64748b; cursor:pointer;";
+          muteRow.appendChild(muteCheck);
+          muteRow.appendChild(muteLabel);
+
           speedRow.appendChild(speedLabel);
-          speedRow.appendChild(speedSelect);
+          speedRow.appendChild(speedInput);
+          speedRow.appendChild(presets);
+          speedRow.appendChild(muteRow);
           container.appendChild(speedRow);
         }
 
@@ -1679,7 +1716,8 @@
           answer_description: q.answer_description || "",
           answer_image_url: q.answer_image_url || "",
           bg_music_url: q.bg_music_url || "",
-          playback_rate: q.playback_rate || 1.0
+          playback_rate: q.playback_rate || 1.0,
+          muted: q.muted || false
         }))
       }))
     };
@@ -1854,6 +1892,7 @@
         const vid = document.createElement("video");
         vid.src = q.media_url;
         vid.controls = true;
+        vid.muted = q.muted || false;
         const rate = q.playback_rate || 1.0;
         vid.addEventListener("loadedmetadata", () => { vid.playbackRate = rate; });
         vid.playbackRate = rate;
@@ -1862,6 +1901,7 @@
         const aud = document.createElement("audio");
         aud.src = q.media_url;
         aud.controls = true;
+        aud.muted = q.muted || false;
         const rate = q.playback_rate || 1.0;
         aud.addEventListener("loadedmetadata", () => { aud.playbackRate = rate; });
         aud.playbackRate = rate;
