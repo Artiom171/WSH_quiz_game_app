@@ -202,6 +202,7 @@ class QuestionData(BaseModel):
     answer_description: str = ""
     answer_image_url: str = ""
     bg_music_url: str = ""
+    playback_rate: float = 1.0
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]

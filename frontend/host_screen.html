@@ -610,9 +610,21 @@
       } else if (q.type === 'image') {
         wrap.innerHTML = `<img src="${esc(q.media_url)}" alt="" />`;
       } else if (q.type === 'video') {
-        wrap.innerHTML = `<video src="${esc(q.media_url)}" controls autoplay></video>`;
+        const vid = document.createElement('video');
+        vid.src = q.media_url;
+        vid.controls = true;
+        vid.autoplay = true;
+        vid.playbackRate = q.playback_rate || 1.0;
+        vid.addEventListener('loadedmetadata', () => { vid.playbackRate = q.playback_rate || 1.0; });
+        wrap.appendChild(vid);
       } else if (q.type === 'audio') {
-        wrap.innerHTML = `<audio src="${esc(q.media_url)}" controls autoplay></audio>`;
+        const aud = document.createElement('audio');
+        aud.src = q.media_url;
+        aud.controls = true;
+        aud.autoplay = true;
+        aud.playbackRate = q.playback_rate || 1.0;
+        aud.addEventListener('loadedmetadata', () => { aud.playbackRate = q.playback_rate || 1.0; });
+        wrap.appendChild(aud);
       }
 
       content.appendChild(wrap);

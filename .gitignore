@@ -1,3 +1,6 @@
+# Ignore uploaded media files
+uploads/*
+
 # Ignore logs folder
 logs/*
 

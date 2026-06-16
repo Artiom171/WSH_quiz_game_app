@@ -1,7 +1,7 @@
 [
   {
     "id": "1780747537187",
-    "name": "",
+    "name": "Кто тут умный? Лето 2026",
     "created_at": "2026-06-06T14:05:37.187298",
     "tours": [
       {
@@ -16,7 +16,8 @@
             "answer": "Иран",
             "answer_description": "",
             "answer_image_url": "https://daily.hse.ru/storage/865803_diller0054.jpg",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -25,7 +26,8 @@
             "answer": "Мадам",
             "answer_description": "",
             "answer_image_url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Konstantin_Somov_-_%D0%94%D0%B0%D0%BC%D0%B0_%D0%B2_%D0%B3%D0%BE%D0%BB%D1%83%D0%B1%D0%BE%D0%BC._%D0%9F%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_%D0%95.%D0%9C.%D0%9C%D0%B0%D1%80%D1%82%D1%8B%D0%BD%D0%BE%D0%B2%D0%BE%D0%B9_-_Google_Art_Project.jpg",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -34,7 +36,8 @@
             "answer": "Чемпионат Мира по футболу, Мундиаль",
             "answer_description": "",
             "answer_image_url": "https://scontent-waw2-2.xx.fbcdn.net/v/t39.30808-6/720570747_1007858898605212_930931087628633818_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=p526x296&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=e5LT2kPol6IQ7kNvwHlVnhP&_nc_oc=AdoiWXkxcHvjOyU9MuqF-t16uGWxST3SObxIcPOqoSqqren1Js-lSFphktIcYEEwfnU&_nc_zt=23&_nc_ht=scontent-waw2-2.xx&_nc_gid=4XfVg8DvjTVPXArhDm9Gow&_nc_ss=7b289&oh=00_Af8esSb681PY1lpRw919iHL7f6cN5aGd9s3exaiVGtBK0g&oe=6A32F8C4",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -43,7 +46,8 @@
             "answer": "Samsung ",
             "answer_description": "",
             "answer_image_url": "https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/mo/360_197_1.png?$720_N_PNG$",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -52,7 +56,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -61,7 +66,8 @@
             "answer": "Вильнюс",
             "answer_description": "Поселение в Канаде - Wilno",
             "answer_image_url": "https://brazolotmigration.com/wp-content/uploads/2017/09/Wilno-Sign.jpg",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -70,7 +76,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -79,7 +86,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -88,7 +96,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -97,7 +106,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM"
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
+            "playback_rate": 1.0
           }
         ],
         "questions": 10
@@ -114,7 +124,8 @@
             "answer": "Маским Галкин ",
             "answer_description": "",
             "answer_image_url": "https://www.maxgalkin.ru/_next/image?url=%2Fmax1.webp&w=3840&q=75",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "image",
@@ -123,16 +134,18 @@
             "answer": "Michelin",
             "answer_description": "",
             "answer_image_url": "https://michelinmedia.com/site/user/images/Michelin_Corporate_Logo___on_blue.jpg",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
-            "type": "text",
-            "text": "FOkdg",
-            "media_url": "",
+            "type": "video",
+            "text": "",
+            "media_url": "/uploads/The.Martian.2015.BDRip.1080p.mkv",
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 10.0
           },
           {
             "type": "text",
@@ -141,7 +154,8 @@
             "answer": "Samsung ",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -150,7 +164,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -159,7 +174,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -168,7 +184,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -177,7 +194,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -186,7 +204,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -195,7 +214,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -204,7 +224,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -213,7 +234,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -222,7 +244,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -231,7 +254,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -240,7 +264,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08"
+            "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
+            "playback_rate": 1.0
           }
         ],
         "questions": 15
@@ -257,7 +282,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -266,7 +292,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -275,7 +302,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -284,7 +312,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -293,7 +322,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -302,7 +332,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -311,7 +342,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -320,7 +352,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -329,7 +362,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -338,7 +372,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -347,7 +382,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -356,7 +392,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -365,7 +402,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -374,7 +412,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -383,7 +422,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           }
         ],
         "questions": 15
@@ -400,7 +440,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -409,7 +450,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -418,7 +460,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -427,7 +470,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -436,7 +480,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -445,7 +490,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -454,7 +500,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -463,7 +510,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -472,7 +520,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -481,7 +530,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -490,7 +540,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -499,7 +550,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -508,7 +560,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -517,7 +570,8 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           },
           {
             "type": "text",
@@ -526,12 +580,13 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": ""
+            "bg_music_url": "",
+            "playback_rate": 1.0
           }
         ],
         "questions": 15
       }
     ],
-    "updated_at": "2026-06-15T22:16:25.699692"
+    "updated_at": "2026-06-15T23:12:27.805116"
   }
 ]

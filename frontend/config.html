@@ -1009,7 +1009,7 @@
       timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "" }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0 }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -1094,7 +1094,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "" });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0 });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1234,27 +1234,77 @@
           urlInput.value = "";
         });
 
-        fileInput.addEventListener("change", async () => {
+        // progress bar + cancel
+        const progressWrap = document.createElement("div");
+        progressWrap.style.cssText = "display:none; width:100%; margin-top:6px;";
+
+        const progressTrack = document.createElement("div");
+        progressTrack.style.cssText = "width:100%; height:6px; background:#e2e8f0; border-radius:4px; overflow:hidden;";
+        const progressBar = document.createElement("div");
+        progressBar.style.cssText = "height:100%; width:0%; background:linear-gradient(90deg,#a8d800,#80b000); border-radius:4px; transition:width 0.15s;";
+        progressTrack.appendChild(progressBar);
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.textContent = "Отменить";
+        cancelBtn.style.cssText = "margin-top:6px; padding:4px 12px; font-size:12px; font-weight:600; color:#ef4444; background:transparent; border:1px solid #ef4444; border-radius:6px; cursor:pointer;";
+
+        progressWrap.appendChild(progressTrack);
+        progressWrap.appendChild(cancelBtn);
+
+        fileInput.addEventListener("change", () => {
           const file = fileInput.files[0];
           if (!file) return;
           uploadBtn.textContent = "Загрузка...";
           uploadBtn.disabled = true;
-          try {
-            const fd = new FormData();
-            fd.append("file", file);
-            const res = await fetch("/upload", { method: "POST", body: fd });
-            if (!res.ok) throw new Error(await res.text());
-            const data = await res.json();
-            questionData[ti][qi].media_url = data.url;
-            if (q.type === "image") { preview.src = data.url; preview.style.display = "block"; }
-            else { filenameSpan.textContent = data.url.split("/").pop(); }
-            uploadBtn.textContent = "✓ Файл загружен";
-            removeBtn.style.display = "block";
-            urlInput.value = "";
-          } catch {
+          progressBar.style.width = "0%";
+          progressWrap.style.display = "block";
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "/upload");
+
+          xhr.upload.addEventListener("progress", e => {
+            if (e.lengthComputable) {
+              const pct = Math.round(e.loaded / e.total * 100);
+              progressBar.style.width = pct + "%";
+              uploadBtn.textContent = pct >= 100 ? "Сохранение..." : pct + "%";
+            }
+          });
+
+          xhr.addEventListener("load", () => {
+            progressWrap.style.display = "none";
+            if (xhr.status >= 200 && xhr.status < 300) {
+              const data = JSON.parse(xhr.responseText);
+              questionData[ti][qi].media_url = data.url;
+              if (q.type === "image") { preview.src = data.url; preview.style.display = "block"; }
+              else { filenameSpan.textContent = data.url.split("/").pop(); }
+              uploadBtn.textContent = "✓ Файл загружен";
+              removeBtn.style.display = "block";
+              urlInput.value = "";
+            } else {
+              uploadBtn.textContent = "+ Загрузить файл";
+            }
+            uploadBtn.disabled = false;
+          });
+
+          xhr.addEventListener("error", () => {
+            progressWrap.style.display = "none";
             uploadBtn.textContent = "+ Загрузить файл";
-          }
-          uploadBtn.disabled = false;
+            uploadBtn.disabled = false;
+          });
+
+          xhr.addEventListener("abort", () => {
+            progressWrap.style.display = "none";
+            uploadBtn.textContent = "+ Загрузить файл";
+            uploadBtn.disabled = false;
+            fileInput.value = "";
+          });
+
+          cancelBtn.onclick = () => xhr.abort();
+
+          const fd = new FormData();
+          fd.append("file", file);
+          xhr.send(fd);
         });
 
         uploadRow.appendChild(fileInput);
@@ -1262,6 +1312,38 @@
         uploadRow.appendChild(q.type === "image" ? preview : filenameSpan);
         uploadRow.appendChild(removeBtn);
         container.appendChild(uploadRow);
+        container.appendChild(progressWrap);
+
+        if (q.type === "video" || q.type === "audio") {
+          const tip = document.createElement("p");
+          tip.style.cssText = "font-size:11px; color:#94a3b8; margin:4px 0 0;";
+          tip.textContent = "💡 Для большого файла: скопируйте его в папку uploads/ и вставьте /uploads/имя_файла в поле URL ниже.";
+          container.appendChild(tip);
+        }
+
+        // Playback speed (video and audio only)
+        if (q.type === "video" || q.type === "audio") {
+          const speedRow = document.createElement("div");
+          speedRow.className = "q-section";
+          speedRow.style.borderLeft = "3px solid #f59e0b";
+          const speedLabel = document.createElement("span");
+          speedLabel.className = "q-section-label";
+          speedLabel.textContent = "⚡ Скорость воспроизведения";
+          speedLabel.style.color = "#f59e0b";
+          const speedSelect = document.createElement("select");
+          speedSelect.style.cssText = "font-size:13px; width:auto;";
+          [["0.25", "0.25×"], ["0.5", "0.5×"], ["0.75", "0.75×"], ["1", "1× (обычная)"], ["1.5", "1.5×"], ["2", "2×"], ["3", "3×"], ["5", "5×"], ["10", "10×"]].forEach(([val, label]) => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = label;
+            if (parseFloat(val) === (q.playback_rate || 1.0)) opt.selected = true;
+            speedSelect.appendChild(opt);
+          });
+          speedSelect.addEventListener("change", () => { questionData[ti][qi].playback_rate = parseFloat(speedSelect.value); });
+          speedRow.appendChild(speedLabel);
+          speedRow.appendChild(speedSelect);
+          container.appendChild(speedRow);
+        }
 
         // URL as secondary option
         const urlRow = document.createElement("div");
@@ -1464,6 +1546,7 @@
     questionData[ti][qi].type = newType;
     questionData[ti][qi].text = "";
     questionData[ti][qi].media_url = "";
+    questionData[ti][qi].playback_rate = 1.0;
     card.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
     card.querySelectorAll(".type-btn").forEach(b => {
       const t = b.textContent.trim();
@@ -1595,7 +1678,8 @@
           answer: q.answer,
           answer_description: q.answer_description || "",
           answer_image_url: q.answer_image_url || "",
-          bg_music_url: q.bg_music_url || ""
+          bg_music_url: q.bg_music_url || "",
+          playback_rate: q.playback_rate || 1.0
         }))
       }))
     };
@@ -1767,9 +1851,21 @@
       } else if (q.type === "image" && q.media_url) {
         wrap.innerHTML = `<img src="${escHtml(q.media_url)}" alt="">`;
       } else if (q.type === "video" && q.media_url) {
-        wrap.innerHTML = `<video src="${escHtml(q.media_url)}" controls></video>`;
+        const vid = document.createElement("video");
+        vid.src = q.media_url;
+        vid.controls = true;
+        const rate = q.playback_rate || 1.0;
+        vid.addEventListener("loadedmetadata", () => { vid.playbackRate = rate; });
+        vid.playbackRate = rate;
+        wrap.appendChild(vid);
       } else if (q.type === "audio" && q.media_url) {
-        wrap.innerHTML = `<audio src="${escHtml(q.media_url)}" controls></audio>`;
+        const aud = document.createElement("audio");
+        aud.src = q.media_url;
+        aud.controls = true;
+        const rate = q.playback_rate || 1.0;
+        aud.addEventListener("loadedmetadata", () => { aud.playbackRate = rate; });
+        aud.playbackRate = rate;
+        wrap.appendChild(aud);
       } else {
         wrap.innerHTML = `<p style="color:#475569;font-style:italic;font-size:18px;">Медиа не добавлено</p>`;
       }
