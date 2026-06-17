@@ -208,6 +208,7 @@ class QuestionData(BaseModel):
     bg_music_url: str = ""
     playback_rate: float = 1.0
     muted: bool = False
+    timer_seconds: Optional[int] = None
 
 class TourConfigFull(BaseModel):
     type: Literal["ordinary", "themed"]

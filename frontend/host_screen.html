@@ -472,10 +472,14 @@
   function question() { const t = tour(); return t?.questions_data?.[status.current_question - 1] ?? null; }
   function isLast()   { const t = tour(); return t && status.current_question >= t.questions; }
 
+  function effectiveTimer() {
+    const q = question(); const t = tour();
+    return q?.timer_seconds || t?.timer_seconds || 0;
+  }
   function timerMs() {
-    const t = tour();
-    if (!status.question_started_at || !t?.timer_seconds) return null;
-    return Math.max(0, status.question_started_at + t.timer_seconds * 1000 - Date.now());
+    const secs = effectiveTimer();
+    if (!status.question_started_at || !secs) return null;
+    return Math.max(0, status.question_started_at + secs * 1000 - Date.now());
   }
 
   // ===== SCREEN SWITCHER =====
@@ -546,7 +550,7 @@
 
     const rem = timerMs();
     const expired = rem !== null && rem <= 0;
-    const hasTimer = !!t.timer_seconds;
+    const hasTimer = !!effectiveTimer();
 
     if (host_state === 'waiting') {
       if (hasTimer) {
@@ -560,7 +564,7 @@
     }
 
     if (host_state === 'timer_running') {
-      if (hasTimer && !expired) startTimer(t.timer_seconds, question_started_at);
+      if (hasTimer && !expired) startTimer(effectiveTimer(), question_started_at);
 
       if (expired) {
         if (t.type === 'ordinary') showBtns('btn-show-answer');
@@ -690,7 +694,7 @@
     }
 
     const timerWrap = document.getElementById('timer-wrap');
-    timerWrap.style.display = t.timer_seconds ? '' : 'none';
+    timerWrap.style.display = effectiveTimer() ? '' : 'none';
 
     showScreen('screen-question');
     requestAnimationFrame(fitTextToContainer);

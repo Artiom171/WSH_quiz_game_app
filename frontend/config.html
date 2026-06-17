@@ -1021,10 +1021,9 @@
       type: t.type,
       name: t.name || "",
       questionCount: t.questions_data ? t.questions_data.length : t.questions,
-      timerSeconds: t.timer_seconds || ""
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false, timer_seconds: q.timer_seconds || null }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -1041,7 +1040,7 @@
     section.style.display = "block";
 
     // sync tourSettings array length
-    while (tourSettings.length < n) tourSettings.push({ type: "ordinary", questionCount: 10, timerSeconds: 60, name: "" });
+    while (tourSettings.length < n) tourSettings.push({ type: "ordinary", questionCount: 10, name: "" });
     tourSettings = tourSettings.slice(0, n);
     while (questionData.length < n) questionData.push([]);
     questionData = questionData.slice(0, n);
@@ -1077,13 +1076,6 @@
               value="${t.questionCount}"
               oninput="tourSettings[${i}].questionCount = parseInt(this.value) || 0" />
           </div>
-          <div class="field">
-            <label>Таймер (сек)</label>
-            <input type="number" id="timer-${i}" min="5" max="600"
-              placeholder="нет"
-              value="${t.timerSeconds || ""}"
-              oninput="tourSettings[${i}].timerSeconds = parseInt(this.value) || null" />
-          </div>
         </div>
       `;
       list.appendChild(card);
@@ -1109,7 +1101,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0, muted: false });
+        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0, muted: false, timer_seconds: null });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1655,6 +1647,37 @@
     musicRow.appendChild(musicLabel);
     musicRow.appendChild(musicInput);
     container.appendChild(musicRow);
+
+    // Per-question timer
+    const timerRow = document.createElement("div");
+    timerRow.className = "q-section";
+    timerRow.style.borderLeft = "3px solid #38bdf8";
+    timerRow.style.display = "flex";
+    timerRow.style.alignItems = "center";
+    timerRow.style.gap = "10px";
+    const timerLabel = document.createElement("span");
+    timerLabel.className = "q-section-label";
+    timerLabel.textContent = "⏱ Таймер вопроса";
+    timerLabel.style.color = "#38bdf8";
+    timerLabel.style.flexShrink = "0";
+    const timerInput = document.createElement("input");
+    timerInput.type = "number";
+    timerInput.min = "0";
+    timerInput.step = "1";
+    timerInput.placeholder = "Нет";
+    timerInput.value = q.timer_seconds || "";
+    timerInput.style.cssText = "width:80px; font-size:13px;";
+    timerInput.addEventListener("input", () => {
+      const v = parseInt(timerInput.value);
+      questionData[ti][qi].timer_seconds = (v > 0) ? v : null;
+    });
+    const timerUnit = document.createElement("span");
+    timerUnit.textContent = "сек  (пусто = как в туре)";
+    timerUnit.style.cssText = "font-size:11px; color:#94a3b8;";
+    timerRow.appendChild(timerLabel);
+    timerRow.appendChild(timerInput);
+    timerRow.appendChild(timerUnit);
+    container.appendChild(timerRow);
   }
 
   function setQType(ti, qi, newType, card) {
@@ -1785,7 +1808,7 @@
       tours: tourSettings.map((t, i) => ({
         type: t.type,
         name: t.name || "",
-        timer_seconds: t.timerSeconds || null,
+        timer_seconds: null,
         questions_data: (questionData[i] || []).map(q => ({
           type: q.type,
           text: q.text,
@@ -1795,7 +1818,8 @@
           answer_image_url: q.answer_image_url || "",
           bg_music_url: q.bg_music_url || "",
           playback_rate: q.playback_rate || 1.0,
-          muted: q.muted || false
+          muted: q.muted || false,
+          timer_seconds: q.timer_seconds || null
         }))
       }))
     };
