@@ -564,6 +564,21 @@
       object-fit:contain; margin:20px auto 0; display:block;
       animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
+    @keyframes stripScan {
+      0%   { left: -40%; width: 40%; }
+      50%  { left: 30%; width: 60%; }
+      100% { left: 110%; width: 40%; }
+    }
+    .strip-progress-wrap {
+      width: 100%; height: 5px; background: #e2e8f0; border-radius: 4px;
+      overflow: hidden; position: relative; margin-top: 6px;
+    }
+    .strip-progress-bar {
+      position: absolute; top: 0; height: 100%;
+      background: linear-gradient(90deg, #a855f7, #d946ef);
+      border-radius: 4px;
+      animation: stripScan 1.4s ease-in-out infinite;
+    }
     @keyframes pvReveal {
       from { opacity:0; transform:translateY(28px) scale(0.93); }
       to   { opacity:1; transform:translateY(0) scale(1); }
@@ -1403,13 +1418,76 @@
         });
         urlRow.appendChild(urlLabel);
         urlRow.appendChild(urlInput);
+        let stripProgressUrl = null;
+        if (q.type === "video") {
+          const stripAudioBtn = document.createElement("button");
+          stripAudioBtn.type = "button";
+          stripAudioBtn.textContent = "🔇 Убрать звук";
+          stripAudioBtn.style.cssText = "padding:4px 10px; font-size:12px; font-weight:600; color:#a855f7; background:transparent; border:1px solid #a855f7; border-radius:6px; cursor:pointer; white-space:nowrap; flex-shrink:0; display:" + (urlInput.value ? "inline-block" : "none") + ";";
+          urlInput.addEventListener("input", () => {
+            stripAudioBtn.style.display = urlInput.value ? "inline-block" : "none";
+            stripAudioBtn.textContent = "🔇 Убрать звук";
+          });
+          stripProgressUrl = document.createElement("div");
+          stripProgressUrl.className = "strip-progress-wrap";
+          stripProgressUrl.style.display = "none";
+          stripProgressUrl.innerHTML = '<div class="strip-progress-bar"></div>';
+          stripAudioBtn.addEventListener("click", async () => {
+            const currentUrl = urlInput.value.trim();
+            if (!currentUrl) return;
+            stripAudioBtn.textContent = "Убираю звук...";
+            stripAudioBtn.disabled = true;
+            stripProgressUrl.style.display = "block";
+            try {
+              const res = await fetch("/api/strip-audio", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: currentUrl }),
+              });
+              if (!res.ok) throw new Error(await res.text());
+              const data = await res.json();
+              questionData[ti][qi].media_url = data.url;
+              urlInput.value = data.url;
+              stripAudioBtn.textContent = "✓ Звук удалён";
+            } catch (e) {
+              stripAudioBtn.textContent = "⚠ Ошибка";
+              console.error(e);
+            } finally {
+              stripAudioBtn.disabled = false;
+              stripProgressUrl.style.display = "none";
+            }
+          });
+          urlRow.appendChild(stripAudioBtn);
+        }
         container.appendChild(urlRow);
+        if (stripProgressUrl) container.appendChild(stripProgressUrl);
       } else {
         // youtube: URL only
         urlInput.placeholder = "URL YouTube видео (https://youtube.com/...)";
         urlInput.value = q.media_url;
         urlInput.addEventListener("input", () => { questionData[ti][qi].media_url = urlInput.value; });
-        container.appendChild(urlInput);
+        const ytRow = document.createElement("div");
+        ytRow.style.cssText = "display:flex; align-items:center; gap:8px;";
+        ytRow.appendChild(urlInput);
+        const stripAudioBtn = document.createElement("button");
+        stripAudioBtn.type = "button";
+        const isMutedNow = () => !!questionData[ti][qi].muted;
+        const updateMuteBtn = () => {
+          stripAudioBtn.textContent = isMutedNow() ? "🔊 Включить звук" : "🔇 Убрать звук";
+          stripAudioBtn.style.color = isMutedNow() ? "#64748b" : "#a855f7";
+          stripAudioBtn.style.borderColor = isMutedNow() ? "#64748b" : "#a855f7";
+        };
+        stripAudioBtn.style.cssText = "padding:4px 10px; font-size:12px; font-weight:600; background:transparent; border:1px solid; border-radius:6px; cursor:pointer; white-space:nowrap; flex-shrink:0; display:" + (urlInput.value ? "inline-block" : "none") + ";";
+        updateMuteBtn();
+        urlInput.addEventListener("input", () => {
+          stripAudioBtn.style.display = urlInput.value ? "inline-block" : "none";
+        });
+        stripAudioBtn.addEventListener("click", () => {
+          questionData[ti][qi].muted = !isMutedNow();
+          updateMuteBtn();
+        });
+        ytRow.appendChild(stripAudioBtn);
+        container.appendChild(ytRow);
       }
 
       const toggleBtn = document.createElement("button");
@@ -1854,6 +1932,7 @@
   }
 
   let _pvTi = 0, _pvQi = 0;
+  let _pvCover = null;
 
   function showQuestionPreview(ti, qi) {
     _pvTi = ti; _pvQi = qi;
@@ -1885,7 +1964,46 @@
       wrap.className = "pv-q-media";
       if (q.type === "youtube" && q.media_url) {
         const m = q.media_url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/);
-        if (m) wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${m[1]}?rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+        if (m) {
+          const vidId = m[1];
+          const ytWrap = document.createElement("div");
+          ytWrap.style.cssText = "position:relative; width:100%; max-width:860px;";
+
+          const iframe = document.createElement("iframe");
+          iframe.src = `https://www.youtube.com/embed/${vidId}?autoplay=1&mute=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}&controls=0&modestbranding=1&iv_load_policy=3&disablekb=1`;
+          iframe.allowFullscreen = true;
+          iframe.allow = "autoplay; encrypted-media";
+          iframe.style.cssText = "width:100%; display:block;";
+
+          const pvCover = document.createElement("div");
+          pvCover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000 url(https://img.youtube.com/vi/${vidId}/hqdefault.jpg) center/cover no-repeat; display:flex; align-items:center; justify-content:center;`;
+          pvCover.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:14px;pointer-events:none;">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="rgba(0,0,0,0.6)"/>
+              <polygon points="32,24 60,40 32,56" fill="white"/>
+            </svg>
+            <span style="color:#fff;font-size:13px;font-weight:600;background:rgba(0,0,0,0.6);padding:4px 14px;border-radius:20px;">Нажмите для воспроизведения</span>
+          </div>`;
+
+          const topCover = document.createElement("div");
+          topCover.style.cssText = "position:absolute; top:0; left:0; right:0; height:56px; background:#000; z-index:11; pointer-events:none;";
+
+          _pvCover = pvCover;
+          const revealPv = () => {
+            pvCover.remove();
+            _pvCover = null;
+            if (!q.muted) {
+              const unMute = () => { try { iframe.contentWindow.postMessage(JSON.stringify({event:"command",func:"unMute",args:[]}), "*"); } catch(e) {} };
+              unMute(); setTimeout(unMute, 600);
+            }
+          };
+          pvCover.addEventListener("click", revealPv);
+
+          ytWrap.appendChild(iframe);
+          ytWrap.appendChild(pvCover);
+          ytWrap.appendChild(topCover);
+          wrap.appendChild(ytWrap);
+        }
       } else if (q.type === "image" && q.media_url) {
         wrap.innerHTML = `<img src="${escHtml(q.media_url)}" alt="">`;
       } else if (q.type === "video" && q.media_url) {
@@ -1957,12 +2075,13 @@
   function closePreview() {
     document.getElementById("preview-modal").classList.remove("open");
     document.body.style.overflow = "";
-    // stop any playing media
+    _pvCover = null;
     document.querySelectorAll("#pv-q-content audio, #pv-q-content video").forEach(m => m.pause());
   }
 
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closePreview();
+    if (e.key === "Escape") { closePreview(); return; }
+    if (e.code === "Space" && _pvCover) { e.preventDefault(); _pvCover.click(); }
   });
 
 </script>

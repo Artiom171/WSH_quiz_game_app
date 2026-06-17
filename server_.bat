@@ -107,9 +107,19 @@ echo.
 echo  ============================================
 echo.
 
+:launch
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 echo.
 echo  Server stopped.
+echo.
+choice /c RQ /n /m "  Press R to restart, Q to quit: "
+if %errorlevel% equ 1 (
+    echo.
+    echo  Restarting...
+    echo.
+    goto :launch
+)
+
 echo.
 pause

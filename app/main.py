@@ -4,12 +4,15 @@ import logging
 import json
 import re
 import shutil
+import asyncio
+import os
+import tempfile
 from typing_extensions import Literal
 from typing import Optional
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Response, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
@@ -350,8 +353,11 @@ async def cause_404(request: Request, exc: StarletteHTTPException):
     return RedirectResponse(url="/error_page.html")
 
 @app.exception_handler(500)
-async def cause_500(request: Request, exc: StarletteHTTPException):
-    return RedirectResponse(url="/server_error_page.html")
+async def cause_500(request: Request, exc: Exception):
+    if request.url.path.startswith("/api/"):
+        detail = getattr(exc, "detail", str(exc))
+        return JSONResponse(status_code=500, content={"detail": detail})
+    return RedirectResponse(url="/server_error_page.html", status_code=303)
 
 # --------------------
 # RESULTS (leaderboard)
@@ -571,6 +577,57 @@ async def upload_file(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, f)
     logger.info(f"File uploaded: {unique_name}")
     return {"url": f"/uploads/{unique_name}"}
+
+
+class StripAudioRequest(BaseModel):
+    url: str
+
+@app.post("/api/strip-audio")
+async def strip_audio(req: StripAudioRequest):
+    out_name = f"{int(datetime.now().timestamp() * 1000)}_noaudio.mp4"
+    output_path = UPLOADS_DIR / out_name
+
+    if req.url.startswith("/uploads/"):
+        input_path = UPLOADS_DIR / Path(req.url).name
+        if not input_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        proc = await asyncio.create_subprocess_exec(
+            "ffmpeg", "-y", "-i", str(input_path), "-an", "-c:v", "copy", str(output_path),
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, stderr = await proc.communicate()
+        if proc.returncode != 0:
+            logger.error(f"ffmpeg strip-audio failed: {stderr.decode(errors='replace')}")
+            raise HTTPException(status_code=500, detail="FFmpeg failed to strip audio")
+    else:
+        tmp_dir = tempfile.mkdtemp()
+        tmp_input = os.path.join(tmp_dir, "input.mp4")
+        try:
+            dl = await asyncio.create_subprocess_exec(
+                "yt-dlp", "-f", "bestvideo[ext=mp4]+bestaudio/best[ext=mp4]/best",
+                "--merge-output-format", "mp4", "-o", tmp_input, req.url,
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            _, dl_err = await dl.communicate()
+            if dl.returncode != 0:
+                logger.error(f"yt-dlp failed: {dl_err.decode(errors='replace')}")
+                raise HTTPException(status_code=500, detail="Failed to download video")
+            proc = await asyncio.create_subprocess_exec(
+                "ffmpeg", "-y", "-i", tmp_input, "-an", "-c:v", "copy", str(output_path),
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            _, stderr = await proc.communicate()
+            if proc.returncode != 0:
+                logger.error(f"ffmpeg strip-audio failed: {stderr.decode(errors='replace')}")
+                raise HTTPException(status_code=500, detail="FFmpeg failed to strip audio")
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    logger.info(f"Audio stripped: {out_name}")
+    return {"url": f"/uploads/{out_name}"}
 
 # --------------------
 # STATIC FILES

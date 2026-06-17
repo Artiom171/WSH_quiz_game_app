@@ -451,6 +451,7 @@
 
   let status = {};
   let timerInterval = null;
+  let _ytSpaceHandler = null;
 
   // ===== HELPERS =====
 
@@ -462,7 +463,9 @@
 
   function ytEmbedUrl(url) {
     const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/);
-    return m ? `https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0` : null;
+    if (!m) return null;
+    // always muted + autoplay; cover handles reveal + unmute
+    return `https://www.youtube.com/embed/${m[1]}?autoplay=1&mute=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&controls=0&modestbranding=1&iv_load_policy=3&disablekb=1`;
   }
 
   function tour()     { return status.config?.tours?.[status.current_tour - 1] ?? null; }
@@ -592,6 +595,8 @@
     document.getElementById('q-badge').textContent =
       `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
 
+    if (_ytSpaceHandler) { document.removeEventListener('keydown', _ytSpaceHandler); _ytSpaceHandler = null; }
+
     const content = document.getElementById('q-content');
     content.innerHTML = '';
 
@@ -606,7 +611,52 @@
 
       if (q.type === 'youtube') {
         const url = ytEmbedUrl(q.media_url);
-        if (url) wrap.innerHTML = `<iframe src="${esc(url)}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+        const vidId = (q.media_url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^"&?\/ ]{11})/) || [])[1];
+        if (url && vidId) {
+          const ytWrap = document.createElement('div');
+          ytWrap.style.cssText = 'position:relative; width:100%; max-width:860px;';
+
+          // Iframe starts silently under the cover (muted autoplay always works)
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.allowFullscreen = true;
+          iframe.allow = 'autoplay; encrypted-media';
+          iframe.style.cssText = 'width:100%; display:block;';
+
+          // Cover shown until Space/click
+          const cover = document.createElement('div');
+          cover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000 url(https://img.youtube.com/vi/${vidId}/hqdefault.jpg) center/cover no-repeat; display:flex; align-items:center; justify-content:center;`;
+          cover.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:none;">
+            <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
+              <circle cx="44" cy="44" r="44" fill="rgba(0,0,0,0.6)"/>
+              <polygon points="35,28 67,44 35,60" fill="white"/>
+            </svg>
+            <span style="color:#fff;font-size:15px;font-weight:600;background:rgba(0,0,0,0.6);padding:5px 16px;border-radius:20px;letter-spacing:0.04em;">Пробел — воспроизвести</span>
+          </div>`;
+
+          const topCover = document.createElement('div');
+          topCover.style.cssText = 'position:absolute; top:0; left:0; right:0; height:56px; background:#000; z-index:11; pointer-events:none;';
+
+          ytWrap.appendChild(iframe);
+          ytWrap.appendChild(cover);
+          ytWrap.appendChild(topCover);
+          wrap.appendChild(ytWrap);
+
+          const revealVideo = () => {
+            if (_ytSpaceHandler) { document.removeEventListener('keydown', _ytSpaceHandler); _ytSpaceHandler = null; }
+            cover.remove();
+            if (!q.muted) {
+              const unMute = () => {
+                try { iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'unMute',args:[]}), '*'); } catch(e) {}
+              };
+              unMute(); setTimeout(unMute, 600); setTimeout(unMute, 1400);
+            }
+          };
+
+          cover.addEventListener('click', revealVideo);
+          _ytSpaceHandler = (e) => { if (e.code === 'Space') { e.preventDefault(); revealVideo(); } };
+          document.addEventListener('keydown', _ytSpaceHandler);
+        }
       } else if (q.type === 'image') {
         wrap.innerHTML = `<img src="${esc(q.media_url)}" alt="" />`;
       } else if (q.type === 'video') {
