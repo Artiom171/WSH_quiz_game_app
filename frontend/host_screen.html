@@ -613,7 +613,6 @@
           const ytWrap = document.createElement('div');
           ytWrap.style.cssText = 'position:relative; width:100%; max-width:860px;';
 
-          // Iframe starts silently under the cover (muted autoplay always works)
           const iframe = document.createElement('iframe');
           iframe.src = url;
           iframe.allowFullscreen = true;
@@ -621,7 +620,6 @@
           iframe.style.cssText = 'width:100%; display:block;';
           _ytIframe = iframe;
 
-          // Cover shown until Space/click
           const cover = document.createElement('div');
           cover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000; display:flex; align-items:center; justify-content:center;`;
           cover.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:none;">
