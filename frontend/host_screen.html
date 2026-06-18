@@ -452,6 +452,9 @@
   let status = {};
   let timerInterval = null;
   let _ytSpaceHandler = null;
+  let _mediaEl = null;
+  let _ytIframe = null;
+  let _videoOverlay = null;
 
   // ===== HELPERS =====
 
@@ -600,6 +603,9 @@
       `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
 
     if (_ytSpaceHandler) { document.removeEventListener('keydown', _ytSpaceHandler); _ytSpaceHandler = null; }
+    _mediaEl = null;
+    _ytIframe = null;
+    _videoOverlay = null;
 
     const content = document.getElementById('q-content');
     content.innerHTML = '';
@@ -626,10 +632,11 @@
           iframe.allowFullscreen = true;
           iframe.allow = 'autoplay; encrypted-media';
           iframe.style.cssText = 'width:100%; display:block;';
+          _ytIframe = iframe;
 
           // Cover shown until Space/click
           const cover = document.createElement('div');
-          cover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000 url(https://img.youtube.com/vi/${vidId}/hqdefault.jpg) center/cover no-repeat; display:flex; align-items:center; justify-content:center;`;
+          cover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000; display:flex; align-items:center; justify-content:center;`;
           cover.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:none;">
             <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
               <circle cx="44" cy="44" r="44" fill="rgba(0,0,0,0.6)"/>
@@ -641,10 +648,15 @@
           const topCover = document.createElement('div');
           topCover.style.cssText = 'position:absolute; top:0; left:0; right:0; height:56px; background:#000; z-index:11; pointer-events:none;';
 
+          const ytFadeOverlay = document.createElement('div');
+          ytFadeOverlay.style.cssText = 'position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:20; border-radius:18px;';
+
           ytWrap.appendChild(iframe);
           ytWrap.appendChild(cover);
           ytWrap.appendChild(topCover);
+          ytWrap.appendChild(ytFadeOverlay);
           wrap.appendChild(ytWrap);
+          _videoOverlay = ytFadeOverlay;
 
           const revealVideo = () => {
             if (_ytSpaceHandler) { document.removeEventListener('keydown', _ytSpaceHandler); _ytSpaceHandler = null; }
@@ -655,10 +667,11 @@
               };
               unMute(); setTimeout(unMute, 600); setTimeout(unMute, 1400);
             }
+            if (effectiveTimer() && status.host_state === 'waiting') doStartTimer();
           };
 
           cover.addEventListener('click', revealVideo);
-          _ytSpaceHandler = (e) => { if (e.code === 'Space') { e.preventDefault(); revealVideo(); } };
+          _ytSpaceHandler = (e) => { if (e.code === 'Space') { e.preventDefault(); e.stopImmediatePropagation(); revealVideo(); } };
           document.addEventListener('keydown', _ytSpaceHandler);
         }
       } else if (q.type === 'image') {
@@ -671,7 +684,15 @@
         vid.muted = q.muted || false;
         vid.playbackRate = q.playback_rate || 1.0;
         vid.addEventListener('loadedmetadata', () => { vid.playbackRate = q.playback_rate || 1.0; });
-        wrap.appendChild(vid);
+        const vidWrap = document.createElement('div');
+        vidWrap.style.cssText = 'position:relative; width:100%; display:flex; align-items:center; justify-content:center;';
+        const vidFadeOverlay = document.createElement('div');
+        vidFadeOverlay.style.cssText = 'position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:5; border-radius:8px;';
+        vidWrap.appendChild(vid);
+        vidWrap.appendChild(vidFadeOverlay);
+        wrap.appendChild(vidWrap);
+        _mediaEl = vid;
+        _videoOverlay = vidFadeOverlay;
       } else if (q.type === 'audio') {
         const aud = document.createElement('audio');
         aud.src = q.media_url;
@@ -681,6 +702,7 @@
         aud.playbackRate = q.playback_rate || 1.0;
         aud.addEventListener('loadedmetadata', () => { aud.playbackRate = q.playback_rate || 1.0; });
         wrap.appendChild(aud);
+        _mediaEl = aud;
       }
 
       content.appendChild(wrap);
@@ -695,6 +717,11 @@
 
     const timerWrap = document.getElementById('timer-wrap');
     timerWrap.style.display = effectiveTimer() ? '' : 'none';
+    if (effectiveTimer()) {
+      document.getElementById('ring-fill').style.strokeDashoffset = 0;
+      document.getElementById('ring-fill').style.stroke = '#cce840';
+      document.getElementById('timer-num').textContent = effectiveTimer();
+    }
 
     showScreen('screen-question');
     requestAnimationFrame(fitTextToContainer);
@@ -734,6 +761,7 @@
 
   function startTimer(seconds, startedAt) {
     const total = seconds * 1000;
+    const fadeWindow = total * 0.1;
     const ring = document.getElementById('ring-fill');
     const num  = document.getElementById('timer-num');
 
@@ -749,9 +777,26 @@
       else if (pct > 0.1) ring.style.stroke = '#fbbf24';
       else                 ring.style.stroke = '#f87171';
 
-      if (rem > 0 && rem <= 5000) setBgMusicVolume(Math.round((rem / 5000) * 100));
+      if (rem > 0 && rem <= fadeWindow) {
+        const fadePct = rem / fadeWindow;
+        setBgMusicVolume(Math.round(fadePct * 100));
+        if (_mediaEl) _mediaEl.volume = fadePct;
+        if (_videoOverlay) _videoOverlay.style.opacity = 1 - fadePct;
+        if (_ytIframe) {
+          try { _ytIframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[Math.round(fadePct * 100)]}), '*'); } catch(e) {}
+        }
+      }
 
-      if (rem <= 0) { stopBgMusic(); stopTimer(); render(); }
+      if (rem <= 0) {
+        if (_videoOverlay) _videoOverlay.style.opacity = 1;
+        if (_mediaEl) _mediaEl.volume = 0;
+        stopCurrentMedia();
+        stopBgMusic();
+        stopTimer();
+        const t = tour();
+        if (t?.type === 'ordinary') showBtns('btn-show-answer');
+        else showBtns(isLast() ? 'btn-finish-ans' : 'btn-next-q');
+      }
     }
 
     tick();
@@ -760,6 +805,13 @@
 
   function stopTimer() {
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function stopCurrentMedia() {
+    if (_mediaEl) { try { _mediaEl.pause(); } catch(e) {} }
+    if (_ytIframe) {
+      try { _ytIframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'pauseVideo',args:[]}), '*'); } catch(e) {}
+    }
   }
 
   // ===== BACKGROUND MUSIC =====
@@ -879,6 +931,16 @@
 
   document.addEventListener('fullscreenchange', () => {
     document.getElementById('btn-fullscreen').textContent = document.fullscreenElement ? '✕ Выйти' : '⛶';
+  });
+
+  // Global Space handler: starts timer for any non-YouTube question when the timer button is visible
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space' || _ytSpaceHandler) return;
+    const btn = document.getElementById('btn-start-timer');
+    if (btn && btn.style.display !== 'none') {
+      e.preventDefault();
+      btn.click();
+    }
   });
 
   init();

@@ -1957,6 +1957,48 @@
 
   let _pvTi = 0, _pvQi = 0;
   let _pvCover = null;
+  let _pvTimerInterval = null;
+  let _pvFadeAudio = null;
+  let _pvFadeVideo = null;
+  let _pvFadeYtIframe = null;
+  let _pvSpaceStart = null;
+
+  function startPreviewTimer(seconds, onExpire) {
+    stopPreviewTimer();
+    const ring = document.querySelector('.pv-ring-fill');
+    const num = document.getElementById('pv-timer-num');
+    const total = seconds * 1000;
+    const fadeWindow = total * 0.1;
+    const startedAt = Date.now();
+    const circ = 239;
+    function tick() {
+      const rem = Math.max(0, startedAt + total - Date.now());
+      const pct = rem / total;
+      num.textContent = Math.ceil(rem / 1000);
+      ring.style.strokeDashoffset = circ * (1 - pct);
+      ring.style.stroke = pct > 0.3 ? '#cce840' : pct > 0.1 ? '#fbbf24' : '#f87171';
+      if (rem > 0 && rem <= fadeWindow) {
+        const fadePct = rem / fadeWindow;
+        if (_pvFadeAudio) _pvFadeAudio.volume = fadePct;
+        if (_pvFadeVideo) _pvFadeVideo.style.opacity = 1 - fadePct;
+        if (_pvFadeYtIframe) {
+          try { _pvFadeYtIframe.contentWindow.postMessage(JSON.stringify({event:"command",func:"setVolume",args:[Math.round(fadePct * 100)]}), "*"); } catch(e) {}
+        }
+      }
+      if (rem <= 0) {
+        if (_pvFadeVideo) _pvFadeVideo.style.opacity = 1;
+        if (_pvFadeAudio) _pvFadeAudio.volume = 0;
+        stopPreviewTimer();
+        if (onExpire) onExpire();
+      }
+    }
+    tick();
+    _pvTimerInterval = setInterval(tick, 100);
+  }
+
+  function stopPreviewTimer() {
+    if (_pvTimerInterval) { clearInterval(_pvTimerInterval); _pvTimerInterval = null; }
+  }
 
   function showQuestionPreview(ti, qi) {
     _pvTi = ti; _pvQi = qi;
@@ -1968,7 +2010,15 @@
       `Тур ${ti + 1} · Вопрос ${qi + 1} из ${t.questionCount}`;
 
     // Timer
-    document.getElementById("pv-timer-num").textContent = t.timerSeconds || 60;
+    stopPreviewTimer();
+    _pvSpaceStart = null;
+    const timerWrap = document.querySelector('.pv-timer-wrap');
+    timerWrap.style.display = q.timer_seconds ? '' : 'none';
+    if (q.timer_seconds) {
+      document.getElementById("pv-timer-num").textContent = q.timer_seconds;
+      const pvRing = document.querySelector('.pv-ring-fill');
+      if (pvRing) { pvRing.style.strokeDashoffset = 0; pvRing.style.stroke = '#cce840'; }
+    }
 
     // Question content
     const qEl = document.getElementById("pv-q-content");
@@ -2000,7 +2050,7 @@
           iframe.style.cssText = "width:100%; display:block;";
 
           const pvCover = document.createElement("div");
-          pvCover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000 url(https://img.youtube.com/vi/${vidId}/hqdefault.jpg) center/cover no-repeat; display:flex; align-items:center; justify-content:center;`;
+          pvCover.style.cssText = `position:absolute; inset:0; z-index:10; cursor:pointer; background:#000; display:flex; align-items:center; justify-content:center;`;
           pvCover.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:14px;pointer-events:none;">
             <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
               <circle cx="40" cy="40" r="40" fill="rgba(0,0,0,0.6)"/>
@@ -2012,7 +2062,13 @@
           const topCover = document.createElement("div");
           topCover.style.cssText = "position:absolute; top:0; left:0; right:0; height:56px; background:#000; z-index:11; pointer-events:none;";
 
+          const ytFadeOverlayPv = document.createElement("div");
+          ytFadeOverlayPv.style.cssText = "position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:20; border-radius:0;";
+
           _pvCover = pvCover;
+          _pvFadeYtIframe = iframe;
+          _pvFadeVideo = ytFadeOverlayPv;
+          _pvFadeAudio = null;
           const revealPv = () => {
             pvCover.remove();
             _pvCover = null;
@@ -2020,12 +2076,16 @@
               const unMute = () => { try { iframe.contentWindow.postMessage(JSON.stringify({event:"command",func:"unMute",args:[]}), "*"); } catch(e) {} };
               unMute(); setTimeout(unMute, 600);
             }
+            if (q.timer_seconds) startPreviewTimer(q.timer_seconds, () => {
+              try { iframe.contentWindow.postMessage(JSON.stringify({event:"command",func:"pauseVideo",args:[]}), "*"); } catch(e) {}
+            });
           };
           pvCover.addEventListener("click", revealPv);
 
           ytWrap.appendChild(iframe);
           ytWrap.appendChild(pvCover);
           ytWrap.appendChild(topCover);
+          ytWrap.appendChild(ytFadeOverlayPv);
           wrap.appendChild(ytWrap);
         }
       } else if (q.type === "image" && q.media_url) {
@@ -2034,20 +2094,36 @@
         const vid = document.createElement("video");
         vid.src = q.media_url;
         vid.controls = true;
+        vid.autoplay = true;
         vid.muted = q.muted || false;
         const rate = q.playback_rate || 1.0;
         vid.addEventListener("loadedmetadata", () => { vid.playbackRate = rate; });
         vid.playbackRate = rate;
-        wrap.appendChild(vid);
+        const vidWrapPv = document.createElement("div");
+        vidWrapPv.style.cssText = "position:relative; width:100%; display:flex; align-items:center; justify-content:center;";
+        const vidFadeOverlayPv = document.createElement("div");
+        vidFadeOverlayPv.style.cssText = "position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:5; border-radius:8px;";
+        vidWrapPv.appendChild(vid);
+        vidWrapPv.appendChild(vidFadeOverlayPv);
+        wrap.appendChild(vidWrapPv);
+        _pvFadeAudio = vid;
+        _pvFadeVideo = vidFadeOverlayPv;
+        _pvFadeYtIframe = null;
+        if (q.timer_seconds) _pvSpaceStart = () => startPreviewTimer(q.timer_seconds, () => { try { vid.pause(); } catch(e) {} });
       } else if (q.type === "audio" && q.media_url) {
         const aud = document.createElement("audio");
         aud.src = q.media_url;
         aud.controls = true;
+        aud.autoplay = true;
         aud.muted = q.muted || false;
         const rate = q.playback_rate || 1.0;
         aud.addEventListener("loadedmetadata", () => { aud.playbackRate = rate; });
         aud.playbackRate = rate;
         wrap.appendChild(aud);
+        _pvFadeAudio = aud;
+        _pvFadeVideo = null;
+        _pvFadeYtIframe = null;
+        if (q.timer_seconds) _pvSpaceStart = () => startPreviewTimer(q.timer_seconds, () => { try { aud.pause(); } catch(e) {} });
       } else {
         wrap.innerHTML = `<p style="color:#475569;font-style:italic;font-size:18px;">Медиа не добавлено</p>`;
       }
@@ -2059,6 +2135,9 @@
         qEl.appendChild(sub);
       }
     }
+
+    // Text questions: Space starts the visual countdown
+    if (q.type === "text" && q.timer_seconds) _pvSpaceStart = () => startPreviewTimer(q.timer_seconds, () => {});
 
     // Show question view
     document.getElementById("pv-question").style.display = "flex";
@@ -2100,12 +2179,20 @@
     document.getElementById("preview-modal").classList.remove("open");
     document.body.style.overflow = "";
     _pvCover = null;
+    _pvSpaceStart = null;
+    stopPreviewTimer();
+    _pvFadeAudio = null;
+    _pvFadeVideo = null;
+    _pvFadeYtIframe = null;
     document.querySelectorAll("#pv-q-content audio, #pv-q-content video").forEach(m => m.pause());
   }
 
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") { closePreview(); return; }
-    if (e.code === "Space" && _pvCover) { e.preventDefault(); _pvCover.click(); }
+    if (e.code === "Space") {
+      if (_pvCover) { e.preventDefault(); _pvCover.click(); return; }
+      if (_pvSpaceStart) { e.preventDefault(); const fn = _pvSpaceStart; _pvSpaceStart = null; fn(); }
+    }
   });
 
 </script>

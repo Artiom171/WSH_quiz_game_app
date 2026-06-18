@@ -586,7 +586,9 @@ function pollState() {
           // Timer may already be running when player connects mid-question
           if (data.host_state === "timer_running" && data.question_started_at) {
             const t = tourConfigs[round - 1];
-            if (t && t.timer_seconds) scheduleLock(data.question_started_at, t.timer_seconds);
+            const q = t?.questions_data?.[newQ - 1];
+            const timerSecs = q?.timer_seconds || t?.timer_seconds || 0;
+            if (timerSecs) scheduleLock(data.question_started_at, timerSecs);
           }
         } else if (newTour > 0) {
           showWaiting(newTour, "Ведущий скоро покажет вопрос");
@@ -600,7 +602,9 @@ function pollState() {
       // Timer just started — schedule the lock if not already scheduled
       if (!submittedQ && !lockTimeout && data.host_state === "timer_running" && data.question_started_at) {
         const t = tourConfigs[round - 1];
-        if (t && t.timer_seconds) scheduleLock(data.question_started_at, t.timer_seconds);
+        const q = t?.questions_data?.[questionNumber - 1];
+        const timerSecs = q?.timer_seconds || t?.timer_seconds || 0;
+        if (timerSecs) scheduleLock(data.question_started_at, timerSecs);
       }
 
       setTimeout(pollState, 2000);
