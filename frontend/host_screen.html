@@ -436,13 +436,6 @@
 
 <!-- ===== CONTROL PANEL ===== -->
 <div id="controls">
-  <button class="ctrl-btn ctrl-primary" id="btn-begin-tour"   onclick="doBeginTour()"      style="display:none">Начать тур →</button>
-  <button class="ctrl-btn ctrl-primary" id="btn-start-timer"  onclick="doStartTimer()"     style="display:none">▶ Запустить таймер</button>
-  <button class="ctrl-btn ctrl-orange"  id="btn-show-answer"  onclick="doShowAnswer()"     style="display:none">Показать ответ</button>
-  <button class="ctrl-btn ctrl-green"   id="btn-next-q"       onclick="doNextQuestion()"   style="display:none">Следующий вопрос →</button>
-  <button class="ctrl-btn ctrl-ghost"   id="btn-finish-ans"   onclick="doFinishAnswers()"  style="display:none">Завершить вопросы</button>
-  <button class="ctrl-btn ctrl-ghost"   id="btn-stop-music"   onclick="doStopMusicOrAnswer()" style="display:none">Завершить сейчас</button>
-  <div class="ctrl-sep"></div>
   <button class="ctrl-btn ctrl-ghost" id="btn-fullscreen" onclick="toggleFullscreen()" title="Полный экран">⛶</button>
 </div>
 
@@ -492,20 +485,14 @@
     document.getElementById(id).classList.add('active');
   }
 
-  const ALL_BTNS = ['btn-begin-tour','btn-start-timer','btn-show-answer','btn-next-q','btn-finish-ans','btn-stop-music'];
   let musicBtnStage = 0; // 0 = stop music, 1 = show answer
 
   function resetStopMusicBtn() {
     musicBtnStage = 0;
-    const btn = document.getElementById('btn-stop-music');
-    btn.textContent = 'Завершить сейчас';
-    btn.className = 'ctrl-btn ctrl-ghost';
   }
 
   function showBtns(...ids) {
-    ALL_BTNS.forEach(id => {
-      document.getElementById(id).style.display = ids.includes(id) ? '' : 'none';
-    });
+    // buttons removed — keyboard shortcuts handle all actions
   }
 
   // ===== RENDER =====
@@ -867,9 +854,6 @@
     if (musicBtnStage === 0) {
       stopBgMusic();
       musicBtnStage = 1;
-      const btn = document.getElementById('btn-stop-music');
-      btn.textContent = '→ Показать ответ';
-      btn.className = 'ctrl-btn ctrl-orange';
     } else {
       doShowAnswer();
     }
@@ -933,13 +917,47 @@
     document.getElementById('btn-fullscreen').textContent = document.fullscreenElement ? '✕ Выйти' : '⛶';
   });
 
-  // Global Space handler: starts timer for any non-YouTube question when the timer button is visible
+  // Space: start timer (non-YouTube questions)
   document.addEventListener('keydown', (e) => {
     if (e.code !== 'Space' || _ytSpaceHandler) return;
-    const btn = document.getElementById('btn-start-timer');
-    if (btn && btn.style.display !== 'none') {
+    if (status.host_state === 'waiting' && effectiveTimer()) {
       e.preventDefault();
-      btn.click();
+      doStartTimer();
+    }
+  });
+
+  // Right arrow: advance game (begin tour → next question → show answer)
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'ArrowRight') return;
+    if (!status.started || !status.current_tour) return;
+    const t = tour();
+    if (!t) return;
+
+    if (!status.current_question) { doBeginTour(); return; }
+
+    const hs = status.host_state;
+    const rem = timerMs();
+    const expired = rem !== null && rem <= 0;
+
+    if (hs === 'show_answer') {
+      if (!isLast()) doNextQuestion();
+      return;
+    }
+    if (hs === 'finish_answers') return;
+    if (hs === 'waiting' && !effectiveTimer()) {
+      if (t.type === 'ordinary') doShowAnswer();
+      else if (isLast()) doFinishAnswers();
+      else doNextQuestion();
+      return;
+    }
+    if (hs === 'timer_running') {
+      if (expired) {
+        if (t.type === 'ordinary') doShowAnswer();
+        else if (isLast()) doFinishAnswers();
+        else doNextQuestion();
+      } else {
+        doStopMusicOrAnswer();
+      }
     }
   });
 
