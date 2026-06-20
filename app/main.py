@@ -7,6 +7,8 @@ import shutil
 import asyncio
 import os
 import tempfile
+import secrets
+import hashlib
 from typing_extensions import Literal
 from typing import Optional
 
@@ -56,6 +58,14 @@ GAME_STATE_FILE = Path(__file__).resolve().parents[1] / "game_state.json"
 SAVED_CONFIGS_FILE = Path(__file__).resolve().parents[1] / "saved_configs.json"
 UPLOADS_DIR = Path(__file__).resolve().parents[1] / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
+# --------------------
+# CONFIG AUTH
+# --------------------
+
+_ADMIN_USERNAME = "ArtiomHost"
+_ADMIN_PW_HASH = "9152d9e8590f9e4d71ab0eb2c086d42c25a9564d3114084abf553871c08f1441"  # SHA-256
+_config_sessions: set = set()
 
 # --------------------
 # GAME STATE
@@ -197,6 +207,10 @@ class AnswerCreate(BaseModel):
 
 class AnswerUpdate(BaseModel):
     is_correct: bool
+
+class ConfigLoginRequest(BaseModel):
+    username: str
+    password: str
 
 class QuestionData(BaseModel):
     type: Literal["text", "youtube", "image", "video", "audio"] = "text"
@@ -649,6 +663,33 @@ async def serve_index():
 def favicon():
     logger.info("Favicon requested")
     return Response(status_code=204)
+
+_NO_CACHE = {"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", "Pragma": "no-cache"}
+
+@app.post("/api/config-login")
+async def config_login(data: ConfigLoginRequest, response: Response):
+    pw_hash = hashlib.sha256(data.password.encode()).hexdigest()
+    if data.username != _ADMIN_USERNAME or pw_hash != _ADMIN_PW_HASH:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = secrets.token_hex(32)
+    _config_sessions.add(token)
+    response.set_cookie("config_session", token, httponly=True, samesite="strict", max_age=86400 * 7)
+    return {"ok": True}
+
+@app.post("/api/config-logout")
+async def config_logout(request: Request, response: Response):
+    token = request.cookies.get("config_session")
+    if token:
+        _config_sessions.discard(token)
+    response.delete_cookie("config_session")
+    return {"ok": True}
+
+@app.get("/config.html")
+async def serve_config(request: Request):
+    token = request.cookies.get("config_session")
+    if not token or token not in _config_sessions:
+        return RedirectResponse("/config_login.html", status_code=302)
+    return FileResponse(FRONTEND_DIR / "config.html", headers=_NO_CACHE)
 
 @app.get("/{full_path:path}", response_class=FileResponse)
 async def serve_frontend(full_path: str):

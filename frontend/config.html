@@ -814,7 +814,10 @@
 
   <!-- ===== LANDING VIEW ===== -->
   <div id="landing-view">
-    <h2>Настройка игры</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <h2 style="margin:0;">Настройка игры</h2>
+      <button onclick="doLogout()" style="background:none;border:1.5px solid #d1d5db;border-radius:8px;padding:5px 14px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;" title="Выйти">Выйти</button>
+    </div>
     <p class="page-subtitle">Конфигурации сохраняются и доступны после перезапуска сервера.</p>
 
     <button class="new-config-btn" onclick="showStep1(null)">+ Новая конфигурация</button>
@@ -892,6 +895,13 @@
 </div>
 
 <script>
+  // ===== AUTH =====
+
+  async function doLogout() {
+    await fetch('/api/config-logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/config_login.html';
+  }
+
   // ===== HELPERS =====
 
   function esc(str) {
