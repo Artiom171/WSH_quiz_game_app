@@ -58,13 +58,27 @@ GAME_STATE_FILE = Path(__file__).resolve().parents[1] / "game_state.json"
 SAVED_CONFIGS_FILE = Path(__file__).resolve().parents[1] / "saved_configs.json"
 UPLOADS_DIR = Path(__file__).resolve().parents[1] / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+AUTH_CONFIG_FILE = Path(__file__).resolve().parents[1] / "auth_config.json"
 
 # --------------------
 # CONFIG AUTH
 # --------------------
 
 _ADMIN_USERNAME = "ArtiomHost"
-_ADMIN_PW_HASH = "9152d9e8590f9e4d71ab0eb2c086d42c25a9564d3114084abf553871c08f1441"  # SHA-256
+_DEFAULT_PASSWORD = "Open3ayArti8m*17"
+
+def _load_password() -> str:
+    try:
+        if AUTH_CONFIG_FILE.exists():
+            data = json.loads(AUTH_CONFIG_FILE.read_text(encoding="utf-8"))
+            return data.get("password", _DEFAULT_PASSWORD)
+    except Exception:
+        pass
+    return _DEFAULT_PASSWORD
+
+def _load_pw_hash() -> str:
+    return hashlib.sha256(_load_password().encode()).hexdigest()
+
 _config_sessions: set = set()
 
 # --------------------
@@ -669,7 +683,7 @@ _NO_CACHE = {"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", 
 @app.post("/api/config-login")
 async def config_login(data: ConfigLoginRequest, response: Response):
     pw_hash = hashlib.sha256(data.password.encode()).hexdigest()
-    if data.username != _ADMIN_USERNAME or pw_hash != _ADMIN_PW_HASH:
+    if data.username != _ADMIN_USERNAME or pw_hash != _load_pw_hash():
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = secrets.token_hex(32)
     _config_sessions.add(token)
@@ -683,6 +697,17 @@ async def config_logout(request: Request, response: Response):
         _config_sessions.discard(token)
     response.delete_cookie("config_session")
     return {"ok": True}
+
+class RecoverRequest(BaseModel):
+    phrase: str
+
+_RECOVERY_PHRASE = "ihaveforgotthepassword"
+
+@app.post("/api/config-recover")
+async def config_recover(data: RecoverRequest):
+    if data.phrase != _RECOVERY_PHRASE:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"username": _ADMIN_USERNAME, "password": _load_password()}
 
 @app.get("/config.html")
 async def serve_config(request: Request):
