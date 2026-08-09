@@ -851,6 +851,8 @@
   function doStopMusicOrAnswer() {
     if (musicBtnStage === 0) {
       stopBgMusic();
+      stopTimer();
+      stopCurrentMedia();
       musicBtnStage = 1;
     } else {
       doShowAnswer();
