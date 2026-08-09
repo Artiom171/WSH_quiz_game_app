@@ -581,9 +581,21 @@ def reset_database(db: Session = Depends(get_db)):
     db.query(User).delete()
     db.commit()
     _game_state.update(dict(_GAME_STATE_DEFAULTS))
+    _game_state["game_id"] = _game_state.get("game_id", 0) + 1
     _save_game_state()
     logger.info("Database reset: all users and answers deleted, game state reset")
     return {"status": "ok"}
+
+@app.post("/game/quit")
+def quit_game(db: Session = Depends(get_db)):
+    db.query(Answer).delete()
+    db.query(User).delete()
+    db.commit()
+    _game_state.update(dict(_GAME_STATE_DEFAULTS))
+    _game_state["game_id"] = _game_state.get("game_id", 0) + 1
+    _save_game_state()
+    logger.info("Game quit: all users and answers deleted, game state reset")
+    return {"ok": True}
 
 # --------------------
 # FILE UPLOAD

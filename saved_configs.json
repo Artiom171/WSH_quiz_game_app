@@ -1,7 +1,7 @@
 [
   {
     "id": "1780747537187",
-    "name": "",
+    "name": "Кто тут умный? Осень 2026",
     "created_at": "2026-06-06T14:05:37.187298",
     "tours": [
       {
@@ -39,11 +39,11 @@
             "media_url": "",
             "answer": "Чемпионат Мира по футболу, Мундиаль",
             "answer_description": "",
-            "answer_image_url": "https://scontent-waw2-2.xx.fbcdn.net/v/t39.30808-6/720570747_1007858898605212_930931087628633818_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=p526x296&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=e5LT2kPol6IQ7kNvwHlVnhP&_nc_oc=AdoiWXkxcHvjOyU9MuqF-t16uGWxST3SObxIcPOqoSqqren1Js-lSFphktIcYEEwfnU&_nc_zt=23&_nc_ht=scontent-waw2-2.xx&_nc_gid=4XfVg8DvjTVPXArhDm9Gow&_nc_ss=7b289&oh=00_Af8esSb681PY1lpRw919iHL7f6cN5aGd9s3exaiVGtBK0g&oe=6A32F8C4",
+            "answer_image_url": "/uploads/1786295335565.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 60
           },
           {
             "type": "text",
@@ -55,7 +55,7 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 60
           },
           {
             "type": "text",
@@ -64,10 +64,10 @@
             "answer": "",
             "answer_description": "",
             "answer_image_url": "",
-            "bg_music_url": "",
+            "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 60
           },
           {
             "type": "text",
@@ -79,7 +79,7 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 60
           },
           {
             "type": "text",
@@ -119,15 +119,15 @@
           },
           {
             "type": "text",
-            "text": "",
+            "text": "«Альбион» (др.-греч. Ἀλβίων) — древнейшее из всех известных названий ОСТРОВА. В настоящее время используется главным образом для поэтического обозначения ОСТРОВА. Назовите ОСТРОВ",
             "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
+            "answer": "Великобритания ",
+            "answer_description": "От туда поэтическое \"Туманный Альбион\"",
+            "answer_image_url": "/uploads/1786295394688.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 60
           }
         ],
         "questions": 10
@@ -697,6 +697,6 @@
         "questions": 15
       }
     ],
-    "updated_at": "2026-06-18T21:34:33.089715"
+    "updated_at": "2026-08-09T19:10:08.881201"
   }
 ]
