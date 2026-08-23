@@ -94,9 +94,32 @@
     }
 
     .waiting-subtitle {
-      font-size: 20px;
+      font-size: 24px;
       color: #475569;
-      margin: 0;
+      margin: 0 0 32px;
+    }
+
+    .waiting-qr {
+      display: inline-block;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    .waiting-qr img {
+      display: block;
+      width: 460px;
+      height: 460px;
+    }
+
+    .waiting-qr-label {
+      margin: 10px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     /* lift content above blobs on question + answer screens */
@@ -392,8 +415,12 @@
   <div class="glow-blob blob-purple"></div>
   <div class="waiting-content">
     <p class="waiting-label" id="waiting-label">Ожидание</p>
-    <h1 class="waiting-title" id="waiting-title">Экран ведущего</h1>
+    <h1 class="waiting-title" id="waiting-title">Кто тут умный?</h1>
     <p class="waiting-subtitle" id="waiting-subtitle">Запустите игру из панели настройки</p>
+    <div class="waiting-qr">
+      <img src="/qr.png" alt="QR" />
+    </div>
+    <p class="waiting-qr-label">Сканируйте для входа</p>
   </div>
 </div>
 
@@ -503,7 +530,7 @@
     const { started, config, current_tour, current_question, host_state, question_started_at } = status;
 
     if (!started || !config) {
-      setWaiting('Ожидание', 'Экран ведущего', 'Запустите игру из панели настройки');
+      setWaiting('Ожидание', 'Кто тут умный?', 'Новый дизайн, новый способ сдачи ответов.<br>Но всё та же, родная, любимая Ваша игра...');
       showBtns(); return;
     }
 
@@ -569,7 +596,7 @@
   function setWaiting(label, title, subtitle) {
     document.getElementById('waiting-label').textContent   = label;
     document.getElementById('waiting-title').textContent   = title;
-    document.getElementById('waiting-subtitle').textContent = subtitle;
+    document.getElementById('waiting-subtitle').innerHTML = subtitle;
     showScreen('screen-waiting');
   }
 

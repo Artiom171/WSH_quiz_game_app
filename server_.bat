@@ -76,17 +76,7 @@ echo.
 :: ---------------------------------------------
 echo  [3/3]  Detecting network address...
 
-set LOCAL_IP=
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4"') do (
-    set CANDIDATE=%%a
-    set CANDIDATE=!CANDIDATE: =!
-    if not "!CANDIDATE:~0,3!"=="127" (
-        if not "!CANDIDATE:~0,3!"=="169" (
-            if "!LOCAL_IP!"=="" set LOCAL_IP=!CANDIDATE!
-        )
-    )
-)
-
+for /f %%i in ('python -c "import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.connect((\"8.8.8.8\",80)); print(s.getsockname()[0]); s.close()" 2^>nul') do set LOCAL_IP=%%i
 if "!LOCAL_IP!"=="" set LOCAL_IP=unknown
 
 echo         OK  (!LOCAL_IP!)

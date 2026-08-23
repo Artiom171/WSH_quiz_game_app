@@ -19,7 +19,7 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
@@ -31,19 +31,19 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
             "text": "Шакира в этом году сделала ЧТО-ТО в четвертый раз, что делает её самым тесно связанным поп-исполнителем с ЭТИМ. Назовите это ЭТО",
             "media_url": "",
             "answer": "Чемпионат Мира по футболу, Мундиаль",
-            "answer_description": "",
-            "answer_image_url": "/uploads/1786295335565.jpg",
+            "answer_description": "В этом году Шакира в четвертый раз спела на ЧМ по футболу ",
+            "answer_image_url": "https://wwd.com/wp-content/uploads/2026/07/shakira-fi.jpg?w=1000&h=563&crop=1",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
@@ -55,19 +55,19 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
-            "text": "",
+            "text": "С кем она хотели бы делиться секретами проживая в одном из районов Нью-Йорка? ",
             "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
+            "answer": "Деми Мур ",
+            "answer_description": "Строки из песни группы Бандэрос.",
+            "answer_image_url": "https://img.tsn.ua/cached/365/tsn-7d69491ed57b2e0aebe0922b41d97a86/thumbs/x/60/94/629c23a745e5128728bb12b9073c9460.jpeg",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
@@ -79,43 +79,43 @@
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           },
           {
             "type": "text",
-            "text": "",
+            "text": "Известный режиссёр Robert Zemeckis. Догадавшись по его фамилии, какая страна является исторической родиной его отца, добавьте к его имени несколько букв, чтобы оно было написано на языке этой страны. Напишите получившиеся имя",
             "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
+            "answer": "Robertas ",
+            "answer_description": "Историческая родина отца режисёра - Литва ",
+            "answer_image_url": "https://ve.lt/sites/default/files/styles/straipsnis_1x_640x422/public/2013-08/vilniuje-lankesi-pasaulinio-garso-lietuviu-kilmes-holivudo-rezisierius-robertas-zemeckis.webp?h=e00325de&itok=w-doTTTP",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
             "type": "text",
-            "text": "",
+            "text": "Название какой всемирно известной компании можно встретить и в рейтингах, где мечтают получить три звезды, хотя изначально компания занималась совсем другим?",
             "media_url": "",
-            "answer": "",
-            "answer_description": "",
-            "answer_image_url": "",
+            "answer": "Мишлен",
+            "answer_description": "Компания занимается производством автомобильных шин",
+            "answer_image_url": "https://michelinmedia.com/site/user/images/MSRNY2022fullproject_211_Bib_crop.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
             "type": "text",
-            "text": "",
+            "text": "В какой европейской стране можно встретить шуточные знаки с надписью «Никаких кенгуру в…»?",
             "media_url": "",
-            "answer": "",
+            "answer": "Австрия",
             "answer_description": "",
-            "answer_image_url": "",
+            "answer_image_url": "https://tse1.mm.bing.net/th/id/OIP.CGQDyElOw5Mn6xtGsrlEAQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
             "type": "text",
@@ -123,11 +123,11 @@
             "media_url": "",
             "answer": "Великобритания ",
             "answer_description": "От туда поэтическое \"Туманный Альбион\"",
-            "answer_image_url": "/uploads/1786295394688.jpg",
+            "answer_image_url": "https://ixbt.online/live/images/original/20/85/03/2023/10/08/df3a47253d.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=RdeKtS7WWTM",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": 60
+            "timer_seconds": 30
           }
         ],
         "questions": 10
@@ -152,10 +152,10 @@
           {
             "type": "image",
             "text": "Что за логотип?",
-            "media_url": "/uploads/1781554299943.png",
-            "answer": "Michelin",
+            "media_url": "https://logos-world.net/wp-content/uploads/2023/01/Sony-Ericsson-Symbol.png",
+            "answer": "Sony Ericsson",
             "answer_description": "",
-            "answer_image_url": "https://michelinmedia.com/site/user/images/Michelin_Corporate_Logo___on_blue.jpg",
+            "answer_image_url": "https://logos-world.net/wp-content/uploads/2023/01/Sony-Ericsson-Symbol.png",
             "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
             "playback_rate": 1.0,
             "muted": false,
@@ -174,40 +174,40 @@
             "timer_seconds": 15
           },
           {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "Samsung ",
+            "type": "image",
+            "text": "Фраза из какой кино-франшизы? ",
+            "media_url": "/uploads/1787498718347.jpg",
+            "answer": "Терминатор",
             "answer_description": "",
-            "answer_image_url": "",
+            "answer_image_url": "https://pic.rutubelist.ru/video/85/b7/85b75134c7b23c1df45732018fdf1556.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "",
+            "type": "image",
+            "text": "Что общего у этих актёров?",
+            "media_url": "/uploads/1787499164988.jpg",
+            "answer": "Имя",
             "answer_description": "",
-            "answer_image_url": "",
+            "answer_image_url": "/uploads/1787499416205.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
-            "type": "text",
-            "text": "",
-            "media_url": "",
-            "answer": "",
+            "type": "image",
+            "text": "В инсталяции посвещённой какому сериалу ваш покорный слуга сфотографировался?",
+            "media_url": "/uploads/1787500606039.jpg",
+            "answer": "Игра в кальмара",
             "answer_description": "",
-            "answer_image_url": "",
+            "answer_image_url": "/uploads/1787500674265.jpg",
             "bg_music_url": "https://www.youtube.com/watch?v=hCxqhGUJE08",
             "playback_rate": 1.0,
             "muted": false,
-            "timer_seconds": null
+            "timer_seconds": 30
           },
           {
             "type": "text",
@@ -697,6 +697,6 @@
         "questions": 15
       }
     ],
-    "updated_at": "2026-08-09T19:10:08.881201"
+    "updated_at": "2026-08-23T18:04:31.426974"
   }
 ]

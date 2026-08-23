@@ -9,6 +9,9 @@ import os
 import tempfile
 import secrets
 import hashlib
+import io
+import socket
+import qrcode
 from typing_extensions import Literal
 from typing import Optional
 
@@ -66,6 +69,18 @@ AUTH_CONFIG_FILE = Path(__file__).resolve().parents[1] / "auth_config.json"
 
 _ADMIN_USERNAME = "ArtiomHost"
 _DEFAULT_PASSWORD = "Open3ayArti8m*17"
+
+def _detect_lan_ip() -> str:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "localhost"
+
+_lan_ip = _detect_lan_ip()
 
 def _load_password() -> str:
     try:
@@ -684,6 +699,16 @@ async def serve_index():
             "Pragma": "no-cache"
         },
     )
+
+@app.get("/qr.png")
+def get_qr():
+    url = f"http://{_lan_ip}:8000/"
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return Response(content=buf.read(), media_type="image/png",
+                    headers={"Cache-Control": "no-store"})
 
 @app.get("/favicon.ico")
 def favicon():
