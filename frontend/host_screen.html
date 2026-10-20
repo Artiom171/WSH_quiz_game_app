@@ -469,6 +469,11 @@
 <script>
   const CIRC = 2 * Math.PI * 54; // 339.29
 
+  // Rehearsal (?rehearsal=1, opened from the editor): plays one tour locally up to a chosen question.
+  // Nothing is sent to the server, so a live game and player phones are not affected.
+  const REHEARSAL = new URLSearchParams(location.search).has('rehearsal');
+  let rehearsalUpTo = 0;
+
   let status = {};
   let timerInterval = null;
   let _ytSpaceHandler = null;
@@ -493,7 +498,7 @@
 
   function tour()     { return status.config?.tours?.[status.current_tour - 1] ?? null; }
   function question() { const t = tour(); return t?.questions_data?.[status.current_question - 1] ?? null; }
-  function isLast()   { const t = tour(); return t && status.current_question >= t.questions; }
+  function isLast()   { const t = tour(); return t && status.current_question >= (REHEARSAL ? rehearsalUpTo : t.questions); }
 
   function effectiveTimer() {
     const q = question(); const t = tour();
@@ -854,6 +859,7 @@
   // ===== CONTROL ACTIONS =====
 
   async function post(url, body) {
+    if (REHEARSAL) return;
     return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   }
 
@@ -926,7 +932,35 @@
     } catch (_) {}
   }
 
+  function initRehearsal() {
+    let data = null;
+    try { data = JSON.parse(localStorage.getItem('rehearsal')); } catch (_) {}
+    if (!data?.tour) {
+      setWaiting('Репетиция', 'Нет данных', 'Откройте репетицию из редактора туров');
+      return;
+    }
+    const t = { ...data.tour, questions: data.tour.questions_data.length };
+    rehearsalUpTo = Math.min(data.upTo, t.questions);
+    const tours = [];
+    tours[data.tourNumber - 1] = t;
+    status = {
+      started: true, config: { tours },
+      current_tour: data.tourNumber, current_question: 0,
+      host_state: 'waiting', question_started_at: null,
+    };
+
+    const badge = document.createElement('div');
+    badge.textContent = `Репетиция · Тур ${data.tourNumber}, вопросы 1–${rehearsalUpTo}`;
+    badge.style.cssText = 'position:fixed;top:16px;left:16px;z-index:300;padding:6px 14px;border-radius:999px;' +
+      'background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.5);color:#fbbf24;' +
+      'font:600 13px Inter,Arial,sans-serif;letter-spacing:0.03em;pointer-events:none;';
+    document.body.appendChild(badge);
+
+    render();
+  }
+
   async function init() {
+    if (REHEARSAL) { initRehearsal(); return; }
     status = await fetch('/game/status').then(r => r.json());
     render();
     setInterval(poll, 2000);

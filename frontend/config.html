@@ -127,6 +127,22 @@
 
     .btn-secondary:hover { background: #e2e8f0; }
 
+    .btn-end-game {
+      padding: 12px 24px;
+      background: #fff;
+      color: #dc2626;
+      border: 1.5px solid #fca5a5;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-end-game:hover { background: #fef2f2; border-color: #ef4444; }
+    .btn-end-game:disabled { opacity: 0.5; cursor: default; }
+
     .btn-back {
       display: inline-flex;
       align-items: center;
@@ -410,7 +426,7 @@
       flex-shrink: 0;
     }
 
-    .btn-save-q, .btn-preview-q {
+    .btn-save-q, .btn-preview-q, .btn-rehearse-q {
       border-radius: 8px;
       padding: 5px 14px;
       font-size: 12px;
@@ -436,6 +452,13 @@
       color: #64748b;
     }
     .btn-preview-q:hover { border-color: #a8d800; color: #a8d800; }
+
+    .btn-rehearse-q {
+      background: transparent;
+      border: 1px solid #64748b;
+      color: #64748b;
+    }
+    .btn-rehearse-q:hover { border-color: #a8d800; color: #a8d800; }
 
     /* ===== PREVIEW MODAL — replicates host_screen ===== */
     #preview-modal {
@@ -1188,6 +1211,7 @@
         <span class="question-num">Вопрос ${qi + 1}</span>
         <div class="type-selector">${typeButtons}</div>
         <div class="q-card-actions">
+          <button class="btn-rehearse-q" onclick="rehearseTour(${ti}, ${qi})" title="Открыть экран ведущего и прогнать тур с первого вопроса по этот — с таймерами и звуком, без игроков">▶ Прокрутить этот тур, до этого вопроса</button>
           <button class="btn-preview-q" onclick="showQuestionPreview(${ti}, ${qi})">👁 Просмотр</button>
           <button class="btn-save-q" id="save-q-${ti}-${qi}" onclick="saveQuestion(${ti}, ${qi})">Сохранить</button>
         </div>
@@ -1844,6 +1868,13 @@
     };
   }
 
+  // Rehearsal: host_screen plays this tour locally (current unsaved edits included), up to question qi
+  function rehearseTour(ti, qi) {
+    const tour = buildPayload("").tours[ti];
+    localStorage.setItem("rehearsal", JSON.stringify({ tourNumber: ti + 1, upTo: qi + 1, tour }));
+    window.open("/host_screen.html?rehearsal=1", "_blank");
+  }
+
   // ===== GAME CONTROL =====
 
   function showGameControl(tours) {
@@ -1869,15 +1900,26 @@
         <span class="game-status" id="gameStatus">● Идёт игра</span>
       </div>
       <div class="tour-control-list">${cards}</div>
-      <div style="text-align:center; margin-top:28px;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:28px;">
         <a href="demo_final_result.html" target="_blank" class="btn-secondary" style="display:inline-block; text-decoration:none; padding:12px 24px; font-size:15px; font-weight:700;">
           🏆 Финальные результаты (демо)
         </a>
+        <button class="btn-end-game" id="endGameBtn" onclick="endGame()">Закончить игру</button>
       </div>
     `;
 
     showView("game-view");
     completionInterval = setInterval(pollCompletion, 3000);
+  }
+
+  async function endGame() {
+    if (!confirm("Закончить игру? Все игроки и ответы будут удалены.")) return;
+    document.getElementById("endGameBtn").disabled = true;
+    if (completionInterval) clearInterval(completionInterval);
+    try {
+      await fetch("/game/quit", { method: "POST" });
+    } catch (_) {}
+    window.location.href = "/config.html";
   }
 
   async function activateTour(tourNumber) {

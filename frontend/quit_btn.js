@@ -9,6 +9,9 @@
     return res;
   };
 
+  // Rehearsal screen must not offer to wipe the real game
+  if (new URLSearchParams(location.search).has('rehearsal')) return;
+
   const css = `
     #qb-btn {
       position: fixed;
