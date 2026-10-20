@@ -24,3 +24,6 @@ postman/*
 # Ignore Python bytecode
 __pycache__/
 *.pyc
+
+# Ignore saved game configs (questions/answers)
+saved_configs.json
