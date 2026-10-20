@@ -20,3 +20,7 @@ smtp_config.json
 # Ignore postman files
 postman/*
 .postman/*
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
