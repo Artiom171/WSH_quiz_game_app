@@ -1,4 +1,14 @@
 (function () {
+  // Host session lost (e.g. server restart) — send the host back to login instead of failing silently
+  const _fetch = window.fetch.bind(window);
+  window.fetch = async function (...args) {
+    const res = await _fetch(...args);
+    if (res.status === 401) {
+      window.location.href = '/config_login.html?next=' + encodeURIComponent(location.pathname);
+    }
+    return res;
+  };
+
   const css = `
     #qb-btn {
       position: fixed;

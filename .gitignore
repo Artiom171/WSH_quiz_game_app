@@ -27,3 +27,7 @@ __pycache__/
 
 # Ignore saved game configs (questions/answers)
 saved_configs.json
+
+# Ignore JSON backups / temp files from atomic writes
+*.bak
+*.tmp

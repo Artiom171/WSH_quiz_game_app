@@ -23,8 +23,7 @@ from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.db.database import SessionLocal, engine, Base
@@ -96,6 +95,43 @@ def _load_pw_hash() -> str:
 
 _config_sessions: set = set()
 
+def _is_host(request: Request) -> bool:
+    token = request.cookies.get("config_session")
+    return bool(token) and token in _config_sessions
+
+def require_host(request: Request) -> None:
+    if not _is_host(request):
+        raise HTTPException(status_code=401, detail="Host login required")
+
+# --------------------
+# JSON FILES (atomic write + .bak)
+# --------------------
+
+def _bak_path(path: Path) -> Path:
+    return path.with_name(path.name + ".bak")
+
+def _write_json_atomic(path: Path, data, **dump_kwargs) -> None:
+    """Write to a temp file and rename over the target, keeping the previous version as .bak."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, **dump_kwargs), encoding="utf-8")
+    if path.exists():
+        shutil.copy2(path, _bak_path(path))
+    os.replace(tmp, path)
+
+def _read_json_with_backup(path: Path):
+    """Parsed JSON from path, falling back to .bak; None if neither file exists.
+    Raises if a file exists but no copy parses, so callers never overwrite good data with an empty list."""
+    bak = _bak_path(path)
+    if not path.exists() and not bak.exists():
+        return None
+    for candidate in (path, bak):
+        try:
+            if candidate.exists():
+                return json.loads(candidate.read_text(encoding="utf-8"))
+        except Exception:
+            logging.getLogger("quiz_app").exception(f"Failed to read {candidate.name}")
+    raise RuntimeError(f"{path.name} and its backup are unreadable")
+
 # --------------------
 # GAME STATE
 # --------------------
@@ -112,8 +148,8 @@ _GAME_STATE_DEFAULTS = {
 
 def _load_game_state() -> dict:
     try:
-        if GAME_STATE_FILE.exists():
-            loaded = json.loads(GAME_STATE_FILE.read_text(encoding="utf-8"))
+        loaded = _read_json_with_backup(GAME_STATE_FILE)
+        if loaded:
             return {**_GAME_STATE_DEFAULTS, **loaded}
     except Exception:
         pass
@@ -121,9 +157,9 @@ def _load_game_state() -> dict:
 
 def _save_game_state() -> None:
     try:
-        GAME_STATE_FILE.write_text(json.dumps(_game_state), encoding="utf-8")
+        _write_json_atomic(GAME_STATE_FILE, _game_state)
     except Exception:
-        pass
+        logging.getLogger("quiz_app").exception("Failed to save game state")
 
 # --------------------
 # SAVED CONFIGS
@@ -131,19 +167,17 @@ def _save_game_state() -> None:
 
 def _load_saved_configs() -> list:
     try:
-        if SAVED_CONFIGS_FILE.exists():
-            return json.loads(SAVED_CONFIGS_FILE.read_text(encoding="utf-8"))
+        configs = _read_json_with_backup(SAVED_CONFIGS_FILE)
     except Exception:
-        pass
-    return []
+        raise HTTPException(status_code=500, detail="saved_configs.json is corrupted; refusing to overwrite it")
+    return configs if configs is not None else []
 
 def _save_saved_configs(configs: list) -> None:
     try:
-        SAVED_CONFIGS_FILE.write_text(
-            json.dumps(configs, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        _write_json_atomic(SAVED_CONFIGS_FILE, configs, ensure_ascii=False, indent=2)
     except Exception:
-        pass
+        logging.getLogger("quiz_app").exception("Failed to save configs")
+        raise HTTPException(status_code=500, detail="Failed to save configs")
 
 # --------------------
 # LOGGING
@@ -207,7 +241,6 @@ app.add_middleware(
 )
 
 
-app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 # --------------------
@@ -327,7 +360,7 @@ def create_session(data: UserCreate, db: Session = Depends(get_db)):
 # --------------------
 
 @app.get("/users")
-def get_users(db: Session = Depends(get_db)):
+def get_users(db: Session = Depends(get_db), _: None = Depends(require_host)):
     users = db.query(User).all()
     logger.info(f"Retrieved {len(users)} users")
     return [{"id": u.id, "name": u.name, "score": u.score} for u in users]
@@ -362,7 +395,7 @@ def create_answer(data: AnswerCreate, db: Session = Depends(get_db)):
 # --------------------
 
 @app.patch("/answers/{answer_id}")
-def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_db)):
+def update_answer(answer_id: int, data: AnswerUpdate, db: Session = Depends(get_db), _: None = Depends(require_host)):
     answer = db.query(Answer).filter(Answer.id == answer_id).first()
     if not answer:
         logger.warning(f"Update failed: answer id={answer_id} not found")
@@ -408,7 +441,7 @@ async def cause_500(request: Request, exc: Exception):
 # --------------------
 
 @app.get("/results")
-def get_results(db: Session = Depends(get_db)):
+def get_results(db: Session = Depends(get_db), _: None = Depends(require_host)):
     score_subq = (
         db.query(Answer.session_id, func.count(Answer.id).label("score"))
         .filter(Answer.is_correct == True)
@@ -429,7 +462,7 @@ def get_results(db: Session = Depends(get_db)):
 # --------------------
 
 @app.get("/answers")
-def get_answers(db: Session = Depends(get_db)):
+def get_answers(db: Session = Depends(get_db), _: None = Depends(require_host)):
     results = db.query(Answer, User).join(User, Answer.session_id == User.id).all()
     logger.info(f"Retrieved {len(results)} answers")
     return [
@@ -462,7 +495,7 @@ def get_answers_by_session(session_id: int, db: Session = Depends(get_db)):
 # --------------------
 
 @app.get("/configs")
-def list_configs():
+def list_configs(_: None = Depends(require_host)):
     configs = _load_saved_configs()
     return [
         {
@@ -475,7 +508,7 @@ def list_configs():
     ]
 
 @app.post("/configs")
-def create_config(data: ConfigSave):
+def create_config(data: ConfigSave, _: None = Depends(require_host)):
     configs = _load_saved_configs()
     config_id = str(int(datetime.now().timestamp() * 1000))
     tours = []
@@ -494,7 +527,7 @@ def create_config(data: ConfigSave):
     return {"status": "ok", "id": config_id}
 
 @app.get("/configs/{config_id}")
-def get_config(config_id: str):
+def get_config(config_id: str, _: None = Depends(require_host)):
     configs = _load_saved_configs()
     config = next((c for c in configs if c["id"] == config_id), None)
     if not config:
@@ -502,7 +535,7 @@ def get_config(config_id: str):
     return config
 
 @app.put("/configs/{config_id}")
-def update_config(config_id: str, data: ConfigSave):
+def update_config(config_id: str, data: ConfigSave, _: None = Depends(require_host)):
     configs = _load_saved_configs()
     idx = next((i for i, c in enumerate(configs) if c["id"] == config_id), None)
     if idx is None:
@@ -522,7 +555,7 @@ def update_config(config_id: str, data: ConfigSave):
     return {"status": "ok"}
 
 @app.delete("/configs/{config_id}")
-def delete_config(config_id: str):
+def delete_config(config_id: str, _: None = Depends(require_host)):
     configs = _load_saved_configs()
     configs = [c for c in configs if c["id"] != config_id]
     _save_saved_configs(configs)
@@ -534,7 +567,7 @@ def delete_config(config_id: str):
 # --------------------
 
 @app.post("/game/start")
-def start_game(data: GameStartWithConfig):
+def start_game(data: GameStartWithConfig, _: None = Depends(require_host)):
     configs = _load_saved_configs()
     config = next((c for c in configs if c["id"] == data.config_id), None)
     if not config:
@@ -551,7 +584,7 @@ def start_game(data: GameStartWithConfig):
     return {"status": "ok"}
 
 @app.post("/game/tour")
-def set_active_tour(data: TourActivate):
+def set_active_tour(data: TourActivate, _: None = Depends(require_host)):
     _game_state["current_tour"] = data.tour_number
     _game_state["current_question"] = 0
     _game_state["question_started_at"] = None
@@ -561,7 +594,7 @@ def set_active_tour(data: TourActivate):
     return {"status": "ok"}
 
 @app.post("/game/question")
-def set_active_question(data: QuestionActivate):
+def set_active_question(data: QuestionActivate, _: None = Depends(require_host)):
     _game_state["current_question"] = data.question_number
     _game_state["question_started_at"] = None
     _game_state["host_state"] = "waiting"
@@ -570,7 +603,7 @@ def set_active_question(data: QuestionActivate):
     return {"status": "ok"}
 
 @app.post("/game/host-state")
-def set_host_state(data: HostStateUpdate):
+def set_host_state(data: HostStateUpdate, _: None = Depends(require_host)):
     _game_state["host_state"] = data.state
     if data.state == "timer_running":
         _game_state["question_started_at"] = int(datetime.now().timestamp() * 1000)
@@ -578,11 +611,30 @@ def set_host_state(data: HostStateUpdate):
     logger.info(f"Host state set to: {data.state}")
     return {"status": "ok"}
 
+def _player_safe_config(config: Optional[dict]) -> Optional[dict]:
+    """Only what player phones need: tour type, question count and timers. No texts, no answers."""
+    if not config:
+        return config
+    return {
+        "tours": [
+            {
+                "type": t.get("type"),
+                "questions": t.get("questions"),
+                "timer_seconds": t.get("timer_seconds"),
+                "questions_data": [
+                    {"timer_seconds": q.get("timer_seconds")} for q in t.get("questions_data", [])
+                ],
+            }
+            for t in config.get("tours", [])
+        ]
+    }
+
 @app.get("/game/status")
-def get_game_status():
+def get_game_status(request: Request):
+    config = _game_state["config"]
     return {
         "started": _game_state["started"],
-        "config": _game_state["config"],
+        "config": config if _is_host(request) else _player_safe_config(config),
         "current_tour": _game_state["current_tour"],
         "current_question": _game_state.get("current_question", 0),
         "question_started_at": _game_state.get("question_started_at"),
@@ -591,7 +643,7 @@ def get_game_status():
     }
 
 @app.delete("/reset")
-def reset_database(db: Session = Depends(get_db)):
+def reset_database(db: Session = Depends(get_db), _: None = Depends(require_host)):
     db.query(Answer).delete()
     db.query(User).delete()
     db.commit()
@@ -602,7 +654,7 @@ def reset_database(db: Session = Depends(get_db)):
     return {"status": "ok"}
 
 @app.post("/game/quit")
-def quit_game(db: Session = Depends(get_db)):
+def quit_game(db: Session = Depends(get_db), _: None = Depends(require_host)):
     db.query(Answer).delete()
     db.query(User).delete()
     db.commit()
@@ -623,7 +675,7 @@ _ALLOWED_UPLOAD_TYPES = {
 }
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), _: None = Depends(require_host)):
     if file.content_type not in _ALLOWED_UPLOAD_TYPES:
         raise HTTPException(status_code=400, detail="Only image, video, or audio files are allowed")
     ext = Path(file.filename).suffix.lower() or ".bin"
@@ -639,7 +691,7 @@ class StripAudioRequest(BaseModel):
     url: str
 
 @app.post("/api/strip-audio")
-async def strip_audio(req: StripAudioRequest):
+async def strip_audio(req: StripAudioRequest, _: None = Depends(require_host)):
     out_name = f"{int(datetime.now().timestamp() * 1000)}_noaudio.mp4"
     output_path = UPLOADS_DIR / out_name
 
@@ -746,15 +798,12 @@ async def config_recover(data: RecoverRequest):
         raise HTTPException(status_code=403, detail="Forbidden")
     return {"username": _ADMIN_USERNAME, "password": _load_password()}
 
-@app.get("/config.html")
-async def serve_config(request: Request):
-    token = request.cookies.get("config_session")
-    if not token or token not in _config_sessions:
-        return RedirectResponse("/config_login.html", status_code=302)
-    return FileResponse(FRONTEND_DIR / "config.html", headers=_NO_CACHE)
+_HOST_PAGES = {"config.html", "answers.html", "host_screen.html", "final_result.html"}
 
 @app.get("/{full_path:path}", response_class=FileResponse)
-async def serve_frontend(full_path: str):
+async def serve_frontend(full_path: str, request: Request):
+    if full_path in _HOST_PAGES and not _is_host(request):
+        return RedirectResponse(f"/config_login.html?next=/{full_path}", status_code=302)
     target_path = (FRONTEND_DIR / full_path).resolve()
     if not str(target_path).startswith(str(FRONTEND_DIR.resolve())) or not target_path.exists():
         logger.warning(f"Frontend file not found: {full_path}")
