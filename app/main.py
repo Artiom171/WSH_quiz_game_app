@@ -274,13 +274,19 @@ class ConfigLoginRequest(BaseModel):
     username: str
     password: str
 
+class CaptionedImage(BaseModel):
+    url: str
+    caption: str = ""
+
 class QuestionData(BaseModel):
     type: Literal["text", "youtube", "image", "video", "audio"] = "text"
     text: str = ""
     media_url: str = ""
+    question_images: list[CaptionedImage] = []
     answer: str = ""
     answer_description: str = ""
     answer_image_url: str = ""
+    answer_images: list[CaptionedImage] = []
     bg_music_url: str = ""
     playback_rate: float = 1.0
     muted: bool = False

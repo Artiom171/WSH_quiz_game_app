@@ -192,6 +192,41 @@
       display: block;
     }
 
+    /* image questions are sized like the answer images (.a-answer-imgs) */
+    #q-content:has(.q-imgs),
+    .q-media:has(.q-imgs) {
+      max-width: 92vw;
+    }
+
+    /* rows and image sizes are set by image_grid.js */
+    .q-imgs {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .q-fig {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .q-media .q-img {
+      max-width: none;
+      max-height: none;
+    }
+
+    .q-cap {
+      font-size: clamp(14px, 1.4vw, 22px);
+      font-weight: 500;
+      color: #94a3b8;
+      line-height: 1.3;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
     .q-media iframe {
       width: 100%;
       max-width: 860px;
@@ -282,6 +317,16 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 28px;
+      flex-shrink: 0;
+    }
+
+    /* answer text block; with images it sits right under them (see image_grid.js) */
+    .a-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: 16px;
     }
 
     .a-divider {
@@ -289,7 +334,7 @@
       height: 4px;
       background: linear-gradient(90deg, #059669, #34d399);
       border-radius: 2px;
-      margin: 0 auto 36px;
+      margin: 0 auto 20px;
     }
 
     .a-label {
@@ -298,17 +343,38 @@
       color: #34d399;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      margin: 0 0 16px;
+      margin: 0 0 12px;
+    }
+
+    /* rows and image sizes are set by image_grid.js */
+    .a-answer-imgs {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      max-width: 92vw;
+      animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .a-answer-fig {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
 
     .a-answer-img {
-      max-height: 45vh;
-      max-width: 80vw;
+      display: block;
       border-radius: 18px;
       object-fit: contain;
-      margin: 0 auto;
-      flex-shrink: 1;
-      animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .a-answer-cap {
+      font-size: clamp(14px, 1.4vw, 22px);
+      font-weight: 500;
+      color: #94a3b8;
+      line-height: 1.3;
+      text-align: center;
     }
 
     .a-description {
@@ -316,7 +382,7 @@
       font-weight: 500;
       color: #94a3b8;
       max-width: 900px;
-      margin: 20px auto 0;
+      margin: 12px auto 0;
       line-height: 1.4;
       animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
@@ -406,6 +472,7 @@
       background: rgba(255,255,255,0.12);
     }
   </style>
+  <script src="/image_grid.js"></script>
 </head>
 <body>
 
@@ -444,11 +511,13 @@
   <div class="glow-blob blob-blue"></div>
   <div class="glow-blob blob-purple"></div>
   <div class="a-tour-badge" id="a-tour-badge"></div>
-  <img class="a-answer-img" id="a-answer-img" src="" alt="" style="display:none" />
-  <div class="a-divider"></div>
-  <p class="a-label">Правильный ответ</p>
-  <p class="a-answer" id="a-answer"></p>
-  <p class="a-description" id="a-description" style="display:none"></p>
+  <div class="a-answer-imgs" id="a-answer-imgs" style="display:none"></div>
+  <div class="a-text" id="a-text">
+    <div class="a-divider"></div>
+    <p class="a-label">Правильный ответ</p>
+    <p class="a-answer" id="a-answer"></p>
+    <p class="a-description" id="a-description" style="display:none"></p>
+  </div>
 </div>
 
 <!-- ===== FINISH SCREEN (themed tour end) ===== -->
@@ -617,6 +686,32 @@
     }
   }
 
+  // Figures (image + optional caption) with classes `${prefix}-fig/-img/-cap`
+  function appendFigures(parent, images, prefix) {
+    images.forEach(im => {
+      const fig = document.createElement('figure');
+      fig.className = prefix + '-fig';
+      const img = document.createElement('img');
+      img.className = prefix + '-img';
+      img.src = im.url;
+      img.alt = '';
+      fig.appendChild(img);
+      if (im.caption) {
+        const cap = document.createElement('figcaption');
+        cap.className = prefix + '-cap';
+        cap.textContent = im.caption;
+        fig.appendChild(cap);
+      }
+      parent.appendChild(fig);
+    });
+  }
+
+  // older configs stored a single URL instead of an [{url, caption}] list
+  function imageList(list, legacyUrl) {
+    if (list?.length) return list;
+    return legacyUrl ? [{ url: legacyUrl, caption: '' }] : [];
+  }
+
   function renderQuestion(q, t) {
     document.getElementById('q-badge').textContent =
       `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
@@ -692,7 +787,10 @@
           document.addEventListener('keydown', _ytSpaceHandler);
         }
       } else if (q.type === 'image') {
-        wrap.innerHTML = `<img src="${esc(q.media_url)}" alt="" />`;
+        const imgs = document.createElement('div');
+        imgs.className = 'q-imgs';
+        appendFigures(imgs, imageList(q.question_images, q.media_url), 'q');
+        wrap.appendChild(imgs);
       } else if (q.type === 'video') {
         const vid = document.createElement('video');
         vid.src = q.media_url;
@@ -730,6 +828,10 @@
         p.textContent = q.text;
         content.appendChild(p);
       }
+
+      // image grid keeps the question text right under the images
+      const grid = content.querySelector('.q-imgs');
+      if (grid) setupImageGrid(grid, content.querySelector('.q-subtext'));
     }
 
     const timerWrap = document.getElementById('timer-wrap');
@@ -748,14 +850,15 @@
     document.getElementById('a-tour-badge').textContent =
       `Тур ${status.current_tour} · Вопрос ${status.current_question} из ${t.questions}`;
 
-    const img = document.getElementById('a-answer-img');
-    if (q?.answer_image_url) {
-      img.src = q.answer_image_url;
-      img.style.display = 'block';
-    } else {
-      img.src = '';
-      img.style.display = 'none';
-    }
+    // older configs stored a single answer_image_url
+    const images = imageList(q?.answer_images, q?.answer_image_url);
+    const imgs = document.getElementById('a-answer-imgs');
+    const textBlock = document.getElementById('a-text');
+    imgs.after(textBlock);  // take the text back out of the previous answer's grid
+    imgs.innerHTML = '';
+    imgs.style.display = images.length ? 'flex' : 'none';
+    appendFigures(imgs, images, 'a-answer');
+    if (images.length) setupImageGrid(imgs, textBlock);
 
     const descEl = document.getElementById('a-description');
     if (q?.answer_description) {

@@ -547,6 +547,19 @@
     .pv-q-media iframe { width:100%; max-width:860px; height:min(484px,55vh); border:none; border-radius:18px; display:block; }
     .pv-q-media video { max-width:100%; max-height:100%; border-radius:8px; }
     .pv-q-media audio { width:min(480px,90%); height:54px; display:block; }
+    /* image questions are sized like the answer images (.pv-a-imgs) */
+    #pv-q-content:has(.pv-q-imgs),
+    .pv-q-media:has(.pv-q-imgs) { max-width:92vw; }
+    /* rows and image sizes are set by image_grid.js */
+    .pv-q-imgs { width:100%; height:100%; min-height:0; }
+    .pv-q-fig {
+      margin:0; display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .pv-q-media .pv-q-img { max-width:none; max-height:none; }
+    .pv-q-cap {
+      font-size: clamp(14px,1.4vw,22px); font-weight:500;
+      color:#94a3b8; line-height:1.3; text-align:center; flex-shrink:0;
+    }
     .pv-q-subtext {
       font-size: clamp(18px,2.4vw,36px); font-weight:700;
       color: #cbd5e1; margin:16px auto 0;
@@ -566,11 +579,14 @@
       display: none; flex-direction: column;
       align-items: center; justify-content: center;
       width: 100%; height: 100vh;
-      padding: 16px 60px 80px;
+      padding: 16px 60px 100px;
       text-align: center; position: relative; z-index:1; overflow: hidden;
     }
-    .pv-a-badge { font-size:15px; font-weight:700; color:#cce840; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:28px; }
-    .pv-a-divider { width:100px; height:4px; background:linear-gradient(90deg,#059669,#34d399); border-radius:2px; margin:0 auto 36px; }
+    .pv-a-badge { font-size:15px; font-weight:700; color:#cce840; text-transform:uppercase; letter-spacing:0.1em; margin:0 0 28px; flex-shrink:0; }
+    /* answer text block; with images it sits right under them (see image_grid.js) */
+    .pv-a-textblock { display:flex; flex-direction:column; align-items:center; flex-shrink:0; margin-top:16px; }
+    .pv-a-divider { width:100px; height:4px; background:linear-gradient(90deg,#059669,#34d399); border-radius:2px; margin:0 auto 20px; }
+    .pv-a-label { font-size:14px; font-weight:700; color:#34d399; text-transform:uppercase; letter-spacing:0.12em; margin:0 0 12px; }
     .pv-a-answer {
       font-size: clamp(36px,5vw,68px); font-weight:900;
       color: #10b981; max-width:1000px; margin:0 auto;
@@ -579,13 +595,21 @@
     }
     .pv-a-desc {
       font-size: clamp(18px,2vw,30px); font-weight:500;
-      color: #94a3b8; max-width:900px; margin:20px auto 0;
+      color: #94a3b8; max-width:900px; margin:12px auto 0;
       line-height:1.4; animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
-    .pv-a-img {
-      max-height:45vh; max-width:80vw; border-radius:18px;
-      object-fit:contain; margin:20px auto 0; display:block;
+    /* rows and image sizes are set by image_grid.js */
+    .pv-a-imgs {
+      flex:1; min-height:0; width:100%; max-width:92vw;
       animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+    .pv-a-fig {
+      margin:0; display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .pv-a-img { border-radius:18px; object-fit:contain; display:block; }
+    .pv-a-cap {
+      font-size: clamp(14px,1.4vw,22px); font-weight:500;
+      color:#94a3b8; line-height:1.3; text-align:center;
     }
     @keyframes stripScan {
       0%   { left: -40%; width: 40%; }
@@ -831,6 +855,7 @@
       .tour-card-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="/image_grid.js"></script>
 </head>
 <body>
 <div class="container" id="mainContainer">
@@ -1065,7 +1090,7 @@
       questionCount: t.questions_data ? t.questions_data.length : t.questions,
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", answer: q.answer || "", answer_description: q.answer_description || "", answer_image_url: q.answer_image_url || "", bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false, timer_seconds: q.timer_seconds || null }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", question_images: imageList(q.question_images, q.type === "image" ? q.media_url : ""), answer: q.answer || "", answer_description: q.answer_description || "", answer_images: imageList(q.answer_images, q.answer_image_url), bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false, timer_seconds: q.timer_seconds || null }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -1143,7 +1168,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", answer: "", answer_description: "", answer_image_url: "", bg_music_url: "", playback_rate: 1.0, muted: false, timer_seconds: null });
+        questionData[i].push({ type: "text", text: "", media_url: "", question_images: [], answer: "", answer_description: "", answer_images: [], bg_music_url: "", playback_rate: 1.0, muted: false, timer_seconds: null });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1242,7 +1267,10 @@
       urlInput.type = "text";
       urlInput.className = "q-media-url";
 
-      if (isUploadable) {
+      if (q.type === "image") {
+        if (!q.question_images) q.question_images = imageList(null, q.media_url);
+        container.appendChild(buildImageListEditor(q.question_images, "+ Фото вопроса"));
+      } else if (isUploadable) {
         // --- file upload row ---
         const uploadRow = document.createElement("div");
         uploadRow.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;";
@@ -1576,7 +1604,7 @@
     descRow.appendChild(descInput);
     container.appendChild(descRow);
 
-    // answer image section
+    // answer images section (several images allowed)
     const imgSection = document.createElement("div");
     imgSection.className = "q-section";
     const imgLabel = document.createElement("span");
@@ -1586,91 +1614,8 @@
     imgSection.style.borderLeft = "3px solid #0284c7";
     imgSection.appendChild(imgLabel);
 
-    const uploadRow = document.createElement("div");
-    uploadRow.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap;";
-
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.style.display = "none";
-
-    const uploadBtn = document.createElement("button");
-    uploadBtn.type = "button";
-    uploadBtn.className = "btn-secondary";
-    uploadBtn.style.cssText = "padding:7px 12px; font-size:13px; flex-shrink:0;";
-    uploadBtn.textContent = q.answer_image_url ? "✓ Фото ответа" : "+ Фото ответа";
-    uploadBtn.addEventListener("click", () => fileInput.click());
-
-    const preview = document.createElement("img");
-    preview.style.cssText = "height:48px; border-radius:6px; display:" + (q.answer_image_url ? "block" : "none") + ";";
-    if (q.answer_image_url) preview.src = q.answer_image_url;
-
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "btn-secondary";
-    removeBtn.style.cssText = "padding:5px 10px; font-size:12px; color:#dc2626; display:" + (q.answer_image_url ? "block" : "none") + ";";
-    removeBtn.textContent = "✕";
-    removeBtn.addEventListener("click", () => {
-      questionData[ti][qi].answer_image_url = "";
-      preview.src = ""; preview.style.display = "none";
-      uploadBtn.textContent = "+ Фото ответа";
-      removeBtn.style.display = "none";
-      fileInput.value = "";
-      urlInput.value = "";
-    });
-
-    fileInput.addEventListener("change", async () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      uploadBtn.textContent = "Загрузка...";
-      uploadBtn.disabled = true;
-      try {
-        const fd = new FormData();
-        fd.append("file", file);
-        const res = await fetch("/upload", { method: "POST", body: fd });
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        questionData[ti][qi].answer_image_url = data.url;
-        preview.src = data.url;
-        preview.style.display = "block";
-        uploadBtn.textContent = "✓ Фото ответа";
-        removeBtn.style.display = "block";
-        urlInput.value = "";
-      } catch {
-        uploadBtn.textContent = "+ Фото ответа";
-      }
-      uploadBtn.disabled = false;
-    });
-
-    uploadRow.appendChild(fileInput);
-    uploadRow.appendChild(uploadBtn);
-    uploadRow.appendChild(preview);
-    uploadRow.appendChild(removeBtn);
-
-    const urlRow = document.createElement("div");
-    urlRow.style.cssText = "display:flex; align-items:center; gap:8px;";
-    const urlLabel = document.createElement("span");
-    urlLabel.textContent = "или URL:";
-    urlLabel.style.cssText = "font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; flex-shrink:0;";
-    const urlInput = document.createElement("input");
-    urlInput.type = "text";
-    urlInput.placeholder = "https://example.com/image.jpg";
-    urlInput.style.cssText = "flex:1; font-size:13px;";
-    if (q.answer_image_url && q.answer_image_url.startsWith("http")) urlInput.value = q.answer_image_url;
-    urlInput.addEventListener("input", () => {
-      const url = urlInput.value.trim();
-      questionData[ti][qi].answer_image_url = url;
-      preview.src = url || "";
-      preview.style.display = url ? "block" : "none";
-      removeBtn.style.display = url ? "block" : "none";
-      uploadBtn.textContent = url ? "✓ Фото ответа" : "+ Фото ответа";
-      if (url) fileInput.value = "";
-    });
-    urlRow.appendChild(urlLabel);
-    urlRow.appendChild(urlInput);
-
-    imgSection.appendChild(uploadRow);
-    imgSection.appendChild(urlRow);
+    if (!q.answer_images) q.answer_images = imageList(null, q.answer_image_url);
+    imgSection.appendChild(buildImageListEditor(q.answer_images, "+ Фото ответа"));
     container.appendChild(imgSection);
 
     // background music field (all question types)
@@ -1727,6 +1672,7 @@
     questionData[ti][qi].type = newType;
     questionData[ti][qi].text = "";
     questionData[ti][qi].media_url = "";
+    questionData[ti][qi].question_images = [];
     questionData[ti][qi].playback_rate = 1.0;
     card.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
     card.querySelectorAll(".type-btn").forEach(b => {
@@ -1845,6 +1791,137 @@
     }
   }
 
+  // Image lists [{url, caption}]; older configs stored a single URL (media_url / answer_image_url)
+  function imageList(list, legacyUrl) {
+    if (list && list.length) return list.map(im => ({ url: im.url, caption: im.caption || "" }));
+    return legacyUrl ? [{ url: legacyUrl, caption: "" }] : [];
+  }
+
+  // Editor for an image list: thumbnails with optional captions, multi-file upload, add by URL
+  function buildImageListEditor(images, uploadLabel) {
+    const root = document.createElement("div");
+
+    const imgList = document.createElement("div");
+    imgList.style.cssText = "display:flex; flex-direction:column; gap:8px;";
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.multiple = true;
+    fileInput.style.display = "none";
+
+    const uploadBtn = document.createElement("button");
+    uploadBtn.type = "button";
+    uploadBtn.className = "btn-secondary";
+    uploadBtn.style.cssText = "padding:7px 12px; font-size:13px; flex-shrink:0;";
+    uploadBtn.textContent = uploadLabel;
+    uploadBtn.addEventListener("click", () => fileInput.click());
+
+    function renderThumbs() {
+      imgList.innerHTML = "";
+      images.forEach((im, idx) => {
+        const item = document.createElement("div");
+        item.style.cssText = "display:flex; align-items:center; gap:8px;";
+        const preview = document.createElement("img");
+        preview.style.cssText = "height:48px; max-width:96px; object-fit:cover; border-radius:6px; display:block; flex-shrink:0;";
+        preview.src = im.url;
+        const captionInput = document.createElement("input");
+        captionInput.type = "text";
+        captionInput.placeholder = "Подпись под фото (опционально)...";
+        captionInput.value = im.caption || "";
+        captionInput.style.cssText = "flex:1; min-width:0; font-size:13px;";
+        captionInput.addEventListener("input", () => { im.caption = captionInput.value; });
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn-secondary";
+        removeBtn.style.cssText = "padding:5px 10px; font-size:12px; color:#dc2626; flex-shrink:0;";
+        removeBtn.textContent = "✕";
+        removeBtn.addEventListener("click", () => { images.splice(idx, 1); renderThumbs(); });
+        item.appendChild(preview);
+        item.appendChild(captionInput);
+        item.appendChild(removeBtn);
+        imgList.appendChild(item);
+      });
+      const btnRow = document.createElement("div");
+      btnRow.appendChild(fileInput);
+      btnRow.appendChild(uploadBtn);
+      imgList.appendChild(btnRow);
+    }
+
+    fileInput.addEventListener("change", async () => {
+      const files = [...fileInput.files];
+      if (!files.length) return;
+      uploadBtn.textContent = "Загрузка...";
+      uploadBtn.disabled = true;
+      for (const file of files) {
+        try {
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/upload", { method: "POST", body: fd });
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          images.push({ url: data.url, caption: "" });
+        } catch {}
+      }
+      fileInput.value = "";
+      uploadBtn.textContent = uploadLabel;
+      uploadBtn.disabled = false;
+      renderThumbs();
+    });
+
+    renderThumbs();
+
+    const urlRow = document.createElement("div");
+    urlRow.style.cssText = "display:flex; align-items:center; gap:8px; margin-top:8px;";
+    const urlLabel = document.createElement("span");
+    urlLabel.textContent = "или URL:";
+    urlLabel.style.cssText = "font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; flex-shrink:0;";
+    const urlInput = document.createElement("input");
+    urlInput.type = "text";
+    urlInput.placeholder = "https://example.com/image.jpg";
+    urlInput.style.cssText = "flex:1; font-size:13px;";
+    const urlAddBtn = document.createElement("button");
+    urlAddBtn.type = "button";
+    urlAddBtn.className = "btn-secondary";
+    urlAddBtn.style.cssText = "padding:7px 12px; font-size:13px; flex-shrink:0;";
+    urlAddBtn.textContent = "Добавить";
+    const addUrl = () => {
+      const url = urlInput.value.trim();
+      if (!url) return;
+      images.push({ url, caption: "" });
+      urlInput.value = "";
+      renderThumbs();
+    };
+    urlAddBtn.addEventListener("click", addUrl);
+    urlInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addUrl(); } });
+    urlRow.appendChild(urlLabel);
+    urlRow.appendChild(urlInput);
+    urlRow.appendChild(urlAddBtn);
+
+    root.appendChild(imgList);
+    root.appendChild(urlRow);
+    return root;
+  }
+
+  // Preview: figures (image + optional caption) with classes `${prefix}-fig/-img/-cap`
+  function appendFigures(parent, images, prefix) {
+    images.forEach(im => {
+      const fig = document.createElement("figure");
+      fig.className = prefix + "-fig";
+      const img = document.createElement("img");
+      img.className = prefix + "-img";
+      img.src = im.url;
+      fig.appendChild(img);
+      if (im.caption) {
+        const cap = document.createElement("figcaption");
+        cap.className = prefix + "-cap";
+        cap.textContent = im.caption;
+        fig.appendChild(cap);
+      }
+      parent.appendChild(fig);
+    });
+  }
+
   function buildPayload(name) {
     return {
       name,
@@ -1855,10 +1932,12 @@
         questions_data: (questionData[i] || []).map(q => ({
           type: q.type,
           text: q.text,
-          media_url: q.media_url,
+          media_url: q.type === "image" ? ((q.question_images || [])[0]?.url || "") : q.media_url,
+          question_images: q.type === "image" ? (q.question_images || []) : [],
           answer: q.answer,
           answer_description: q.answer_description || "",
-          answer_image_url: q.answer_image_url || "",
+          answer_image_url: (q.answer_images || [])[0]?.url || "",
+          answer_images: q.answer_images || [],
           bg_music_url: q.bg_music_url || "",
           playback_rate: q.playback_rate || 1.0,
           muted: q.muted || false,
@@ -2149,8 +2228,11 @@
           ytWrap.appendChild(ytFadeOverlayPv);
           wrap.appendChild(ytWrap);
         }
-      } else if (q.type === "image" && q.media_url) {
-        wrap.innerHTML = `<img src="${escHtml(q.media_url)}" alt="">`;
+      } else if (q.type === "image" && (q.question_images || []).length) {
+        const imgs = document.createElement("div");
+        imgs.className = "pv-q-imgs";
+        appendFigures(imgs, q.question_images, "pv-q");
+        wrap.appendChild(imgs);
       } else if (q.type === "video" && q.media_url) {
         const vid = document.createElement("video");
         vid.src = q.media_url;
@@ -2195,6 +2277,10 @@
         sub.textContent = q.text;
         qEl.appendChild(sub);
       }
+
+      // image grid keeps the question text right under the images
+      const grid = qEl.querySelector(".pv-q-imgs");
+      if (grid) setupImageGrid(grid, qEl.querySelector(".pv-q-subtext"));
     }
 
     // Text questions: Space starts the visual countdown
@@ -2219,14 +2305,21 @@
     document.getElementById("pv-a-desc").textContent = q.answer_description || "";
     document.getElementById("pv-a-desc").style.display = q.answer_description ? "" : "none";
 
-    const img = document.getElementById("pv-a-img");
-    img.src = q.answer_image_url || "";
-    img.style.display = q.answer_image_url ? "block" : "none";
+    document.getElementById("pv-a-badge").textContent = document.getElementById("pv-badge").textContent;
+
+    const imgs = document.getElementById("pv-a-imgs");
+    const textBlock = document.getElementById("pv-a-textblock");
+    imgs.after(textBlock);  // take the text back out of the previous answer's grid
+    imgs.innerHTML = "";
+    const images = q.answer_images || [];
+    imgs.style.display = images.length ? "flex" : "none";
+    appendFigures(imgs, images, "pv-a");
 
     document.getElementById("pv-question").style.display = "none";
     document.getElementById("pv-answer").style.display = "flex";
     document.getElementById("pv-reveal-btn").style.display = "none";
     document.getElementById("pv-back-btn").style.display = "";
+    if (images.length) setupImageGrid(imgs, textBlock);
   }
 
   function showPreviewQuestion() {
@@ -2280,12 +2373,16 @@
     </div>
   </div>
 
+  <!-- mirrors #screen-answer in host_screen.html -->
   <div id="pv-answer">
-    <p class="pv-a-badge">Правильный ответ</p>
-    <div class="pv-a-divider"></div>
-    <p class="pv-a-answer" id="pv-a-text"></p>
-    <p class="pv-a-desc"   id="pv-a-desc"></p>
-    <img class="pv-a-img"  id="pv-a-img">
+    <p class="pv-a-badge" id="pv-a-badge"></p>
+    <div class="pv-a-imgs" id="pv-a-imgs"></div>
+    <div class="pv-a-textblock" id="pv-a-textblock">
+      <div class="pv-a-divider"></div>
+      <p class="pv-a-label">Правильный ответ</p>
+      <p class="pv-a-answer" id="pv-a-text"></p>
+      <p class="pv-a-desc"   id="pv-a-desc"></p>
+    </div>
   </div>
 </div>
 
