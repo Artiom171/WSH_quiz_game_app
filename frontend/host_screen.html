@@ -831,7 +831,7 @@
 
       // image grid keeps the question text right under the images
       const grid = content.querySelector('.q-imgs');
-      if (grid) setupImageGrid(grid, content.querySelector('.q-subtext'));
+      if (grid) setupImageGrid(grid, content.querySelector('.q-subtext'), !!q.rebus);
     }
 
     const timerWrap = document.getElementById('timer-wrap');
@@ -858,7 +858,7 @@
     imgs.innerHTML = '';
     imgs.style.display = images.length ? 'flex' : 'none';
     appendFigures(imgs, images, 'a-answer');
-    if (images.length) setupImageGrid(imgs, textBlock);
+    if (images.length) setupImageGrid(imgs, textBlock, !!q?.rebus);
 
     const descEl = document.getElementById('a-description');
     if (q?.answer_description) {

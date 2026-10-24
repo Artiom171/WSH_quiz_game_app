@@ -290,6 +290,7 @@ class QuestionData(BaseModel):
     bg_music_url: str = ""
     playback_rate: float = 1.0
     muted: bool = False
+    rebus: bool = False  # show question/answer images joined in one seamless row
     timer_seconds: Optional[int] = None
 
 class TourConfigFull(BaseModel):

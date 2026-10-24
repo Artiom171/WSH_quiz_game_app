@@ -665,18 +665,6 @@
       margin-bottom: 10px;
     }
 
-    .btn-toggle-text {
-      background: none;
-      border: none;
-      color: #a8d800;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      padding: 0;
-      margin-bottom: 8px;
-    }
-
     .q-section {
       margin-top: 16px;
       padding-top: 12px;
@@ -1090,7 +1078,7 @@
       questionCount: t.questions_data ? t.questions_data.length : t.questions,
     }));
     questionData = config.tours.map(t =>
-      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", question_images: imageList(q.question_images, q.type === "image" ? q.media_url : ""), answer: q.answer || "", answer_description: q.answer_description || "", answer_images: imageList(q.answer_images, q.answer_image_url), bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false, timer_seconds: q.timer_seconds || null }))
+      (t.questions_data || []).map(q => ({ type: q.type || "text", text: q.text || "", media_url: q.media_url || "", question_images: imageList(q.question_images, q.type === "image" ? q.media_url : ""), answer: q.answer || "", answer_description: q.answer_description || "", answer_images: imageList(q.answer_images, q.answer_image_url), bg_music_url: q.bg_music_url || "", playback_rate: q.playback_rate || 1.0, muted: q.muted || false, rebus: !!q.rebus, timer_seconds: q.timer_seconds || null }))
     );
 
     document.getElementById("numTours").value = tourSettings.length;
@@ -1168,7 +1156,7 @@
     tourSettings.forEach((t, i) => {
       if (!questionData[i]) questionData[i] = [];
       while (questionData[i].length < t.questionCount)
-        questionData[i].push({ type: "text", text: "", media_url: "", question_images: [], answer: "", answer_description: "", answer_images: [], bg_music_url: "", playback_rate: 1.0, muted: false, timer_seconds: null });
+        questionData[i].push({ type: "text", text: "", media_url: "", question_images: [], answer: "", answer_description: "", answer_images: [], bg_music_url: "", playback_rate: 1.0, muted: false, rebus: false, timer_seconds: null });
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
@@ -1553,25 +1541,41 @@
         container.appendChild(ytRow);
       }
 
-      const toggleBtn = document.createElement("button");
-      toggleBtn.className = "btn-toggle-text";
-      toggleBtn.textContent = q.text ? "− Текст" : "+ Добавить текст";
-      container.appendChild(toggleBtn);
-
+      // question text under the media (optional); shown big on the host screen,
+      // unlike the small per-image captions
+      const textSection = document.createElement("div");
+      textSection.className = "q-section";
+      textSection.style.borderLeft = "3px solid #a8d800";
+      const textLabel = document.createElement("span");
+      textLabel.className = "q-section-label";
+      textLabel.textContent = "Текст вопроса";
+      textLabel.style.color = "#80b000";
       const ta = document.createElement("textarea");
-      ta.placeholder = "Дополнительный текст вопроса (опционально)...";
+      ta.placeholder = "Например: Что за логотип? (необязательно)";
       ta.value = q.text;
-      ta.style.display = q.text ? "" : "none";
+      ta.style.cssText = "min-height:60px; font-size:14px;";
       ta.addEventListener("input", () => { questionData[ti][qi].text = ta.value; });
-      container.appendChild(ta);
-
-      toggleBtn.addEventListener("click", () => {
-        const visible = ta.style.display !== "none";
-        ta.style.display = visible ? "none" : "";
-        toggleBtn.textContent = visible ? "+ Добавить текст" : "− Текст";
-        if (visible) { questionData[ti][qi].text = ""; ta.value = ""; }
-      });
+      textSection.appendChild(textLabel);
+      textSection.appendChild(ta);
+      container.appendChild(textSection);
     }
+
+    // rebus: question and answer images are shown joined, without gaps
+    const rebusRow = document.createElement("div");
+    rebusRow.style.cssText = "display:flex; align-items:center; gap:8px; margin:10px 0;";
+    const rebusCheck = document.createElement("input");
+    rebusCheck.type = "checkbox";
+    rebusCheck.id = `rebus-${ti}-${qi}`;
+    rebusCheck.checked = !!q.rebus;
+    rebusCheck.style.cssText = "width:16px; height:16px; cursor:pointer; accent-color:#a855f7;";
+    rebusCheck.addEventListener("change", () => { questionData[ti][qi].rebus = rebusCheck.checked; });
+    const rebusLabel = document.createElement("label");
+    rebusLabel.htmlFor = `rebus-${ti}-${qi}`;
+    rebusLabel.textContent = "🧩 Ребус — картинки вопроса и ответа вплотную, без промежутков";
+    rebusLabel.style.cssText = "font-size:13px; font-weight:600; color:#64748b; cursor:pointer;";
+    rebusRow.appendChild(rebusCheck);
+    rebusRow.appendChild(rebusLabel);
+    container.appendChild(rebusRow);
 
     // answer field (always shown)
     const answerRow = document.createElement("div");
@@ -1941,6 +1945,7 @@
           bg_music_url: q.bg_music_url || "",
           playback_rate: q.playback_rate || 1.0,
           muted: q.muted || false,
+          rebus: !!q.rebus,
           timer_seconds: q.timer_seconds || null
         }))
       }))
@@ -2280,7 +2285,7 @@
 
       // image grid keeps the question text right under the images
       const grid = qEl.querySelector(".pv-q-imgs");
-      if (grid) setupImageGrid(grid, qEl.querySelector(".pv-q-subtext"));
+      if (grid) setupImageGrid(grid, qEl.querySelector(".pv-q-subtext"), !!q.rebus);
     }
 
     // Text questions: Space starts the visual countdown
@@ -2319,7 +2324,7 @@
     document.getElementById("pv-answer").style.display = "flex";
     document.getElementById("pv-reveal-btn").style.display = "none";
     document.getElementById("pv-back-btn").style.display = "";
-    if (images.length) setupImageGrid(imgs, textBlock);
+    if (images.length) setupImageGrid(imgs, textBlock, !!q.rebus);
   }
 
   function showPreviewQuestion() {
