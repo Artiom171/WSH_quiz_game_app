@@ -13,3 +13,7 @@ game_state.json
 # Ignore postman files
 postman/*
 .postman/*
+# Ignore Python bytecode and test cache
+__pycache__/
+*.pyc
+.pytest_cache/
