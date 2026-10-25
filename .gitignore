@@ -20,10 +20,10 @@ smtp_config.json
 # Ignore postman files
 postman/*
 .postman/*
-
-# Ignore Python bytecode
+# Ignore Python bytecode and test cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # Ignore saved game configs (questions/answers)
 saved_configs.json
