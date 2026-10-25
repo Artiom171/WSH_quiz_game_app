@@ -13,7 +13,7 @@ import io
 import socket
 import qrcode
 from typing_extensions import Literal
-from typing import Optional
+from typing import Annotated, Optional
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Response, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +21,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from fastapi.responses import RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -299,9 +299,25 @@ class TourConfigFull(BaseModel):
     timer_seconds: Optional[int] = None
     questions_data: list[QuestionData]
 
+class Theme(BaseModel):
+    """Game color theme (hex colors); the host screen derives the rest from these."""
+    bg: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    accent: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    answer: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    text: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    glow1: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    glow2: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+
+class ThemeChoice(BaseModel):
+    """How the editor built the theme: a preset name plus the colors the user replaced."""
+    base: str = ""
+    custom: dict[Literal["bg", "accent", "answer", "text", "glow1", "glow2"], Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}$")]] = {}
+
 class ConfigSave(BaseModel):
     name: str
     tours: list[TourConfigFull]
+    theme: Optional[Theme] = None
+    theme_choice: Optional[ThemeChoice] = None
 
 class GameStartWithConfig(BaseModel):
     config_id: str
@@ -528,6 +544,8 @@ def create_config(data: ConfigSave, _: None = Depends(require_host)):
         "name": data.name,
         "created_at": datetime.now().isoformat(),
         "tours": tours,
+        "theme": data.theme.model_dump() if data.theme else None,
+        "theme_choice": data.theme_choice.model_dump() if data.theme_choice else None,
     })
     _save_saved_configs(configs)
     logger.info(f"Config created: id={config_id}, name='{data.name}'")
@@ -555,6 +573,8 @@ def update_config(config_id: str, data: ConfigSave, _: None = Depends(require_ho
     configs[idx].update({
         "name": data.name,
         "tours": tours,
+        "theme": data.theme.model_dump() if data.theme else None,
+        "theme_choice": data.theme_choice.model_dump() if data.theme_choice else None,
         "updated_at": datetime.now().isoformat(),
     })
     _save_saved_configs(configs)
@@ -580,7 +600,7 @@ def start_game(data: GameStartWithConfig, _: None = Depends(require_host)):
     if not config:
         raise HTTPException(status_code=404, detail="Config not found")
     _game_state["started"] = True
-    _game_state["config"] = {"tours": config["tours"]}
+    _game_state["config"] = {"tours": config["tours"], "theme": config.get("theme")}
     _game_state["game_id"] = int(datetime.now().timestamp() * 1000)
     _game_state["current_tour"] = 0
     _game_state["current_question"] = 0
@@ -619,7 +639,7 @@ def set_host_state(data: HostStateUpdate, _: None = Depends(require_host)):
     return {"status": "ok"}
 
 def _player_safe_config(config: Optional[dict]) -> Optional[dict]:
-    """Only what player phones need: tour type, question count and timers. No texts, no answers."""
+    """Only what player phones need: tour type, question count, timers and the color theme. No texts, no answers."""
     if not config:
         return config
     return {
@@ -633,7 +653,8 @@ def _player_safe_config(config: Optional[dict]) -> Optional[dict]:
                 ],
             }
             for t in config.get("tours", [])
-        ]
+        ],
+        "theme": config.get("theme"),
     }
 
 @app.get("/game/status")

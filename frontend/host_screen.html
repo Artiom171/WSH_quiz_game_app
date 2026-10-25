@@ -7,13 +7,32 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
+    /* game color theme; defaults here, overridden from the config by theme.js */
+    :root {
+      --bg: #0c1008;
+      --accent: #cce840;
+      --answer: #10b981;
+      --text: #ffffff;
+      --text-soft: #cbd5e1;
+      --text-muted: #94a3b8;
+      --answer-light: #34d399;
+      --answer-dark: #059669;
+      --answer-glow: rgba(16,185,129,0.45);
+      --glow1: rgba(130,175,0,0.28);
+      --glow2: rgba(210,55,105,0.22);
+      --track: rgba(255,255,255,0.08);
+      --on-accent: #1a2000;
+      --panel: rgba(12,16,8,0.92);
+      --panel-border: rgba(255,255,255,0.1);
+    }
+
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100vh;
       overflow: hidden;
       font-family: Inter, Arial, sans-serif;
-      background: #0c1008;
-      color: white;
+      background: var(--bg);
+      color: var(--text);
     }
 
     /* ===== SCREENS ===== */
@@ -41,14 +60,14 @@
 
     .blob-blue {
       width: 600px; height: 600px;
-      background: rgba(130, 175, 0, 0.28);
+      background: var(--glow1);
       top: -200px; left: -160px;
       animation: blobDrift 14s ease-in-out infinite;
     }
 
     .blob-purple {
       width: 520px; height: 520px;
-      background: rgba(210, 55, 105, 0.22);
+      background: var(--glow2);
       bottom: -160px; right: -140px;
       animation: blobDrift 17s ease-in-out infinite reverse;
     }
@@ -71,7 +90,7 @@
     .waiting-label {
       font-size: 16px;
       font-weight: 700;
-      color: #cce840;
+      color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.12em;
       margin: 0 0 20px;
@@ -82,7 +101,7 @@
       font-weight: 900;
       line-height: 1.05;
       letter-spacing: -0.02em;
-      color: #ffffff;
+      color: var(--text);
       text-shadow: 0 0 32px rgba(56,189,248,0.6), 0 0 80px rgba(37,99,235,0.35);
       margin: 0 0 20px;
       animation: titleFloat 5s ease-in-out infinite;
@@ -95,7 +114,7 @@
 
     .waiting-subtitle {
       font-size: 24px;
-      color: #475569;
+      color: var(--text-muted);
       margin: 0 0 32px;
     }
 
@@ -117,7 +136,7 @@
       margin: 10px 0 0;
       font-size: 13px;
       font-weight: 600;
-      color: #64748b;
+      color: var(--text-muted);
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
@@ -140,9 +159,9 @@
     }
 
     .q-badge {
-      font-size: 14px;
+      font-size: 28px;
       font-weight: 700;
-      color: #cce840;
+      color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 12px;
@@ -166,7 +185,7 @@
       font-size: clamp(18px, 2.8vw, 48px);
       font-weight: 800;
       line-height: 1.28;
-      color: white;
+      color: var(--text);
       margin: 0 auto;
       max-width: 1040px;
     }
@@ -221,7 +240,7 @@
     .q-cap {
       font-size: clamp(14px, 1.4vw, 22px);
       font-weight: 500;
-      color: #94a3b8;
+      color: var(--text-muted);
       line-height: 1.3;
       text-align: center;
       flex-shrink: 0;
@@ -251,7 +270,7 @@
     .q-subtext {
       font-size: clamp(18px, 2.4vw, 36px);
       font-weight: 700;
-      color: #cbd5e1;
+      color: var(--text-soft);
       margin: 16px auto 0;
       max-width: 960px;
       line-height: 1.3;
@@ -270,20 +289,20 @@
     }
 
     .timer-ring {
-      width: 90px;
-      height: 90px;
+      width: 117px;
+      height: 117px;
       transform: rotate(-90deg);
     }
 
     .ring-track {
       fill: none;
-      stroke: rgba(255,255,255,0.08);
+      stroke: var(--track);
       stroke-width: 9;
     }
 
     .ring-fill {
       fill: none;
-      stroke: #cce840;
+      stroke: var(--accent);
       stroke-width: 9;
       stroke-linecap: round;
       stroke-dasharray: 339.29;
@@ -293,9 +312,9 @@
 
     .timer-num {
       position: absolute;
-      font-size: 28px;
+      font-size: 36px;
       font-weight: 900;
-      color: white;
+      color: var(--text);
       line-height: 1;
       letter-spacing: -0.02em;
     }
@@ -311,9 +330,9 @@
     }
 
     .a-tour-badge {
-      font-size: 15px;
+      font-size: 29px;
       font-weight: 700;
-      color: #cce840;
+      color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 28px;
@@ -332,7 +351,7 @@
     .a-divider {
       width: 100px;
       height: 4px;
-      background: linear-gradient(90deg, #059669, #34d399);
+      background: linear-gradient(90deg, var(--answer-dark), var(--answer-light));
       border-radius: 2px;
       margin: 0 auto 20px;
     }
@@ -340,7 +359,7 @@
     .a-label {
       font-size: 14px;
       font-weight: 700;
-      color: #34d399;
+      color: var(--answer-light);
       text-transform: uppercase;
       letter-spacing: 0.12em;
       margin: 0 0 12px;
@@ -372,7 +391,7 @@
     .a-answer-cap {
       font-size: clamp(14px, 1.4vw, 22px);
       font-weight: 500;
-      color: #94a3b8;
+      color: var(--text-muted);
       line-height: 1.3;
       text-align: center;
     }
@@ -380,7 +399,7 @@
     .a-description {
       font-size: clamp(18px, 2vw, 30px);
       font-weight: 500;
-      color: #94a3b8;
+      color: var(--text-muted);
       max-width: 900px;
       margin: 12px auto 0;
       line-height: 1.4;
@@ -390,11 +409,11 @@
     .a-answer {
       font-size: clamp(36px, 5vw, 68px);
       font-weight: 900;
-      color: #10b981;
+      color: var(--answer);
       max-width: 1000px;
       margin: 0 auto;
       line-height: 1.1;
-      text-shadow: 0 0 48px rgba(16,185,129,0.45);
+      text-shadow: 0 0 48px var(--answer-glow);
       animation: answerReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
 
@@ -415,7 +434,7 @@
     .finish-title {
       font-size: 68px;
       font-weight: 900;
-      color: white;
+      color: var(--text);
       margin: 0 0 20px;
       text-shadow: 0 0 32px rgba(251,191,36,0.4);
       animation: titleFloat 4s ease-in-out infinite;
@@ -423,7 +442,7 @@
 
     .finish-subtitle {
       font-size: 22px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin: 0;
     }
 
@@ -436,8 +455,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(12,16,8,0.92);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
       padding: 14px 18px;
       backdrop-filter: blur(16px);
@@ -461,18 +480,19 @@
     .ctrl-btn:active { transform: translateY(0); }
     .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .ctrl-primary { background: linear-gradient(135deg,#a8d800,#80b000); color: #1a2000; }
+    .ctrl-primary { background: var(--accent); color: var(--on-accent); }
     .ctrl-green   { background: linear-gradient(135deg,#059669,#047857); color: white; }
     .ctrl-orange  { background: linear-gradient(135deg,#d97706,#b45309); color: white; }
-    .ctrl-ghost   { background: rgba(255,255,255,0.1); color: #cbd5e1; }
+    .ctrl-ghost   { background: var(--panel-border); color: var(--text-soft); }
 
     .ctrl-sep {
       width: 1px;
       height: 28px;
-      background: rgba(255,255,255,0.12);
+      background: var(--panel-border);
     }
   </style>
   <script src="/image_grid.js"></script>
+  <script src="/theme.js"></script>
 </head>
 <body>
 
@@ -598,10 +618,15 @@
 
   // ===== RENDER =====
 
+  let _appliedTheme = null;
+
   function render() {
     stopTimer();
 
     const { started, config, current_tour, current_question, host_state, question_started_at } = status;
+
+    const themeKey = JSON.stringify(config?.theme ?? null);
+    if (themeKey !== _appliedTheme) { applyTheme(config?.theme); _appliedTheme = themeKey; }
 
     if (!started || !config) {
       setWaiting('Ожидание', 'Кто тут умный?', 'Новый дизайн, новый способ сдачи ответов.<br>Но всё та же, родная, любимая Ваша игра...');
@@ -838,7 +863,7 @@
     timerWrap.style.display = effectiveTimer() ? '' : 'none';
     if (effectiveTimer()) {
       document.getElementById('ring-fill').style.strokeDashoffset = 0;
-      document.getElementById('ring-fill').style.stroke = '#cce840';
+      document.getElementById('ring-fill').style.stroke = 'var(--accent)';
       document.getElementById('timer-num').textContent = effectiveTimer();
     }
 
@@ -893,7 +918,7 @@
       num.textContent = secs;
       ring.style.strokeDashoffset = CIRC * (1 - pct);
 
-      if (pct > 0.3)      ring.style.stroke = '#cce840';
+      if (pct > 0.3)      ring.style.stroke = 'var(--accent)';
       else if (pct > 0.1) ring.style.stroke = '#fbbf24';
       else                 ring.style.stroke = '#f87171';
 
@@ -1047,7 +1072,7 @@
     const tours = [];
     tours[data.tourNumber - 1] = t;
     status = {
-      started: true, config: { tours },
+      started: true, config: { tours, theme: data.theme },
       current_tour: data.tourNumber, current_question: 0,
       host_state: 'waiting', question_started_at: null,
     };

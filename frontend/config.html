@@ -112,6 +112,11 @@
       box-shadow: none;
     }
 
+    .step1-actions { display:flex; gap:10px; margin-top:24px; }
+    .step1-actions .btn-primary { flex:1; width:auto; }
+    .step1-actions .btn-secondary { flex:0 0 auto; padding:15px 22px; font-size:15px; border-radius:14px; }
+    .btn-secondary.saved { background:#ecfccb; color:#4d7c0f; border-color:#bef264; }
+
     .btn-secondary {
       padding: 10px 18px;
       background: #f1f5f9;
@@ -466,7 +471,15 @@
       position: fixed;
       inset: 0;
       z-index: 3000;
-      background: #0c1008;
+      /* game theme, mirrors host_screen.html; set from gameTheme by theme.js */
+      --bg: #0c1008; --accent: #cce840; --answer: #10b981; --text: #ffffff;
+      --text-soft: #cbd5e1; --text-muted: #94a3b8;
+      --answer-light: #34d399; --answer-dark: #059669; --answer-glow: rgba(16,185,129,0.45);
+      --glow1: rgba(130,175,0,0.28); --glow2: rgba(210,55,105,0.22);
+      --track: rgba(255,255,255,0.08); --on-accent: #1a2000;
+      --panel: rgba(12,16,8,0.92); --panel-border: rgba(255,255,255,0.1);
+      background: var(--bg);
+      color: var(--text);
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -483,12 +496,12 @@
     }
     #preview-modal .pv-blob-green {
       width: 600px; height: 600px;
-      background: rgba(130,175,0,0.28);
+      background: var(--glow1);
       top: -200px; left: -160px;
     }
     #preview-modal .pv-blob-pink {
       width: 520px; height: 520px;
-      background: rgba(210,55,105,0.22);
+      background: var(--glow2);
       bottom: -160px; right: -140px;
     }
 
@@ -498,17 +511,18 @@
       display: flex; gap: 10px; z-index: 10;
     }
     .pv-btn {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: white;
+      background: var(--track);
+      border: 1px solid var(--panel-border);
+      color: var(--text);
       border-radius: 10px;
       padding: 8px 18px;
       font-size: 13px; font-weight: 600;
       cursor: pointer; font-family: inherit;
     }
-    .pv-btn:hover { background: rgba(255,255,255,0.16); }
+    .pv-btn:hover { background: var(--panel-border); }
     .pv-btn-reveal {
-      background: linear-gradient(135deg, #a8d800, #80b000);
+      background: var(--accent);
+      color: var(--on-accent);
       border-color: transparent;
     }
 
@@ -521,8 +535,8 @@
       text-align: center; overflow: hidden;
     }
     .pv-badge {
-      font-size: 14px; font-weight: 700;
-      color: #cce840; text-transform: uppercase;
+      font-size: 28px; font-weight: 700;
+      color: var(--accent); text-transform: uppercase;
       letter-spacing: 0.1em;
       margin: 8px 0 12px; flex-shrink: 0;
     }
@@ -535,7 +549,7 @@
     .pv-q-text {
       font-size: clamp(18px, 2.8vw, 48px);
       font-weight: 800; line-height: 1.28;
-      color: white; margin: 0 auto; max-width: 1040px;
+      color: var(--text); margin: 0 auto; max-width: 1040px;
     }
     .pv-q-media {
       flex: 1; min-height: 0; margin: 0 auto;
@@ -558,11 +572,11 @@
     .pv-q-media .pv-q-img { max-width:none; max-height:none; }
     .pv-q-cap {
       font-size: clamp(14px,1.4vw,22px); font-weight:500;
-      color:#94a3b8; line-height:1.3; text-align:center; flex-shrink:0;
+      color:var(--text-muted); line-height:1.3; text-align:center; flex-shrink:0;
     }
     .pv-q-subtext {
       font-size: clamp(18px,2.4vw,36px); font-weight:700;
-      color: #cbd5e1; margin:16px auto 0;
+      color: var(--text-soft); margin:16px auto 0;
       max-width:960px; line-height:1.3; flex-shrink:0;
     }
     .pv-timer-wrap {
@@ -570,10 +584,10 @@
       align-items: center; justify-content: center;
       flex-shrink: 0; margin-top: 12px;
     }
-    .pv-timer-ring { width:90px; height:90px; transform:rotate(-90deg); }
-    .pv-ring-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:9; }
-    .pv-ring-fill  { fill:none; stroke:#cce840; stroke-width:9; stroke-linecap:round; stroke-dasharray:239; stroke-dashoffset:0; }
-    .pv-timer-num  { position:absolute; font-size:28px; font-weight:900; color:white; line-height:1; letter-spacing:-0.02em; }
+    .pv-timer-ring { width:117px; height:117px; transform:rotate(-90deg); }
+    .pv-ring-track { fill:none; stroke:var(--track); stroke-width:9; }
+    .pv-ring-fill  { fill:none; stroke:var(--accent); stroke-width:9; stroke-linecap:round; stroke-dasharray:239; stroke-dashoffset:0; }
+    .pv-timer-num  { position:absolute; font-size:36px; font-weight:900; color:var(--text); line-height:1; letter-spacing:-0.02em; }
 
     #pv-answer {
       display: none; flex-direction: column;
@@ -582,20 +596,20 @@
       padding: 16px 60px 100px;
       text-align: center; position: relative; z-index:1; overflow: hidden;
     }
-    .pv-a-badge { font-size:15px; font-weight:700; color:#cce840; text-transform:uppercase; letter-spacing:0.1em; margin:0 0 28px; flex-shrink:0; }
+    .pv-a-badge { font-size:29px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.1em; margin:0 0 28px; flex-shrink:0; }
     /* answer text block; with images it sits right under them (see image_grid.js) */
     .pv-a-textblock { display:flex; flex-direction:column; align-items:center; flex-shrink:0; margin-top:16px; }
-    .pv-a-divider { width:100px; height:4px; background:linear-gradient(90deg,#059669,#34d399); border-radius:2px; margin:0 auto 20px; }
-    .pv-a-label { font-size:14px; font-weight:700; color:#34d399; text-transform:uppercase; letter-spacing:0.12em; margin:0 0 12px; }
+    .pv-a-divider { width:100px; height:4px; background:linear-gradient(90deg,var(--answer-dark),var(--answer-light)); border-radius:2px; margin:0 auto 20px; }
+    .pv-a-label { font-size:14px; font-weight:700; color:var(--answer-light); text-transform:uppercase; letter-spacing:0.12em; margin:0 0 12px; }
     .pv-a-answer {
       font-size: clamp(36px,5vw,68px); font-weight:900;
-      color: #10b981; max-width:1000px; margin:0 auto;
-      line-height:1.1; text-shadow:0 0 48px rgba(16,185,129,0.45);
+      color: var(--answer); max-width:1000px; margin:0 auto;
+      line-height:1.1; text-shadow:0 0 48px var(--answer-glow);
       animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
     .pv-a-desc {
       font-size: clamp(18px,2vw,30px); font-weight:500;
-      color: #94a3b8; max-width:900px; margin:12px auto 0;
+      color: var(--text-muted); max-width:900px; margin:12px auto 0;
       line-height:1.4; animation: pvReveal 0.55s cubic-bezier(0.22,1,0.36,1);
     }
     /* rows and image sizes are set by image_grid.js */
@@ -609,7 +623,7 @@
     .pv-a-img { border-radius:18px; object-fit:contain; display:block; }
     .pv-a-cap {
       font-size: clamp(14px,1.4vw,22px); font-weight:500;
-      color:#94a3b8; line-height:1.3; text-align:center;
+      color:var(--text-muted); line-height:1.3; text-align:center;
     }
     @keyframes stripScan {
       0%   { left: -40%; width: 40%; }
@@ -839,11 +853,111 @@
       .config-actions { flex-wrap: wrap; }
     }
 
+    /* ===== THEME (color scheme) EDITOR ===== */
+    .theme-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:4px; }
+    .theme-title { font-size:15px; font-weight:700; color:#0f172a; }
+    .theme-reset { background:none; border:none; padding:0; font:600 12px Inter,Arial,sans-serif; color:#64748b; cursor:pointer; }
+    .theme-reset:hover { color:#0f172a; }
+    .theme-sub { font-size:13px; color:#64748b; margin:0 0 12px; }
+    .theme-step { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; margin:14px 0 8px; }
+
+    .theme-presets { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+    .theme-preset {
+      border:2px solid #e2e8f0; border-radius:12px; padding:6px; background:#fff; cursor:pointer;
+      display:flex; flex-direction:column; gap:6px; font-family:inherit; transition:border-color .15s, box-shadow .15s;
+    }
+    .theme-preset:hover { border-color:#cbd5e1; }
+    .theme-preset.active { border-color:#a8d800; box-shadow:0 0 0 3px rgba(168,216,0,0.2); }
+    .theme-preset-swatch {
+      position:relative; height:46px; border-radius:8px; overflow:hidden;
+      display:flex; align-items:flex-end; gap:4px; padding:7px;
+    }
+    .theme-preset-swatch i { position:absolute; width:70%; height:130%; border-radius:50%; filter:blur(10px); opacity:0.7; }
+    .theme-preset-swatch i:nth-child(1) { left:-25%; top:-60%; }
+    .theme-preset-swatch i:nth-child(2) { right:-25%; bottom:-70%; }
+    .theme-preset-swatch b { position:relative; height:6px; border-radius:3px; }
+    .theme-preset-swatch b:nth-of-type(1) { width:42%; }
+    .theme-preset-swatch b:nth-of-type(2) { width:24%; }
+    .theme-preset-name { font-size:11.5px; font-weight:600; color:#334155; line-height:1.2; }
+
+    /* mini host screens, colored by the same CSS variables as host_screen.html */
+    .theme-previews { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .theme-screen-wrap { display:flex; flex-direction:column; gap:4px; }
+    .theme-screen-cap { font-size:11px; font-weight:600; color:#94a3b8; text-align:center; }
+    .theme-screen {
+      position:relative; aspect-ratio:16/9; border-radius:10px; overflow:hidden;
+      background:var(--bg); color:var(--text); font-family:Inter,Arial,sans-serif;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+      box-shadow:0 4px 14px rgba(15,23,42,0.15);
+    }
+    .theme-screen > * { position:relative; }
+    .theme-screen .ts-blob { position:absolute; border-radius:50%; filter:blur(22px); }
+    .theme-screen .ts-blob1 { width:70%; height:100%; left:-28%; top:-45%; background:var(--glow1); }
+    .theme-screen .ts-blob2 { width:60%; height:90%; right:-24%; bottom:-40%; background:var(--glow2); }
+    .ts-ring {
+      width:31px; height:31px; border-radius:50%; border:4px solid var(--accent);
+      display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:var(--text);
+    }
+    .ts-badge { font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); }
+    .ts-q { font-size:12px; font-weight:800; line-height:1.2; text-align:center; max-width:86%; color:var(--text); }
+    .theme-screen .ts-btn { position:absolute; right:6px; bottom:6px; font-size:6px; font-weight:700; padding:3px 6px; border-radius:4px; background:var(--accent); color:var(--on-accent); }
+    .ts-divider { width:26px; height:2px; border-radius:1px; background:linear-gradient(90deg,var(--answer-dark),var(--answer-light)); }
+    .ts-label { font-size:6px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--answer-light); }
+    .ts-answer { font-size:20px; font-weight:900; line-height:1.05; color:var(--answer); text-shadow:0 0 12px var(--answer-glow); }
+    .ts-desc { font-size:7.5px; color:var(--text-muted); }
+
+    .theme-colors { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .theme-summary { font-size:12.5px; color:#475569; margin:0 0 8px; }
+    .theme-summary b { color:#0f172a; }
+    .theme-color {
+      position:relative; display:flex; align-items:center; gap:10px; padding:8px 10px;
+      border:1.5px dashed #cbd5e1; border-radius:10px; background:#f8fafc; cursor:pointer; user-select:none;
+      transition:border-color .15s, box-shadow .15s, background .15s;
+    }
+    .theme-color:hover { border-color:#a8d800; }
+    .theme-color.on { border:1.5px solid #a8d800; background:#fff; box-shadow:0 0 0 3px rgba(168,216,0,0.18); }
+    .theme-color-check {
+      position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:50%;
+      border:2px solid #cbd5e1; background:#fff; color:transparent;
+      display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; line-height:1;
+    }
+    .theme-color.on .theme-color-check { background:#a8d800; border-color:#a8d800; color:#fff; }
+    .theme-color-state { display:block; margin-top:2px; font-size:10.5px; font-weight:600; color:#94a3b8; }
+    .theme-color.on .theme-color-state { color:#6b8f00; }
+    .theme-color:not(.on) .theme-color-name { color:#64748b; }
+    .theme-color:not(.on) input.theme-color-hex { color:#94a3b8; background:#f1f5f9; }
+    .theme-color input { position:absolute; left:0; bottom:0; width:1px; height:1px; opacity:0; border:0; padding:0; }
+    .theme-color-sw { width:28px; height:28px; border-radius:50%; flex-shrink:0; border:2px solid #fff; box-shadow:0 0 0 1px #cbd5e1; }
+    .theme-color-name { display:block; font-size:13px; font-weight:600; color:#334155; }
+    .theme-color-text { min-width:0; flex:1; }
+    .theme-color input.theme-color-hex {
+      position:static; display:block; width:100%; max-width:84px; height:auto; opacity:1;
+      margin:2px 0 0; padding:2px 6px; border:1px solid #e2e8f0; border-radius:6px; background:#fff;
+      font:12px Consolas,monospace; color:#334155;
+    }
+    .theme-color input.theme-color-hex:focus { outline:none; border-color:#a8d800; box-shadow:0 0 0 2px rgba(168,216,0,0.2); }
+    .theme-color input.theme-color-hex.invalid { border-color:#f87171; box-shadow:0 0 0 2px rgba(248,113,113,0.2); }
+
+    .theme-warn {
+      display:none; margin-top:10px; padding:8px 12px; border-radius:8px;
+      background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; font-size:12.5px; line-height:1.4;
+    }
+    .theme-warn button {
+      margin-left:6px; padding:2px 10px; border-radius:6px; border:1px solid #fdba74; background:#fff;
+      color:#9a3412; font:600 12px Inter,Arial,sans-serif; cursor:pointer;
+    }
+
+    @media (max-width: 480px) {
+      .theme-presets, .theme-colors { grid-template-columns:repeat(2,1fr); }
+      .theme-previews { grid-template-columns:1fr; }
+    }
+
     @media (max-width: 380px) {
       .tour-card-grid { grid-template-columns: 1fr; }
     }
   </style>
   <script src="/image_grid.js"></script>
+  <script src="/theme.js"></script>
 </head>
 <body>
 <div class="container" id="mainContainer">
@@ -877,6 +991,11 @@
     <p class="page-subtitle">Шаг 1 из 2 — задайте количество туров и их параметры.</p>
 
     <div class="field">
+      <label for="gameNameInput">Название игры</label>
+      <input type="text" id="gameNameInput" placeholder="Например, Игра июнь 2026" oninput="syncConfigName(this)" />
+    </div>
+
+    <div class="field">
       <label for="numTours">Количество туров</label>
       <input type="number" id="numTours" min="1" max="20" placeholder="Например, 4" oninput="updateTourCards()" />
     </div>
@@ -886,8 +1005,50 @@
       <div id="toursList"></div>
     </div>
 
+    <hr class="divider" />
+    <div class="theme-head">
+      <span class="theme-title">🎨 Цветовая гамма</span>
+      <button type="button" class="theme-reset" onclick="loadThemeState(null)">Сбросить</button>
+    </div>
+    <p class="theme-sub">Как будет выглядеть экран ведущего. Выберите готовую тему или настройте любой цвет — превью меняется сразу.</p>
+
+    <div class="theme-step">1. Готовая тема</div>
+    <div class="theme-presets" id="themePresets"></div>
+
+    <div class="theme-step">2. Как это выглядит</div>
+    <div class="theme-previews" id="themePreview">
+      <div class="theme-screen-wrap">
+        <div class="theme-screen">
+          <div class="ts-blob ts-blob1"></div><div class="ts-blob ts-blob2"></div>
+          <div class="ts-ring">30</div>
+          <div class="ts-badge">Тур 1 · Вопрос 3 из 10</div>
+          <div class="ts-q">Какая планета самая большая?</div>
+          <div class="ts-btn">Показать ответ</div>
+        </div>
+        <div class="theme-screen-cap">Вопрос</div>
+      </div>
+      <div class="theme-screen-wrap">
+        <div class="theme-screen">
+          <div class="ts-blob ts-blob1"></div><div class="ts-blob ts-blob2"></div>
+          <div class="ts-divider"></div>
+          <div class="ts-label">Правильный ответ</div>
+          <div class="ts-answer">Юпитер</div>
+          <div class="ts-desc">Газовый гигант</div>
+        </div>
+        <div class="theme-screen-cap">Ответ</div>
+      </div>
+    </div>
+
+    <div class="theme-step">3. Свои цвета — нажмите на карточку, чтобы заменить цвет темы своим</div>
+    <p class="theme-summary" id="themeSummary"></p>
+    <div class="theme-colors" id="themeColors"></div>
+    <div class="theme-warn" id="themeWarn"></div>
+
     <p id="step1Error" class="error-msg"></p>
-    <button class="btn-primary" style="margin-top:24px" onclick="goToStep2()">Далее: Вопросы →</button>
+    <div class="step1-actions">
+      <button class="btn-secondary" id="step1SaveBtn" onclick="saveStep1(false)">Сохранить</button>
+      <button class="btn-primary" id="step1NextBtn" onclick="saveStep1(true)">Сохранить и далее: Вопросы →</button>
+    </div>
   </div>
 
   <!-- ===== STEP 2 — QUESTION EDITOR ===== -->
@@ -916,7 +1077,7 @@
     <div class="save-panel">
       <p class="save-panel-title">Сохранить конфигурацию</p>
       <div class="save-panel-row">
-        <input type="text" id="configNameInput" placeholder="Название (например, Игра июнь 2026)" />
+        <input type="text" id="configNameInput" placeholder="Название (например, Игра июнь 2026)" oninput="syncConfigName(this)" />
         <button class="btn-secondary" onclick="saveConfig()">Сохранить</button>
       </div>
       <p id="saveError" class="error-msg"></p>
@@ -1051,6 +1212,195 @@
     showGameControl(data.config.tours);
   }
 
+  // ===== COLOR THEME =====
+
+  // The editor state: a base preset plus the user's own colors. A color card that is
+  // "on" overrides the preset's color; an "off" card shows (and uses) the preset's color.
+  let themeBaseName = THEME_PRESETS[0].name;
+  let themeCustom = {};    // key -> hex, remembered even while the card is off
+  let themeCustomOn = {};  // key -> true when that card is selected
+  let gameTheme = { ...DEFAULT_THEME };  // the resulting theme, what the game uses
+
+  const sameTheme = (a, b) => THEME_FIELDS.every(f => a[f.key] === b[f.key]);
+  const baseTheme = () => (THEME_PRESETS.find(p => p.name === themeBaseName) || THEME_PRESETS[0]).theme;
+
+  // "#e5c07b", "e5c07b", "#fc0" -> "#e5c07b" / "#ffcc00"; anything else -> null
+  function parseHex(raw) {
+    let v = raw.trim().replace(/^#/, "").toLowerCase();
+    if (/^[0-9a-f]{3}$/.test(v)) v = v.split("").map(c => c + c).join("");
+    return /^[0-9a-f]{6}$/.test(v) ? "#" + v : null;
+  }
+
+  function computeGameTheme() {
+    const base = baseTheme();
+    gameTheme = {};
+    THEME_FIELDS.forEach(f => { gameTheme[f.key] = themeCustomOn[f.key] ? themeCustom[f.key] : base[f.key]; });
+  }
+
+  // What gets saved, so the editor can restore which cards were selected
+  function themeChoice() {
+    const custom = {};
+    THEME_FIELDS.forEach(f => { if (themeCustomOn[f.key]) custom[f.key] = themeCustom[f.key]; });
+    return { base: themeBaseName, custom };
+  }
+
+  function loadThemeState(config) {
+    themeCustom = {};
+    themeCustomOn = {};
+    const choice = config?.theme_choice;
+    if (choice && THEME_PRESETS.some(p => p.name === choice.base)) {
+      themeBaseName = choice.base;
+      for (const k in choice.custom || {}) {
+        const v = parseHex(choice.custom[k] || "");
+        if (v) { themeCustom[k] = v; themeCustomOn[k] = true; }
+      }
+    } else {
+      // older configs saved only the final colors: find the matching preset,
+      // and keep whatever differs from it as the user's own colors
+      const t = normalizeTheme(config?.theme);
+      const p = THEME_PRESETS.find(p => sameTheme(p.theme, t)) || THEME_PRESETS[0];
+      themeBaseName = p.name;
+      THEME_FIELDS.forEach(f => {
+        if (t[f.key] !== p.theme[f.key]) { themeCustom[f.key] = t[f.key]; themeCustomOn[f.key] = true; }
+      });
+    }
+    renderThemeEditor();
+  }
+
+  function setThemeBase(name) {
+    themeBaseName = name;
+    renderThemeEditor();
+  }
+
+  function setCustomColor(key, value) {
+    themeCustom[key] = value;
+    themeCustomOn[key] = true;
+    renderThemeEditor();
+  }
+
+  function renderThemeEditor() {
+    computeGameTheme();
+
+    const presets = document.getElementById("themePresets");
+    presets.innerHTML = "";
+    THEME_PRESETS.forEach(p => {
+      const t = p.theme;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "theme-preset" + (p.name === themeBaseName ? " active" : "");
+      btn.innerHTML = `
+        <span class="theme-preset-swatch" style="background:${t.bg}">
+          <i style="background:${t.glow1}"></i><i style="background:${t.glow2}"></i>
+          <b style="background:${t.accent}"></b><b style="background:${t.answer}"></b>
+        </span>
+        <span class="theme-preset-name">${p.name}</span>`;
+      btn.addEventListener("click", () => setThemeBase(p.name));
+      presets.appendChild(btn);
+    });
+
+    const colors = document.getElementById("themeColors");
+    colors.innerHTML = "";
+    THEME_FIELDS.forEach(f => {
+      const item = document.createElement("div");
+      item.className = "theme-color";
+      item.title = (f.hint ? f.hint[0].toUpperCase() + f.hint.slice(1) + ". " : "") + "Нажмите на карточку, чтобы использовать свой цвет вместо цвета темы";
+      const check = document.createElement("span");
+      check.className = "theme-color-check";
+      check.textContent = "✓";
+      const input = document.createElement("input");
+      input.type = "color";
+      const sw = document.createElement("span");
+      sw.className = "theme-color-sw";
+      sw.title = "Выбрать цвет в палитре";
+      const text = document.createElement("span");
+      text.className = "theme-color-text";
+      const name = document.createElement("span");
+      name.className = "theme-color-name";
+      name.textContent = f.label;
+      const hexInput = document.createElement("input");
+      hexInput.type = "text";
+      hexInput.className = "theme-color-hex";
+      hexInput.maxLength = 7;
+      hexInput.spellcheck = false;
+      hexInput.title = "Код цвета, например #e5c07b";
+      const state = document.createElement("span");
+      state.className = "theme-color-state";
+
+      // shows the card as it is now, without re-rendering (keeps the color picker open)
+      const refresh = (from) => {
+        const on = !!themeCustomOn[f.key];
+        const value = gameTheme[f.key];
+        item.classList.toggle("on", on);
+        sw.style.background = value;
+        if (from !== input) input.value = value;
+        if (from !== hexInput) hexInput.value = value;
+        state.textContent = on ? "свой цвет" : "из темы";
+      };
+      const setColor = (value, from) => {
+        themeCustom[f.key] = value;
+        themeCustomOn[f.key] = true;
+        computeGameTheme();
+        hexInput.classList.remove("invalid");
+        refresh(from);
+        updateThemePreview();
+      };
+
+      // clicking the card toggles it; turning it on starts from the remembered own color
+      item.addEventListener("click", e => {
+        if (e.target === sw || e.target === hexInput || e.target === input) return;
+        themeCustomOn[f.key] = !themeCustomOn[f.key];
+        if (themeCustomOn[f.key] && !themeCustom[f.key]) themeCustom[f.key] = gameTheme[f.key];
+        computeGameTheme();
+        refresh();
+        updateThemePreview();
+      });
+      sw.addEventListener("click", () => input.click());
+      // picking or typing a color selects the card
+      input.addEventListener("input", () => setColor(input.value, input));
+      hexInput.addEventListener("input", () => {
+        const value = parseHex(hexInput.value);
+        if (value) setColor(value, hexInput);
+        else hexInput.classList.add("invalid");
+      });
+      hexInput.addEventListener("blur", () => {
+        hexInput.classList.remove("invalid");
+        refresh();
+      });
+      hexInput.addEventListener("keydown", e => { if (e.key === "Enter") hexInput.blur(); });
+
+      text.appendChild(name);
+      text.appendChild(hexInput);
+      text.appendChild(state);
+      item.appendChild(check);
+      item.appendChild(input);
+      item.appendChild(sw);
+      item.appendChild(text);
+      colors.appendChild(item);
+      refresh();
+    });
+
+    updateThemePreview();
+  }
+
+  function updateThemePreview() {
+    applyTheme(gameTheme, document.getElementById("themePreview"));
+
+    const own = THEME_FIELDS.filter(f => themeCustomOn[f.key]).map(f => f.label);
+    document.getElementById("themeSummary").innerHTML = own.length
+      ? `Тема «${esc(themeBaseName)}» + свои цвета: <b>${own.join(", ")}</b>`
+      : `Все цвета из темы «${esc(themeBaseName)}»`;
+
+    // readability hints (WCAG contrast); text gets a one-click fix
+    const t = gameTheme;
+    const warns = [];
+    if (themeContrast(t.text, t.bg) < 4.5) warns.push(`Текст плохо читается на этом фоне. <button type="button" onclick="setCustomColor('text', readableText(gameTheme.bg))">Исправить</button>`);
+    if (themeContrast(t.accent, t.bg) < 2) warns.push("Акцент почти сливается с фоном — номер вопроса и таймер будет плохо видно.");
+    if (themeContrast(t.answer, t.bg) < 2) warns.push("Цвет ответа почти сливается с фоном.");
+    const box = document.getElementById("themeWarn");
+    box.innerHTML = warns.map(w => "⚠ " + w).join("<br>");
+    box.style.display = warns.length ? "block" : "none";
+  }
+
   // ===== STEP 1 — TOUR STRUCTURE =====
 
   function showStep1(configId) {
@@ -1061,6 +1411,8 @@
       document.getElementById("numTours").value = "";
       document.getElementById("toursList").innerHTML = "";
       document.getElementById("toursSection").style.display = "none";
+      setConfigName("");
+      loadThemeState(null);
     }
     document.getElementById("step1Error").classList.remove("show");
     showView("step1-view");
@@ -1083,6 +1435,8 @@
 
     document.getElementById("numTours").value = tourSettings.length;
     renderTourCards();
+    setConfigName(config.name || "");
+    loadThemeState(config);
     document.getElementById("toursSection").style.display = "block";
     document.getElementById("step1Error").classList.remove("show");
     showView("step1-view");
@@ -1137,19 +1491,26 @@
     });
   }
 
-  function goToStep2() {
-    const errorEl = document.getElementById("step1Error");
-    errorEl.classList.remove("show");
+  // the game name is typed on step 1 or in the save panel of step 2; both show the same value
+  function syncConfigName(src) {
+    for (const id of ["gameNameInput", "configNameInput"]) {
+      const el = document.getElementById(id);
+      if (el !== src) el.value = src.value;
+    }
+  }
 
+  function setConfigName(name) {
+    document.getElementById("gameNameInput").value = name;
+    document.getElementById("configNameInput").value = name;
+  }
+
+  // Checks step 1 and fits questionData to the tour settings; returns an error text or ""
+  function prepareTours() {
     const n = tourSettings.length;
-    if (!n) { errorEl.textContent = "Укажите количество туров."; errorEl.classList.add("show"); return; }
-
+    if (!n) return "Укажите количество туров.";
     for (let i = 0; i < n; i++) {
       const count = tourSettings[i].questionCount;
-      if (!count || count < 1) {
-        errorEl.textContent = `Тур ${i + 1}: укажите количество вопросов.`;
-        errorEl.classList.add("show"); return;
-      }
+      if (!count || count < 1) return `Тур ${i + 1}: укажите количество вопросов.`;
     }
 
     // reconcile questionData with current tourSettings
@@ -1160,6 +1521,14 @@
       questionData[i] = questionData[i].slice(0, t.questionCount);
     });
     questionData = questionData.slice(0, n);
+    return "";
+  }
+
+  function goToStep2() {
+    const errorEl = document.getElementById("step1Error");
+    errorEl.classList.remove("show");
+    const err = prepareTours();
+    if (err) { errorEl.textContent = err; errorEl.classList.add("show"); return; }
 
     // pre-fill config name if editing
     if (editingConfigId) {
@@ -1175,6 +1544,44 @@
 
   function goToStep1() {
     showView("step1-view");
+  }
+
+  // Creates the config or updates the one being edited; returns true on success
+  async function persistConfig(name) {
+    const res = await fetch(editingConfigId ? `/configs/${editingConfigId}` : "/configs", {
+      method: editingConfigId ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(buildPayload(name))
+    });
+    if (!res.ok) return false;
+    if (!editingConfigId) editingConfigId = (await res.json()).id;
+    return true;
+  }
+
+  // Step 1 buttons: "Сохранить" stays on the page, "Сохранить и далее" opens the questions
+  async function saveStep1(andNext) {
+    const errorEl = document.getElementById("step1Error");
+    errorEl.classList.remove("show");
+    const fail = msg => { errorEl.textContent = msg; errorEl.classList.add("show"); };
+
+    const nameInput = document.getElementById("gameNameInput");
+    const name = nameInput.value.trim();
+    if (!name) { fail("Введите название игры."); nameInput.focus(); return; }
+    const err = prepareTours();
+    if (err) { fail(err); return; }
+
+    const saveBtn = document.getElementById("step1SaveBtn");
+    const nextBtn = document.getElementById("step1NextBtn");
+    saveBtn.disabled = nextBtn.disabled = true;
+    let ok = false;
+    try { ok = await persistConfig(name); } catch (_) {}
+    saveBtn.disabled = nextBtn.disabled = false;
+    if (!ok) { fail("Не удалось сохранить. Попробуйте ещё раз."); return; }
+
+    if (andNext) { goToStep2(); return; }
+    saveBtn.textContent = "✓ Сохранено";
+    saveBtn.classList.add("saved");
+    setTimeout(() => { saveBtn.textContent = "Сохранить"; saveBtn.classList.remove("saved"); }, 2000);
   }
 
   // ===== STEP 2 — QUESTION EDITOR =====
@@ -1572,7 +1979,7 @@
     const rebusLabel = document.createElement("label");
     rebusLabel.htmlFor = `rebus-${ti}-${qi}`;
     rebusLabel.textContent = "🧩 Ребус — картинки вопроса и ответа вплотную, без промежутков";
-    rebusLabel.style.cssText = "font-size:13px; font-weight:600; color:#64748b; cursor:pointer;";
+    rebusLabel.style.cssText = "font-size:13px; font-weight:600; color:#64748b; cursor:pointer; margin:0; text-transform:none; letter-spacing:normal;";
     rebusRow.appendChild(rebusCheck);
     rebusRow.appendChild(rebusLabel);
     container.appendChild(rebusRow);
@@ -1728,7 +2135,7 @@
     if (!name) { errorEl.textContent = "Введите название конфигурации."; errorEl.classList.add("show"); return; }
 
     const payload = buildPayload(name + " (копия)");
-    document.getElementById("configNameInput").value = payload.name;
+    setConfigName(payload.name);
 
     const res = await fetch("/configs", {
       method: "POST",
@@ -1929,6 +2336,8 @@
   function buildPayload(name) {
     return {
       name,
+      theme: gameTheme,
+      theme_choice: themeChoice(),
       tours: tourSettings.map((t, i) => ({
         type: t.type,
         name: t.name || "",
@@ -1955,7 +2364,7 @@
   // Rehearsal: host_screen plays this tour locally (current unsaved edits included), up to question qi
   function rehearseTour(ti, qi) {
     const tour = buildPayload("").tours[ti];
-    localStorage.setItem("rehearsal", JSON.stringify({ tourNumber: ti + 1, upTo: qi + 1, tour }));
+    localStorage.setItem("rehearsal", JSON.stringify({ tourNumber: ti + 1, upTo: qi + 1, tour, theme: gameTheme }));
     window.open("/host_screen.html?rehearsal=1", "_blank");
   }
 
@@ -2121,7 +2530,7 @@
       const pct = rem / total;
       num.textContent = Math.ceil(rem / 1000);
       ring.style.strokeDashoffset = circ * (1 - pct);
-      ring.style.stroke = pct > 0.3 ? '#cce840' : pct > 0.1 ? '#fbbf24' : '#f87171';
+      ring.style.stroke = pct > 0.3 ? 'var(--accent)' : pct > 0.1 ? '#fbbf24' : '#f87171';
       if (rem > 0 && rem <= fadeWindow) {
         const fadePct = rem / fadeWindow;
         if (_pvFadeAudio) _pvFadeAudio.volume = fadePct;
@@ -2162,7 +2571,7 @@
     if (q.timer_seconds) {
       document.getElementById("pv-timer-num").textContent = q.timer_seconds;
       const pvRing = document.querySelector('.pv-ring-fill');
-      if (pvRing) { pvRing.style.strokeDashoffset = 0; pvRing.style.stroke = '#cce840'; }
+      if (pvRing) { pvRing.style.strokeDashoffset = 0; pvRing.style.stroke = 'var(--accent)'; }
     }
 
     // Question content
@@ -2297,6 +2706,7 @@
     document.getElementById("pv-reveal-btn").style.display = "";
     document.getElementById("pv-back-btn").style.display = "none";
 
+    applyTheme(gameTheme, document.getElementById("preview-modal"));
     document.getElementById("preview-modal").classList.add("open");
     document.body.style.overflow = "hidden";
   }
