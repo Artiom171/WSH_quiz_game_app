@@ -1,47 +1,41 @@
-// Justified image grid for image questions (host screen + config preview).
-// Splits the figures into rows (keeping their order) and picks the split that makes
-// the images as large as possible inside the container, then sizes every image exactly.
+// Image grid for question/answer images (host screen + config preview).
+// Several images get identical frames: the frame shape is the average of the images'
+// shapes (so each is cropped as little as possible) and the number of columns is the
+// one that makes the frames largest inside the container. A single image keeps its shape.
 (function () {
   const GAP = 24;      // between images, rows and the footer
   const RADIUS = 18;   // image corner radius (matches the page CSS)
 
-  // All ways to split n items into k consecutive non-empty rows, as row lengths
-  function splits(n, k) {
-    const res = [];
-    (function rec(start, rowsLeft, acc) {
-      if (rowsLeft === 1) { res.push([...acc, n - start]); return; }
-      for (let len = 1; len <= n - start - (rowsLeft - 1); len++) rec(start + len, rowsLeft - 1, [...acc, len]);
-    })(0, k, []);
-    return res;
+  // Frame shape for several images: geometric mean of their aspect ratios, kept sane
+  function frameAspect(aspects) {
+    const mean = Math.exp(aspects.reduce((s, a) => s + Math.log(a), 0) / aspects.length);
+    return Math.min(2.2, Math.max(0.6, mean));
   }
 
-  // joined: one seamless row (rebus), images touch each other
+  // Equal frames in rows of `cols` (keeping order); picks the column count with the
+  // largest frames. joined: one seamless row (rebus), frames touch each other
   function bestLayout(aspects, capHs, W, H, joined) {
     const n = aspects.length;
+    const aspect = n === 1 ? aspects[0] : frameAspect(aspects);
     const gap = joined ? 0 : GAP;
+    const capH = Math.max(0, ...capHs);
     let best = null;
-    for (let k = 1; k <= (joined ? 1 : n); k++) {
-      for (const lengths of splits(n, k)) {
-        let i = 0, sumH = 0, sumCap = 0;
-        const rows = lengths.map(len => {
-          const idx = [];
-          for (let j = 0; j < len; j++) idx.push(i + j);
-          i += len;
-          const S = idx.reduce((s, j) => s + aspects[j], 0);
-          const h = (W - gap * (len - 1)) / S;           // row height when it fills the width
-          const cap = Math.max(0, ...idx.map(j => capHs[j]));
-          sumH += h; sumCap += cap;
-          return { idx, S, h };
-        });
-        const avail = H - sumCap - GAP * (k - 1);
-        if (avail <= 0) continue;
-        const scale = Math.min(1, avail / sumH);         // shrink all rows to fit the height
-        rows.forEach(r => { r.h *= scale; });
-        const area = rows.reduce((s, r) => s + r.h * r.h * r.S, 0);
-        if (!best || area > best.area * 1.001) best = { rows, area };
-      }
+    for (let cols = joined ? n : 1; cols <= n; cols++) {
+      const rowsCount = Math.ceil(n / cols);
+      const availH = H - rowsCount * capH - GAP * (rowsCount - 1);
+      if (availH <= 0) continue;
+      const w = Math.min((W - gap * (cols - 1)) / cols, (availH / rowsCount) * aspect);
+      if (!best || w > best.w * 1.001) best = { cols, w };
     }
-    return best;
+    if (!best) return null;
+    const h = best.w / aspect;
+    const rows = [];
+    for (let i = 0; i < n; i += best.cols) {
+      const idx = [];
+      for (let j = i; j < Math.min(n, i + best.cols); j++) idx.push(j);
+      rows.push({ idx, h, w: best.w });
+    }
+    return { rows, cover: n > 1 };
   }
 
   function outerHeight(el) {
@@ -73,10 +67,13 @@
       row.className = 'img-grid-row';
       row.style.cssText = `display:flex; justify-content:center; gap:${joined ? 0 : GAP}px;`;
       r.idx.forEach((j, pos) => {
-        const w = Math.floor(r.h * aspects[j]) + 'px';
+        const w = Math.floor(r.w) + 'px';
         const img = figs[j].querySelector('img');
         img.style.width = w;
         img.style.height = Math.floor(r.h) + 'px';
+        // several images: fill the shared frame, cropping a little; aim above center for faces
+        img.style.objectFit = best.cover ? 'cover' : '';
+        img.style.objectPosition = best.cover ? 'center 30%' : '';
         if (joined) {  // round only the outer corners of the strip
           const first = pos === 0, last = pos === r.idx.length - 1;
           img.style.borderRadius = `${first ? RADIUS : 0}px ${last ? RADIUS : 0}px ${last ? RADIUS : 0}px ${first ? RADIUS : 0}px`;
@@ -95,6 +92,7 @@
   // `footer` (optional, e.g. the question text) is kept right under the images,
   // so images and text stay together as one centered group.
   // `joined` (rebus questions): all images in one row, touching, no gaps.
+  // Several images always get identical frames.
   window.setupImageGrid = function (box, footer, joined = false) {
     box.style.display = 'flex';
     box.style.flexDirection = 'column';
